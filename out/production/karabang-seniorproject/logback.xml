@@ -1,0 +1,16 @@
+<configuration>
+    <!-- Define the console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <logger name="org.group3.csc325project" level="DEBUG" />
+    <logger name="io.netty" level="ERROR" />
+    <logger name="com.google.cloud.firestore.encoding.PojoBeanMapper" level="ERROR" />
+</configuration>
