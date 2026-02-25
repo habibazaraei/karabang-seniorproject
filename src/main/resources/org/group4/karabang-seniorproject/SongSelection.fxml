@@ -6,12 +6,12 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="songSelectionVBox" alignment="CENTER" spacing="15" stylesheets="@../../../CSS/SongSelection.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.group4.karabangApp.SongSelectionController">
+<VBox fx:id="songSelectionVBox" fillWidth="false" alignment="CENTER" spacing="15" stylesheets="@../../../CSS/SongSelection.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.group4.karabangApp.SongSelectionController">
     <Label fx:id="logoTitle" styleClass="header" text="KaraBang" />
-    <Label fx:id="title" styleClass="subtitle" text="Pick a Song" />
+    <Label fx:id="subtitle" styleClass="subtitle" text="Pick a Song" />
     <TextField fx:id="searchField" promptText="Search songs or artists..." styleClass="search-bar" />
-    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
-        <VBox fx:id="songListVBox" alignment="CENTER" spacing="10" style="-fx-padding: 10 20 10 20;" />
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" maxWidth="900" prefWidth="600">
+        <VBox fx:id="songListVBox" spacing="10" alignment="CENTER" style="-fx-padding: 10 20 10 20;" />
     </ScrollPane>
-    <Button fx:id="singButton" text="Sing Now" />
+    <Button fx:id="singButton" styleClass="sing-button" text="Sing Now" />
 </VBox>
