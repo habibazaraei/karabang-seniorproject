@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<VBox fx:id="introVBox" alignment="CENTER" spacing="20" xmlns:fx="org.group4.karabangApp.LoginController"
+      fx:controller="org.group4.karabangApp.LoginController">
 
+    <Label text="Welcome to KaraBang!" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.group4.karabangApp.LoginController">
-
-</AnchorPane>
+    <Button fx:id="goToSongsButton" text="Go to Songs" style="-fx-font-size: 16px; -fx-padding: 10 20;"/>
+</VBox>
