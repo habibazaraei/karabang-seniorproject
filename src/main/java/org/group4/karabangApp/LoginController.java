@@ -29,7 +29,7 @@ public class LoginController {
             stage.setScene(new Scene(root, 500, 600));
             stage.show();
 
-            // optional: hide current window
+
             goToSongsButton.getScene().getWindow().hide();
         } catch (IOException ex) {
             ex.printStackTrace();

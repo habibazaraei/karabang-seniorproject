@@ -1,0 +1,20 @@
+#musicPlayerPane {
+    -fx-background-color: black;
+    -fx-font-family: "Arial";
+}
+
+.subtitle {
+    -fx-font-size: 28px;
+    -fx-text-fill: yellow;
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+    -fx-padding: 10px;
+    -fx-alignment: center;
+}
+.subtitle-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.subtitle-label:highlighted {
+    -fx-text-fill: yellow;
+}

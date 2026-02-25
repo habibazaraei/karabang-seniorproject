@@ -6,11 +6,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +46,8 @@ public class SongSelectionController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        songs.add(new SongData(1, "Blinding Lights", "The Weeknd", "Pop", "Easy"));
-        songs.add(new SongData(2, "Bohemian Rhapsody", "Queen", "Rock", "Hard"));
+        songs.add(new SongData(1, "Blinding Lights", "The Weeknd", "Pop", "Easy","src/main/resources/Video/The Weeknd - Blinding Lights (Official Video)_1080p.mp4", "src/main/resources/Audio/The Weeknd - Blinding Lights (karaoke)_320p.mp3", "src/main/resources/Lyrics/BlindingLights.lrc"));
+        songs.add(new SongData(2, "Bohemian Rhapsody", "Queen", "Rock", "Hard","src/main/resources/Video/Queen – Bohemian Rhapsody (Official Video Remastered)_1080p.mp4","src/main/resources/Audio/Queen - Bohemian Rhapsody (Karaoke Version)_320p.mp3", "src/main/resources/Lyrics/BohemianRhapsody.lrc"));
 
         searchField.textProperty().addListener((obs, oldText, newText) -> refreshSongList());
         songListVBox.widthProperty().addListener((obs, oldWidth, newWidth) -> {
@@ -88,7 +92,7 @@ public class SongSelectionController implements Initializable {
         });
 
         singButton.setDisable(true);
-        singButton.setOnAction(e -> showNowPlaying());
+        singButton.setOnAction(e -> openMusicPlayer());
 
 
     }
@@ -187,13 +191,21 @@ public class SongSelectionController implements Initializable {
     }
 
 
-    private void showNowPlaying() {
-        if (selectedSong != null) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Now Playing");
-            alert.setHeaderText(selectedSong.getTitle());
-            alert.setContentText("by " + selectedSong.getArtist() + "\nSing along!");
-            alert.showAndWait();
+    private void openMusicPlayer() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/group4/karabang-seniorproject/MusicPlayer.fxml"));
+            Parent root = loader.load();
+
+            MusicPlayerController controller = loader.getController();
+            controller.setSong(selectedSong);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            singButton.getScene().getWindow().hide();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }
