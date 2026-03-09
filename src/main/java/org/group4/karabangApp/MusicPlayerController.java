@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import com.kitfox.svg.SVGDiagram;
+import com.kitfox.svg.SVGUniverse;
 public class MusicPlayerController {
 
     @FXML private MediaView videoView;
@@ -39,6 +40,7 @@ public class MusicPlayerController {
 
     private List<LyricsLine> lyrics = new ArrayList<>();
     private boolean isPlaying = false;
+    SVGUniverse svgUniverse = new SVGUniverse();
 
     private final Image playImg = new Image(getClass().getResource("/images/play.png").toString());
     private final Image pauseImg = new Image(getClass().getResource("/images/pause.png").toString());

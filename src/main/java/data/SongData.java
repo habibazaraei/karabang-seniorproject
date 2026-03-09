@@ -7,10 +7,34 @@ public class SongData {
     private String genre;
     private String difficulty;
 
-    private String videoPath;   // e.g., "videos/sample.mp4"
-    private String audioPath;   // e.g., "audio/sample.mp3"
-    private String lyricsPath;  // e.g., "lyrics/sample.txt" or Firebase URL
+    private String videoPath;
+    private String audioPath;
+    private String lyricsPath;
 
+    /**
+     * Default Constructor
+     */
+    public SongData(){
+        this.id = 0;
+        this.title = "";
+        this.artist = "";
+        this.genre = "";
+        this.difficulty = "";
+        this.videoPath = "";
+        this.audioPath = "";
+        this.lyricsPath = "";
+    }
+    /**
+     * Parameterized Constructor
+     * @param id
+     * @param title
+     * @param artist
+     * @param genre
+     * @param difficulty
+     * @param videoPath
+     * @param audioPath
+     * @param lyricsPath
+     */
     public SongData(int id, String title, String artist, String genre, String difficulty,
                     String videoPath, String audioPath, String lyricsPath) {
         this.id = id;
