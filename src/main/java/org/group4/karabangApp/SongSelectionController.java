@@ -45,7 +45,6 @@ public class SongSelectionController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         songs.add(new SongData(1, "Blinding Lights", "The Weeknd", "Pop", "Easy","src/main/resources/Video/The Weeknd - Blinding Lights (Official Video)_1080p.mp4", "src/main/resources/Audio/The Weeknd - Blinding Lights (karaoke)_320p.mp3", "src/main/resources/Lyrics/BlindingLights.lrc"));
         songs.add(new SongData(2, "Bohemian Rhapsody", "Queen", "Rock", "Hard","src/main/resources/Video/Queen – Bohemian Rhapsody (Official Video Remastered)_1080p.mp4","src/main/resources/Audio/Queen - Bohemian Rhapsody (Karaoke Version)_320p.mp3", "src/main/resources/Lyrics/BohemianRhapsody.lrc"));
 

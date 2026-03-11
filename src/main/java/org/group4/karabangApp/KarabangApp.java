@@ -31,6 +31,7 @@ public class KarabangApp extends Application {
         scene = new Scene(fxmlLoader.load(), widthScene, heightScene);
         stage.setMinHeight(heightScene);
         stage.setMinWidth(widthScene);
+        stage.setFullScreen(true);
         stage.setTitle("Karabang");
         stage.setScene(scene);
 
@@ -61,7 +62,6 @@ public class KarabangApp extends Application {
      * Helper method for setRoot. On call, loads a specified .fxml file
      * @param fxml passed in fxml file name
      * @return result of fxmlLoader load
-     * @throws IOException If IO error occurs, just throws.
      */
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(KarabangApp.class.getResource(fxml + ".fxml"));

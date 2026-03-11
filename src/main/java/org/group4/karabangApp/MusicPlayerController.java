@@ -1,16 +1,23 @@
 package org.group4.karabangApp;
 
 import data.SongData;
-import javafx.animation.PauseTransition;
+import javafx.animation.*;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 
 import java.io.File;
@@ -23,31 +30,36 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.kitfox.svg.SVGDiagram;
-import com.kitfox.svg.SVGUniverse;
+
+
 public class MusicPlayerController {
 
     @FXML private MediaView videoView;
     @FXML private Label subtitleLabel;
     @FXML private Slider volumeSlider;
-    @FXML private ImageView playPauseImage;
-    @FXML private ImageView restartImage;
-    @FXML private ImageView volumeIcon;
+    @FXML private SVGPath restart;
 
+    //play icon
+    @FXML private Rectangle leftPause;
+    @FXML private Rectangle rightPause;
+    @FXML private SVGPath play;
+    //volume icon
+    @FXML private StackPane volumeIconPane;
+    @FXML private SVGPath volumeMute;
+    @FXML private SVGPath volumeLowLine;
+    @FXML private SVGPath volumeHighLine;
+    //media player
+    @FXML private ImageView backgroundImageView;
+    @FXML private StackPane backgroundPane;
     private MediaPlayer videoPlayer;
     private MediaPlayer audioPlayer;
     private SongData currentSong;
 
+
+
     private List<LyricsLine> lyrics = new ArrayList<>();
     private boolean isPlaying = false;
-    SVGUniverse svgUniverse = new SVGUniverse();
 
-    private final Image playImg = new Image(getClass().getResource("/images/play.png").toString());
-    private final Image pauseImg = new Image(getClass().getResource("/images/pause.png").toString());
-    private final Image restartImg = new Image(getClass().getResource("/images/restart.png").toString());
-    private final Image volumeHigh = new Image(getClass().getResource("/images/volume_high.png").toString());
-    private final Image volumeLow = new Image(getClass().getResource("/images/volume_low.png").toString());
-    private final Image volumeMute = new Image(getClass().getResource("/images/volume_mute.png").toString());
 
     private static class LyricsLine {
         private final double time;
@@ -64,10 +76,29 @@ public class MusicPlayerController {
 
     @FXML
     public void initialize() {
-        subtitleLabel.setText("");
-        playPauseImage.setImage(playImg);
-        restartImage.setImage(restartImg);
+
         updateVolumeIcon(volumeSlider.getValue());
+
+        subtitleLabel.setText("");
+
+        //play and pause svg opacity
+        play.setOpacity(0);
+        leftPause.setOpacity(1);
+        rightPause.setOpacity(1);
+        leftPause.setTranslateX(-5);
+        rightPause.setTranslateX(5);
+
+        volumeMute.setVisible(false);
+
+        ImageView bgView = new ImageView(new Image(new File("src/main/resources/Images/background1.png").toURI().toString()));
+        bgView.setPreserveRatio(true);
+        bgView.setSmooth(true);
+        backgroundImageView.fitWidthProperty().bind(backgroundPane.widthProperty());
+        backgroundImageView.fitHeightProperty().bind(backgroundPane.heightProperty());
+        backgroundPane.getChildren().add(0, bgView);
+
+        backgroundPane.widthProperty().addListener((obs, oldVal, newVal) -> resizeBackground(bgView));
+        backgroundPane.heightProperty().addListener((obs, oldVal, newVal) -> resizeBackground(bgView));
 
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             double vol = newVal.doubleValue();
@@ -75,31 +106,29 @@ public class MusicPlayerController {
             if (videoPlayer != null) videoPlayer.setVolume(vol);
             updateVolumeIcon(vol);
         });
-
-        videoView.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                videoView.fitWidthProperty().bind(newScene.widthProperty());
-                videoView.fitHeightProperty().bind(newScene.heightProperty().subtract(120));
-            }
+        backgroundPane.heightProperty().addListener((obs, oldH, newH) -> {
+            subtitleLabel.setStyle(String.format(
+                    "-fx-text-fill: yellow; -fx-font-weight: bold; -fx-font-size: %.0fpx;",
+                    newH.doubleValue() * 0.05
+            ));
         });
-        videoView.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
 
-                videoView.fitWidthProperty().bind(newScene.widthProperty());
-                videoView.fitHeightProperty().bind(newScene.heightProperty().subtract(120));
-
-                newScene.heightProperty().addListener((o, oldH, newH) -> {
-
-                    subtitleLabel.setStyle(String.format("-fx-text-fill: yellow; -fx-font-weight: bold; -fx-font-size: %.0fpx;", newH.doubleValue() * 0.05));
-                });
-            }
-        });
     }
 
     private void updateVolumeIcon(double vol) {
-        if (vol == 0) volumeIcon.setImage(volumeMute);
-        else if (vol < 0.33) volumeIcon.setImage(volumeLow);
-        else volumeIcon.setImage(volumeHigh);
+        if (vol == 0) {
+            volumeMute.setVisible(true);
+            volumeLowLine.setVisible(false);
+            volumeHighLine.setVisible(false);
+        } else if (vol < 0.33) {
+            volumeMute.setVisible(false);
+            volumeLowLine.setVisible(true);
+            volumeHighLine.setVisible(false);
+        } else {
+            volumeMute.setVisible(false);
+            volumeLowLine.setVisible(false);
+            volumeHighLine.setVisible(true);
+        }
     }
 
     private void loadSong() {
@@ -137,7 +166,6 @@ public class MusicPlayerController {
             audioPlayer.setOnReady(() -> {
                 audioPlayer.play();
                 if (videoPlayer != null) videoPlayer.play();
-                playPauseImage.setImage(pauseImg);
                 isPlaying = true;
             });
         }
@@ -194,23 +222,57 @@ public class MusicPlayerController {
         if (isPlaying) {
             if (audioPlayer != null) audioPlayer.pause();
             if (videoPlayer != null) videoPlayer.pause();
-            playPauseImage.setImage(playImg);
-            isPlaying = false;
+            pauseToPlay();
         } else {
             if (audioPlayer != null) audioPlayer.play();
             if (videoPlayer != null) videoPlayer.play();
-            playPauseImage.setImage(pauseImg);
-            isPlaying = true;
+            playToPause();
         }
+        isPlaying = !isPlaying;
+    }
+    private void playToPause() {
+        FadeTransition playFade = new FadeTransition(Duration.millis(150), play);
+        playFade.setToValue(0);
+
+        FadeTransition leftFade = new FadeTransition(Duration.millis(150), leftPause);
+        leftFade.setToValue(1);
+
+        FadeTransition rightFade = new FadeTransition(Duration.millis(150), rightPause);
+        rightFade.setToValue(1);
+        rightFade.setDelay(Duration.millis(50));
+
+        new ParallelTransition(playFade, leftFade, rightFade).play();
     }
 
+    private void pauseToPlay() {
+        FadeTransition playFade = new FadeTransition(Duration.millis(150), play);
+        playFade.setToValue(1);
+
+        FadeTransition leftFade = new FadeTransition(Duration.millis(150), leftPause);
+        leftFade.setToValue(0);
+
+        FadeTransition rightFade = new FadeTransition(Duration.millis(150), rightPause);
+        rightFade.setToValue(0);
+
+        new ParallelTransition(playFade, leftFade, rightFade).play();
+    }
     @FXML
     private void restart() {
         if (audioPlayer != null) audioPlayer.stop();
         if (videoPlayer != null) videoPlayer.stop();
         if (audioPlayer != null) audioPlayer.play();
         if (videoPlayer != null) videoPlayer.play();
-        playPauseImage.setImage(pauseImg);
-        isPlaying = true;
+        if (!isPlaying) audioPlayer.stop(); videoPlayer.stop(); audioPlayer.pause(); videoPlayer.pause();
+
+    }
+    private void resizeBackground(ImageView bgView) {
+        double paneWidth = backgroundPane.getWidth();
+        double paneHeight = backgroundPane.getHeight();
+        double imgWidth = bgView.getImage().getWidth();
+        double imgHeight = bgView.getImage().getHeight();
+
+        double scale = Math.max(paneWidth / imgWidth, paneHeight / imgHeight);
+        bgView.setFitWidth(imgWidth * scale);
+        bgView.setFitHeight(imgHeight * scale);
     }
 }

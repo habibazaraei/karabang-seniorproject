@@ -1,52 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.SVGPath?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.group4.karabangApp.MusicPlayerController"
-      spacing="15"
-      alignment="CENTER"
-      style="-fx-background-color: black;">
+<?import javafx.scene.layout.AnchorPane?>
+<StackPane fx:id="backgroundPane" style="-fx-background-color: black;"
+           xmlns:fx="http://javafx.com/fxml/1"
+           xmlns="http://javafx.com/javafx/23.0.1"
+           fx:controller="org.group4.karabangApp.MusicPlayerController">
 
-    <StackPane prefWidth="800" prefHeight="450">
-        <MediaView fx:id="videoView"
-                   fitWidth="800"
-                   fitHeight="450"
-                   preserveRatio="true"/>
+    <!-- Background -->
+    <ImageView fx:id="backgroundImageView" preserveRatio="true" smooth="true"/>
 
-        <Label fx:id="subtitleLabel"
-               textFill="white"
-               style="-fx-font-size: 30px; -fx-font-weight: bold;"/>
-    </StackPane>
+    <!-- Video -->
+    <MediaView fx:id="videoView" fitHeight="450" fitWidth="800" preserveRatio="true"/>
 
-    <HBox spacing="40"
-          alignment="CENTER"
-          prefWidth="800"
-          style="
-              -fx-background-color: white;
-              -fx-padding: 15;
-              -fx-background-radius: 15;
-              -fx-border-radius: 15;
-          ">
+    <!-- Subtitles -->
+    <Label fx:id="subtitleLabel"
+           textFill="yellow"
+           style="-fx-font-size: 30px; -fx-font-weight: bold;"
+           translateY="60"/>
 
-    <HBox spacing="10" alignment="BOTTOM_LEFT">
+    <!-- Bottom Controls -->
+    <AnchorPane pickOnBounds="false">
+
+        <!-- Left Controls -->
+        <HBox spacing="20"
+              alignment="CENTER_LEFT"
+              AnchorPane.leftAnchor="20"
+              AnchorPane.bottomAnchor="20">
 
             <Button fx:id="playPauseButton"
                     onAction="#togglePlayPause"
                     style="-fx-background-color: transparent;">
                 <graphic>
-                    <ImageView fx:id="playPauseImage"
-                               fitWidth="40"
-                               fitHeight="40"
-                               smooth="true"
-                               preserveRatio="true"/>
+                    <StackPane prefWidth="40" prefHeight="40">
+                        <SVGPath fx:id="play"
+                                 content="M74 48.268C75.3333 49.0378 75.3333 50.9623 74 51.7321L35 74.2487C33.6667 75.0185 32 74.0563 32 72.5167L32 27.4833C32 25.9437 33.6667 24.9815 35 25.7513L74 48.268Z"
+                                 fill="white"
+                                 scaleX="0.35" scaleY="0.35"/>
+                        <Rectangle fx:id="leftPause"
+                                   width="12" height="50"
+                                   fill="white"
+                                   scaleX="0.35" scaleY="0.35"/>
+                        <Rectangle fx:id="rightPause"
+                                   width="12" height="50"
+                                   fill="white"
+                                   scaleX="0.35" scaleY="0.35"/>
+                    </StackPane>
                 </graphic>
             </Button>
 
@@ -54,32 +65,33 @@
                     onAction="#restart"
                     style="-fx-background-color: transparent;">
                 <graphic>
-                    <ImageView fx:id="restartImage"
-                               fitWidth="40"
-                               fitHeight="40"
-                               smooth="true"
-                               preserveRatio="true"/>
+                    <StackPane>
+                        <SVGPath fx:id="restart" content="M42.0846 29.3627C40.7468 28.6009 40.7353 26.6764 42.064 25.8987L54.77 18.4617C56.0987 17.684 57.7711 18.6363 57.7803 20.1759L57.8679 34.8981C57.877 36.4376 56.2161 37.4098 54.8782 36.6479L42.0846 29.3627Z M51.1318 24.0225C67.1759 24.6176 80 37.8104 80 54C80 70.5686 66.5685 84 50 84C39.6396 84 30.5054 78.7484 25.1152 70.7617L29.5654 68.4053C34.0918 74.8144 41.557 79 50 79C63.8071 79 75 67.8071 75 54C75 40.6196 64.4883 29.6938 51.2725 29.0313L51.1318 24.0225ZM33.7197 35.0283C28.3818 39.6133 25 46.4114 25 54C25 59.0038 26.4712 63.6635 29.0029 67.5723L24.5693 69.919C21.675 65.305 20 59.8484 20 54C20 44.8681 24.0808 36.6899 30.5176 31.1875L33.7197 35.0283Z" fill="#FFFFFF" scaleX="0.35" scaleY="0.35" />
+                    </StackPane>
                 </graphic>
             </Button>
 
         </HBox>
 
-        <HBox spacing="10" alignment="CENTER_RIGHT">
+        <!-- Right Controls -->
+        <HBox spacing="8"
+              alignment="CENTER_RIGHT"
+              AnchorPane.rightAnchor="20"
+              AnchorPane.bottomAnchor="20">
 
-            <ImageView fx:id="volumeIcon"
-                       fitWidth="40"
-                       fitHeight="40"
-                       smooth="true"
-                       preserveRatio="true"/>
+            <StackPane fx:id="volumeIconPane" prefWidth="40" prefHeight="40">
+                <SVGPath fx:id="volumeMute" content="M65.8203 52.9268L60.1572 58.5781L53.4717 51.8174C50.3133 53.2192 46.7866 54 43 54V46C44.4638 46 45.8781 45.8276 47.2275 45.5029L37 35.1592V51.9609C36.9996 53.6159 35.1034 54.554 33.7871 53.5508L15 39.2305V14.707L16.0117 13.9355L9.16797 7.01465L14.8311 1.36328L65.8203 52.9268ZM43 0C58.0466 0 69 12.3148 69 27C69 32.1992 67.6251 37.1 65.1836 41.2637L59.2832 35.2969C60.3873 32.8074 61 29.9995 61 27C61 16.2801 53.1885 8 43 8V0Z" fill="#FFFFFF" scaleX="0.35" scaleY="0.35" />
+                <SVGPath fx:id="volumeLowLine" content="M48.7891 23.4121C50.1056 22.4104 51.9997 23.3487 52 25.0029V74.961C51.9996 76.6159 50.1034 77.554 48.7871 76.5508L30 62.2305V37.707L48.7891 23.4121ZM58 37C65.4264 37 71 42.8763 71 50C71 57.1238 65.4264 63 58 63V55C60.8971 55 63 52.8174 63 50C63 47.1826 60.8971 45 58 45V37ZM28 62H17C15.8955 62 15.0002 61.1044 15 60V40C15 38.8954 15.8954 38 17 38H28V62Z" fill="#FFFFFF" scaleX="0.35" scaleY="0.35" />
+                <SVGPath fx:id="volumeHighLine" content="M58 23C73.0466 23 84 35.3148 84 50C84 64.6852 73.0466 77 58 77V69C68.1885 69 76 60.7199 76 50C76 39.2801 68.1885 31 58 31V23ZM48.7891 23.4121C50.1056 22.4104 51.9997 23.3487 52 25.0029V74.9609C51.9997 76.6159 50.1034 77.554 48.7871 76.5508L30 62.2305V37.707L48.7891 23.4121ZM58 37C65.4264 37 71 42.8762 71 50C71 57.1238 65.4264 63 58 63V55C60.8971 55 63 52.8174 63 50C63 47.1826 60.8971 45 58 45V37ZM28 62H17C15.8955 62 15.0002 61.1044 15 60V40C15 38.8954 15.8954 38 17 38H28V62Z" fill="#FFFFFF" scaleX="0.35" scaleY="0.35" />
+            </StackPane>
 
             <Slider fx:id="volumeSlider"
                     min="0"
                     max="1"
                     value="0.5"
                     prefWidth="150"/>
-
         </HBox>
 
-    </HBox>
+    </AnchorPane>
 
-</VBox>
+</StackPane>
