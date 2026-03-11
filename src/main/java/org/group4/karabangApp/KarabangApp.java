@@ -21,19 +21,18 @@ import javafx.stage.Stage;
 import java.io.IOException;
 public class KarabangApp extends Application {
     private StackPane stackPane;
-    private static Scene scene;
-    private int heightScene = 450;
-    private int widthScene = 800;
+    private Scene scene;
     @Override
     public void start(Stage stage) throws IOException {
         //initializeFirebase();
-        FXMLLoader fxmlLoader = new FXMLLoader(KarabangApp.class.getResource("/org/group4/karabang-seniorproject/login.fxml"));
-        scene = new Scene(fxmlLoader.load(), widthScene, heightScene);
-        stage.setMinHeight(heightScene);
-        stage.setMinWidth(widthScene);
-        stage.setFullScreen(true);
-        stage.setTitle("Karabang");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/group4/karabang-seniorproject/SongSelection.fxml"));
+        Parent root = loader.load();
+
+        scene = new Scene(root);
+
         stage.setScene(scene);
+        stage.setFullScreen(true);
+        stage.setTitle("KaraBang");
 
         stage.show();
     }
@@ -73,7 +72,7 @@ public class KarabangApp extends Application {
      * Again, if there's a better way of doing this, feel free to update or replace this method and loadFXML
      * @param fxml passed in fxml file name
      */
-    public static void setRoot(String fxml) {
+    public void setRoot(String fxml) {
         try {
             scene.setRoot(loadFXML(fxml));
         } catch (IOException e) {
@@ -85,7 +84,7 @@ public class KarabangApp extends Application {
      * Method that can be called to return to log in scene.
      * Intended to be used in User, and Admin controllers
      */
-    public static void returnToLogin() {
+    public void returnToLogin() {
         setRoot("login");
     }
 

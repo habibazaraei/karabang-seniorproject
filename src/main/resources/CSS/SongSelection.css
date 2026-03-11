@@ -11,8 +11,8 @@
   -fx-border-radius: 10;
   -fx-padding: 15;
 
-  -fx-pref-width: 600px;
-  -fx-max-width: 1200px;
+  -fx-pref-width: 1800px;
+  -fx-max-width: 2000px;
   -fx-min-width: 300px;
 
   -fx-alignment: CENTER_LEFT;
@@ -40,22 +40,22 @@
 }
 
 .header {
-  -fx-font-size: 50px;
+  -fx-font-size: 100px;
   -fx-font-weight: bold;
-  -fx-padding: 0 0 2 0;
+  -fx-padding: 0 0 0 0;
 }
 .subtitle {
-  -fx-font-size: 12px;
+  -fx-font-size: 16px;
   -fx-padding: 0 0 10 0;
 }
 .search-bar {
-  -fx-pref-width: 600px;
-  -fx-max-width: 1200px;
-  -fx-min-width: 300px;
+  -fx-pref-width:1200px;
+  -fx-max-width: 1750px;
+  -fx-min-width: 500px;
 
-  -fx-pref-height: 50px;
-  -fx-max-height: 200px;
-  -fx-min-height: 20px;
+  -fx-pref-height: 100px;
+  -fx-max-height: 400px;
+  -fx-min-height: 40px;
   -fx-font-size: 12px;
 }
 .sing-button {
@@ -66,4 +66,22 @@
   -fx-pref-height: 50px;
   -fx-max-height: 200px;
   -fx-min-height: 20px;
+}
+#songSelectionVBox {
+  -fx-padding: 20;
+}
+.scroll-pane {
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+
+}
+.scroll-pane-vbox{
+  -fx-alignment: center;
+  -fx-spacing: 15;
+  -fx-padding: 10 20 10 20;
+  -fx-background-color: transparent;
+}
+.scroll-pane > .viewport {
+  -fx-background-color: transparent;
 }

@@ -9,11 +9,12 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,7 +22,14 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class SongSelectionController implements Initializable {
-
+    @FXML
+    private Label songName;
+    @FXML
+    private Label artistName;
+    @FXML
+    private ImageView songImage;
+    @FXML
+    private ScrollPane songScrollPane;
     @FXML
     private VBox songSelectionVBox;
 
@@ -40,11 +48,28 @@ public class SongSelectionController implements Initializable {
     @FXML
     private Label subtitle;
 
+    @FXML
+    private ImageView backgroundImageView;
+
+    @FXML
+    private StackPane rootPane;
+
+
     private List<SongData> songs = new ArrayList<>();
     private SongData selectedSong = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        //background image
+        Image image = new Image(getClass().getResource("/Images/background1.png").toExternalForm());
+        backgroundImageView.setImage(image);
+
+        backgroundImageView.fitWidthProperty().bind(rootPane.widthProperty());
+        backgroundImageView.fitHeightProperty().bind(rootPane.heightProperty());
+        backgroundImageView.setPreserveRatio(false);
+
+        searchField.textProperty().addListener((obs, oldText, newText) -> refreshSongList());
         songs.add(new SongData(1, "Blinding Lights", "The Weeknd", "Pop", "Easy","src/main/resources/Video/The Weeknd - Blinding Lights (Official Video)_1080p.mp4", "src/main/resources/Audio/The Weeknd - Blinding Lights (karaoke)_320p.mp3", "src/main/resources/Lyrics/BlindingLights.lrc"));
         songs.add(new SongData(2, "Bohemian Rhapsody", "Queen", "Rock", "Hard","src/main/resources/Video/Queen – Bohemian Rhapsody (Official Video Remastered)_1080p.mp4","src/main/resources/Audio/Queen - Bohemian Rhapsody (Karaoke Version)_320p.mp3", "src/main/resources/Lyrics/BohemianRhapsody.lrc"));
 
@@ -54,42 +79,62 @@ public class SongSelectionController implements Initializable {
         });
         refreshSongList();
         updateSongCardFontSize();
+        Image tempImage = new Image(getClass().getResource("/Images/questionmark.png").toExternalForm());
+        songImage.setImage(tempImage);
+        ((VBox)songImage.getParent()).spacingProperty().bind(songSelectionVBox.widthProperty().multiply(0.02));
+        songSelectionVBox.spacingProperty().bind(rootPane.widthProperty().multiply(0.02));
+        songImage.fitWidthProperty().bind(songSelectionVBox.widthProperty().multiply(0.2));
+        songImage.fitHeightProperty().bind(songImage.fitWidthProperty());
+        singButton.maxWidthProperty().bind(rootPane.widthProperty().multiply(0.2));
+        singButton.minWidthProperty().bind(rootPane.widthProperty().multiply(0.15));
+
+        songScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        songScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        songScrollPane.setFitToWidth(true);
+        songScrollPane.setFitToHeight(true);
+
 
         logoTitle.styleProperty().bind(
                 Bindings.createStringBinding(() -> {
                     double size = songSelectionVBox.getWidth() / 12;
-                    size = Math.max(14, Math.min(size, 20));
-                    return "-fx-font-size: " + size + "px;";
+                    return "-fx-font-size: " + Math.max(16, Math.min(size, 40)) + "px;";
                 }, songSelectionVBox.widthProperty())
         );
 
         subtitle.styleProperty().bind(
                 Bindings.createStringBinding(() -> {
-                    double size = songSelectionVBox.getWidth() / 40;
-                    size = Math.max(14, Math.min(size, 20));
-                    return "-fx-font-size: " + size + "px;";
+                    double size = songSelectionVBox.getWidth() / 25;
+                    return "-fx-font-size: " + Math.max(12, Math.min(size, 30)) + "px;";
                 }, songSelectionVBox.widthProperty())
         );
+
         searchField.styleProperty().bind(
                 Bindings.createStringBinding(() -> {
                     double size = songSelectionVBox.getWidth() / 50;
-                    size = Math.max(14, Math.min(size, 20));
-                    return "-fx-font-size: " + size + "px;";
+                    return "-fx-font-size: " + Math.max(12, Math.min(size, 24)) + "px;";
+                }, songSelectionVBox.widthProperty())
+        );
+
+        songName.styleProperty().bind(
+                Bindings.createStringBinding(() -> {
+                    double size = songSelectionVBox.getWidth() / 50;
+                    return "-fx-font-size: " + Math.max(12, Math.min(size, 24)) + "px;";
+                }, songSelectionVBox.widthProperty())
+        );
+
+        artistName.styleProperty().bind(
+                Bindings.createStringBinding(() -> {
+                    double size = songSelectionVBox.getWidth() / 60;
+                    return "-fx-font-size: " + Math.max(10, Math.min(size, 20)) + "px;";
                 }, songSelectionVBox.widthProperty())
         );
 
         singButton.styleProperty().bind(
                 Bindings.createStringBinding(() -> {
                     double size = songSelectionVBox.getWidth() / 50;
-                    size = Math.max(14, Math.min(size, 20));
-                    return "-fx-font-size: " + size + "px;";
+                    return "-fx-font-size: " + Math.max(12, Math.min(size, 24)) + "px;";
                 }, songSelectionVBox.widthProperty())
         );
-        songListVBox.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-            updateSongCardFontSize();
-
-        });
-
         singButton.setDisable(true);
         singButton.setOnAction(e -> openMusicPlayer());
 
@@ -151,10 +196,10 @@ public class SongSelectionController implements Initializable {
         VBox infoBox = new VBox();
 
         Label titleLabel = new Label(song.getTitle());
-        titleLabel.getStyleClass().add("songTitle");  // matches CSS
+        titleLabel.getStyleClass().add("songTitle");
 
         Label artistLabel = new Label("by " + song.getArtist());
-        artistLabel.getStyleClass().add("songArtist");  // matches CSS
+        artistLabel.getStyleClass().add("songArtist");
 
         infoBox.getChildren().addAll(titleLabel, artistLabel);
         HBox.setHgrow(infoBox, Priority.ALWAYS);
@@ -185,7 +230,8 @@ public class SongSelectionController implements Initializable {
 
         singButton.setDisable(selectedSong == null);
         if (selectedSong != null) {
-            singButton.setText("Sing Now - " + selectedSong.getTitle());
+            songName.setText(selectedSong.getTitle());
+            artistName.setText(selectedSong.getArtist());
         }
     }
 
