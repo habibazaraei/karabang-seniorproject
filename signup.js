@@ -34,3 +34,8 @@ signupBtn.addEventListener("click", async () => {
         alert(error.message);
     }
 });
+
+//Home Button
+homeBtn.addEventListener("click", () => {
+      window.location.href = "login.html"; 
+    });
