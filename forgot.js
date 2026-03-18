@@ -16,3 +16,8 @@ form.addEventListener("submit", async (e) => {
         alert(error.message);
     }
 });
+
+//Home Button
+homeBtn.addEventListener("click", () => {
+      window.location.href = "login.html"; 
+    });
