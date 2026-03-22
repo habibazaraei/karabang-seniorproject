@@ -11,7 +11,7 @@ let scrollTopZone = document.getElementById("scrollTop")
 let scrollBottomZone = document.getElementById("scrollBottom")
 
 let teaserPlayer = document.getElementById("teaserPlayer");
-let currentTeaserId = null;
+
 
 let minSongs = 10
 let songs = []
@@ -29,11 +29,21 @@ const sortState = {};
 const TEASER_FADE_DURATION = 2000;
 const TEASER_REPLAY_DELAY = 3000;
 
+
+let userInteracted = false;
+teaserPlayer.volume = 0;
+teaserPlayer.loop = false;
+
+
+teaserPlayer.play().catch(() => {});
+teaserPlayer.pause();
+
 let teaserFadeInterval = null;
 let teaserReplayTimeout = null;
+let currentTeaserId = null;
 
 searchField.oninput = refreshSongList
-// --- DRAG SCROLLING ---
+// DRAG SCROLLING
 let isDragging = false;
 let startY = 0;
 let startIndex = 0;
@@ -74,7 +84,7 @@ function endDrag(e) {
     isDragging = false;
 }
 
-// --- MOUSE WHEEL SCROLLING ---
+// MOUSE WHEEL SCROLLING
 songList.addEventListener("wheel", (e) => {
     e.preventDefault();
     if (e.deltaY > 0) moveDown();
@@ -92,13 +102,7 @@ scrollBottomZone.onmouseenter = () => {
 scrollTopZone.onmouseleave = () => clearInterval(moveInterval)
 scrollBottomZone.onmouseleave = () => clearInterval(moveInterval)
 
-// drag logic stays on container
-songList.addEventListener("mousedown", startDrag);
-songList.addEventListener("touchstart", startDrag);
-document.addEventListener("mousemove", onDrag);
-document.addEventListener("touchmove", onDrag);
-document.addEventListener("mouseup", endDrag);
-document.addEventListener("touchend", endDrag);
+
 // Restart Category when searching
 searchField.oninput = () => {
     // reset all category buttons
@@ -346,12 +350,44 @@ function refreshSongList() {
     });
 }
 
+function selectSong(song, card) {
+    selectedSong = song;
+    // Remove previous selection
+    document.querySelectorAll(".songCard").forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+
+    // Update song info
+    songName.innerText = song.title;
+    artistName.innerText = song.artist;
+
+    const clickedIndex = currentList.indexOf(song);
+    if (clickedIndex !== -1) {
+        let distance = clickedIndex - currentIndex;
+
+        // Handle wrapping for circular carousel
+        if (distance > currentList.length / 2) distance -= currentList.length;
+        if (distance < -currentList.length / 2) distance += currentList.length;
+
+        // Move the carousel step by step to bring clicked song to center
+        currentIndex = clickedIndex;
+        updateTrackSelect();
+    }
+
+    singButton.disabled = false;
+}
+
+singButton.onclick = ()=>{
+
+    if(!selectedSong) return
+
+    window.location.href = "/musicplayer?song=" + selectedSong.id
+
+}
+
 function updateTrackSelect() {
     const cards = document.querySelectorAll(".songCard");
     const total = cards.length;
 
-    const vh = window.innerHeight;
-    const vw = window.innerWidth;
     const leftPanelHeight = document.getElementById("leftPanel").offsetHeight;
     const baseY = leftPanelHeight * 0.15;
     const baseX = 30;
@@ -379,7 +415,6 @@ function updateTrackSelect() {
         card.style.opacity = opacity;
     });
 
-    // auto selection
     const centerSong = currentList[currentIndex];
 
     if (centerSong && !centerSong.isPlaceholder) {
@@ -392,29 +427,35 @@ function updateTrackSelect() {
 
         singButton.disabled = false;
 
-        // --- PLAY TEASER WITH FADE & LOOP ---
+        // --- Teaser logic ---
         if (currentTeaserId !== centerSong.id) {
             currentTeaserId = centerSong.id;
-            playTeaserWithFade(centerSong);
+
+            // If user already interacted, play normally
+            if (userInteracted) {
+                playTeaserWithFade(centerSong);
+            } else {
+                // preload muted teaser so future autoplay works
+                teaserPlayer.src = centerSong.songTeaserPath;
+                teaserPlayer.volume = 0;
+                teaserPlayer.play().catch(() => {});
+                teaserPlayer.pause();
+            }
         }
     } else {
-        // Stop teaser if placeholder
+        selectedSong = null;
+        singButton.disabled = true;
+        songName.innerText = "???";
+        artistName.innerText = "???";
+        songImage.src = "/images/questionmark_icon.svg";
+
+        // Stop teaser
         teaserPlayer.pause();
         teaserPlayer.currentTime = 0;
         teaserPlayer.volume = 1;
         clearInterval(teaserFadeInterval);
         clearTimeout(teaserReplayTimeout);
         currentTeaserId = null;
-
-        // stop teaser if placeholder or no song
-        if (!centerSong || centerSong.isPlaceholder) {
-            teaserPlayer.pause();
-            teaserPlayer.currentTime = 0;
-            currentTeaserId = null;
-        }
-
-        songName.innerText = "???";
-        artistName.innerText = "???";
     }
 }
 scrollTopZone.onmouseenter = () => moveUp()
@@ -481,22 +522,35 @@ function buildCurrentList(filteredSongs) {
     return list;
 }
 // replays song teaser
+// unlock teaser on first click/touch
+document.addEventListener("click", () => { userInteracted = true; playCurrentTeaser(); }, { once: true });
+document.addEventListener("touchstart", () => { userInteracted = true; playCurrentTeaser(); }, { once: true });
+
+function playCurrentTeaser() {
+    const centerSong = currentList[currentIndex];
+    if (!centerSong || centerSong.isPlaceholder) return;
+    currentTeaserId = centerSong.id;
+    playTeaserWithFade(centerSong);
+}
 
 function playTeaserWithFade(song) {
     if (!song.songTeaserPath) return;
 
-    // Stop previous teaser & fade
     clearInterval(teaserFadeInterval);
     clearTimeout(teaserReplayTimeout);
-    teaserPlayer.pause();
-    teaserPlayer.currentTime = 0;
-    teaserPlayer.volume = 1;
 
+    teaserPlayer.pause();
     teaserPlayer.src = song.songTeaserPath;
+    teaserPlayer.currentTime = 0;
+
+    // Play muted if user hasn't interacted
+    teaserPlayer.volume = userInteracted ? 1 : 0;
+
     teaserPlayer.play().catch(() => {});
+
     // Fade out near the end
     teaserPlayer.ontimeupdate = () => {
-        if (teaserPlayer.duration && teaserPlayer.currentTime >= teaserPlayer.duration - TEASER_FADE_DURATION / 1000) {
+        if (teaserPlayer.duration && teaserPlayer.currentTime >= teaserPlayer.duration - TEASER_FADE_DURATION/1000) {
             if (teaserFadeInterval) return;
 
             const fadeSteps = 20;
@@ -504,7 +558,7 @@ function playTeaserWithFade(song) {
             let currentStep = 0;
             teaserFadeInterval = setInterval(() => {
                 currentStep++;
-                teaserPlayer.volume = Math.max(0, 1 - currentStep / fadeSteps);
+                teaserPlayer.volume = Math.max(userInteracted ? 1 : 0, (userInteracted ? 1 : 0) * (1 - currentStep / fadeSteps));
                 if (currentStep >= fadeSteps) {
                     clearInterval(teaserFadeInterval);
                     teaserFadeInterval = null;
@@ -512,6 +566,7 @@ function playTeaserWithFade(song) {
             }, fadeStepTime);
         }
     };
+
     // Replay after delay
     teaserPlayer.onended = () => {
         teaserReplayTimeout = setTimeout(() => {
@@ -519,4 +574,6 @@ function playTeaserWithFade(song) {
         }, TEASER_REPLAY_DELAY);
     };
 }
+
+
 
