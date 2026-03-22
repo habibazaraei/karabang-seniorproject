@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "title": "Blinding Lights",
+    "artist": "The Weeknd",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/BlindingLights.mp3",
+    "lyricsPath": "/lyrics/BlindingLights.lrc",
+    "artCoverPath": "/artCover/blindingLightsArtCover.jpg"
+  },
+  {
+    "id": 2,
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen",
+    "genre": "Rock",
+    "difficulty": "Hard",
+    "language": "English",
+    "audioPath": "/audio/BohemianRhapsody.mp3",
+    "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
+    "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg"
+  },
+  {
+    "id": 3,
+    "title": "Test Song",
+    "artist": "Queen",
+    "genre": "Rock",
+    "difficulty": "Hard",
+    "language": "English",
+    "audioPath": "/audio/BohemianRhapsody.mp3",
+    "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
+    "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg"
+  }
+]

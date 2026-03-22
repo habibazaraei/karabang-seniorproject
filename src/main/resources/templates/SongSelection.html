@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/SongSelection.css">
+    <title>KaraBang</title>
+</head>
+<body>
+<!-- Top button bar -->
+<div id="topButtonBar">
+    <div id="webLogo">Karabang</div>
+
+    <div id="rightButtons">
+        <button id="profile" class="topBtn">
+            <img src="/images/blank_profile_icon.svg" alt="Profile">
+        </button>
+        <button id="settings" class="topBtn">
+            <img src="/images/settings_icon.svg" alt="Settings">
+        </button>
+
+    </div>
+</div>
+<div id="mainLayout">
+
+    <!-- Left -->
+    <div id="leftPanel">
+        <!-- Category bar -->
+        <div id="leftTop">
+            <!-- Search field -->
+            <input type="text" id="searchField" placeholder="Search songs...">
+            <div id="categoryBar">
+                <button class="categoryBtn">Artist <img class="sortIcon" src="/images/AtoZ_icon.svg"></button>
+                <button class="categoryBtn">Genre <img class="sortIcon" src="/images/AtoZ_icon.svg"></button>
+                <button class="categoryBtn">Difficulty <img class="sortIcon" src="/images/AtoZ_icon.svg"></button>
+                <button class="categoryBtn">Language <img class="sortIcon" src="/images/AtoZ_icon.svg" /></button>
+                <button class="categoryBtn">Favorites <img class="sortIcon" src="/images/AtoZ_icon.svg" /></button>
+
+            </div>
+        </div>
+        <!-- Song list selection -->
+        <div id="songList">
+            <div id="scrollTop" class="scrollZone"></div>
+
+            <div id="songListInner" class="songListInner"></div>
+
+            <div id="scrollBottom" class="scrollZone"></div>
+        </div>
+    </div>
+    <!-- Right -->
+    <div id="rightPanel">
+        <div id="rightTop"></div>
+        <div id="songContainer">
+            <img id="songImage" src="/images/questionmark_icon.svg">
+            <!-- Selected song info -->
+            <div id="songInfo">
+                <h3 id="songName"></h3>
+                <p id="artistName"></p>
+            </div>
+            <button id="singButton" disabled>Sing Now</button>
+        </div>
+    </div>
+    <br>
+</div>
+
+<script src="/js/SongSelection.js"></script>
+
+</body>
+</html>
