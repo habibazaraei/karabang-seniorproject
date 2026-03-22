@@ -20,6 +20,7 @@ public class SongData {
     private String audioPath;
     private String lyricsPath;
     private String artCoverPath;
+    private String songTeaserPath;
 
     /**
      * Default Constructor
@@ -36,8 +37,9 @@ public class SongData {
      * @param audioPath Passed in audioPath
      * @param lyricsPath Passed in lyricsPath
      * @param artCoverPath Passed in artCoverPath
+     * @param songTeaserPath Passed in songTeaserPath
      */
-    public SongData(int id, String title, String artist, String genre, String difficulty, String language, String audioPath, String lyricsPath, String artCoverPath) {
+    public SongData(int id, String title, String artist, String genre, String difficulty, String language, String audioPath, String lyricsPath, String artCoverPath, String songTeaserPath) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -47,6 +49,7 @@ public class SongData {
         this.audioPath = audioPath;
         this.lyricsPath = lyricsPath;
         this.artCoverPath = artCoverPath;
+        this.songTeaserPath = songTeaserPath;
     }
 
     // Getters
@@ -87,14 +90,19 @@ public class SongData {
     public String getAudioPath() { return audioPath; }
     /**
      * Returns lyricsPath upon call
-     * @return title
+     * @return lyricsPath
      */
     public String getLyricsPath() { return lyricsPath; }
     /**
      * Returns artCoverPath upon call
-     * @return title
+     * @return artCoverPath
      */
     public String getArtCoverPath() { return artCoverPath; }
+    /**
+     * Returns songTeaserPath upon call
+     * @return songTeaserPath
+     */
+    public String getSongTeaserPath() { return songTeaserPath; }
     /**
      * Returns Song Data information
      * Example: Bohemian Rhapsody by Queen [Rock, Hard]

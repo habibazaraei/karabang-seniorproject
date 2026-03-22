@@ -9,9 +9,11 @@ let singButton = document.getElementById("singButton")
 let songListInner = document.getElementById("songListInner")
 let scrollTopZone = document.getElementById("scrollTop")
 let scrollBottomZone = document.getElementById("scrollBottom")
+
+let teaserPlayer = document.getElementById("teaserPlayer");
+let currentTeaserId = null;
+
 let minSongs = 10
-
-
 let songs = []
 
 let selectedSong = null
@@ -21,6 +23,14 @@ let currentIndex = 0
 let moveInterval = null
 let currentList = []
 
+const categoryButtons = document.querySelectorAll(".categoryBtn");
+const sortState = {};
+
+const TEASER_FADE_DURATION = 2000;
+const TEASER_REPLAY_DELAY = 3000;
+
+let teaserFadeInterval = null;
+let teaserReplayTimeout = null;
 
 searchField.oninput = refreshSongList
 // --- DRAG SCROLLING ---
@@ -100,8 +110,6 @@ searchField.oninput = () => {
     refreshSongList();
 };
 // Category sort
-const categoryButtons = document.querySelectorAll(".categoryBtn");
-const sortState = {}; // tracks sort state: "asc", "desc", "none"
 
 categoryButtons.forEach(button => {
     const name = button.innerText.trim();
@@ -356,7 +364,6 @@ function updateTrackSelect() {
         if (offset < -total / 2) offset += total;
 
         const rotY = -offset * 10;
-
         const scaleValues = [1.1, 0.95, 0.85, 0.7, 0.6];
         const opacityValues = [1, 0.8, 0.6, 0.4, 0.3];
 
@@ -374,27 +381,38 @@ function updateTrackSelect() {
 
     // auto selection
     const centerSong = currentList[currentIndex];
+
     if (centerSong && !centerSong.isPlaceholder) {
         selectedSong = centerSong;
         cards[currentIndex].classList.add("selected");
-        if (centerSong.title && centerSong.title !== "") {
-            songName.innerText = centerSong.title;
-            artistName.innerText = centerSong.artist;
-        } else {
-            songName.innerText = "???";
-            artistName.innerText = "???";
-        }
-        if (centerSong.artCoverPath && centerSong.artCoverPath !== "") {
-            songImage.src = centerSong.artCoverPath;
-        } else {
-            songImage.src = "/images/questionmark_icon.svg";
-        }
+
+        songName.innerText = centerSong.title || "???";
+        artistName.innerText = centerSong.artist || "???";
+        songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
         singButton.disabled = false;
+
+        // --- PLAY TEASER WITH FADE & LOOP ---
+        if (currentTeaserId !== centerSong.id) {
+            currentTeaserId = centerSong.id;
+            playTeaserWithFade(centerSong);
+        }
     } else {
-        selectedSong = null;
-        singButton.disabled = true;
-        songImage.src = "/images/questionmark_icon.svg";
+        // Stop teaser if placeholder
+        teaserPlayer.pause();
+        teaserPlayer.currentTime = 0;
+        teaserPlayer.volume = 1;
+        clearInterval(teaserFadeInterval);
+        clearTimeout(teaserReplayTimeout);
+        currentTeaserId = null;
+
+        // stop teaser if placeholder or no song
+        if (!centerSong || centerSong.isPlaceholder) {
+            teaserPlayer.pause();
+            teaserPlayer.currentTime = 0;
+            currentTeaserId = null;
+        }
+
         songName.innerText = "???";
         artistName.innerText = "???";
     }
@@ -414,55 +432,8 @@ function moveUp(){
     updateTrackSelect()
 }
 
-function selectSong(song, card) {
-    selectedSong = song;
-    // Remove previous selection
-    document.querySelectorAll(".songCard").forEach(c => c.classList.remove("selected"));
-    card.classList.add("selected");
 
-    // Update song info
-    songName.innerText = song.title;
-    artistName.innerText = song.artist;
 
-    const clickedIndex = currentList.indexOf(song);
-    if (clickedIndex !== -1) {
-        let distance = clickedIndex - currentIndex;
-
-        // Handle wrapping for circular carousel
-        if (distance > currentList.length / 2) distance -= currentList.length;
-        if (distance < -currentList.length / 2) distance += currentList.length;
-
-        // Move the carousel step by step to bring clicked song to center
-        currentIndex = clickedIndex;
-        updateTrackSelect();
-    }
-
-    singButton.disabled = false;
-}
-
-singButton.onclick = ()=>{
-
-    if(!selectedSong) return
-
-    window.location.href = "/musicplayer?song=" + selectedSong.id
-
-}
-function renderSongCards() {
-    const container = document.querySelector('.songListInner');
-    container.innerHTML = '';
-
-    currentList.forEach((song, i) => {
-        const card = document.createElement('div');
-        card.className = 'songCard';
-        card.innerHTML = `
-            <div class="songTop">${song.title}</div>
-            <div class="songBottom">
-                <span class="artistText">${song.artist}</span>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
 async function loadSongsFromAPI() {
     try {
         const res = await fetch('/api/songs');
@@ -509,3 +480,43 @@ function buildCurrentList(filteredSongs) {
 
     return list;
 }
+// replays song teaser
+
+function playTeaserWithFade(song) {
+    if (!song.songTeaserPath) return;
+
+    // Stop previous teaser & fade
+    clearInterval(teaserFadeInterval);
+    clearTimeout(teaserReplayTimeout);
+    teaserPlayer.pause();
+    teaserPlayer.currentTime = 0;
+    teaserPlayer.volume = 1;
+
+    teaserPlayer.src = song.songTeaserPath;
+    teaserPlayer.play().catch(() => {});
+    // Fade out near the end
+    teaserPlayer.ontimeupdate = () => {
+        if (teaserPlayer.duration && teaserPlayer.currentTime >= teaserPlayer.duration - TEASER_FADE_DURATION / 1000) {
+            if (teaserFadeInterval) return;
+
+            const fadeSteps = 20;
+            const fadeStepTime = TEASER_FADE_DURATION / fadeSteps;
+            let currentStep = 0;
+            teaserFadeInterval = setInterval(() => {
+                currentStep++;
+                teaserPlayer.volume = Math.max(0, 1 - currentStep / fadeSteps);
+                if (currentStep >= fadeSteps) {
+                    clearInterval(teaserFadeInterval);
+                    teaserFadeInterval = null;
+                }
+            }, fadeStepTime);
+        }
+    };
+    // Replay after delay
+    teaserPlayer.onended = () => {
+        teaserReplayTimeout = setTimeout(() => {
+            playTeaserWithFade(song);
+        }, TEASER_REPLAY_DELAY);
+    };
+}
+

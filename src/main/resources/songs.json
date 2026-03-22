@@ -8,7 +8,8 @@
     "language": "English",
     "audioPath": "/audio/BlindingLights.mp3",
     "lyricsPath": "/lyrics/BlindingLights.lrc",
-    "artCoverPath": "/artCover/blindingLightsArtCover.jpg"
+    "artCoverPath": "/artCover/blindingLightsArtCover.jpg",
+    "songTeaserPath": "/teaser/blindingLightsTeaser.mp3"
   },
   {
     "id": 2,
@@ -19,17 +20,8 @@
     "language": "English",
     "audioPath": "/audio/BohemianRhapsody.mp3",
     "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
-    "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg"
-  },
-  {
-    "id": 3,
-    "title": "Test Song",
-    "artist": "Queen",
-    "genre": "Rock",
-    "difficulty": "Hard",
-    "language": "English",
-    "audioPath": "/audio/BohemianRhapsody.mp3",
-    "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
-    "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg"
+    "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg",
+    "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3"
   }
+
 ]
