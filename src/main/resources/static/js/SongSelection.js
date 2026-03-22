@@ -23,7 +23,7 @@ let currentIndex = 0
 let moveInterval = null
 let currentList = []
 
-const categoryButtons = document.querySelectorAll(".categoryBtn");
+const categoryButtons = document.querySelectorAll(".categoryButton");
 const sortState = {};
 
 const TEASER_FADE_DURATION = 2000;
@@ -106,20 +106,20 @@ scrollBottomZone.onmouseleave = () => clearInterval(moveInterval)
 // Restart Category when searching
 searchField.oninput = () => {
     // reset all category buttons
-    categoryButtons.forEach(btn => {
-        sortState[btn.innerText.trim()] = "none";
-        setButtonIcon(btn, "default");
+    categoryButtons.forEach(button => {
+        sortState[button.innerText.trim()] = "none";
+        setButtonIcon(button, "default");
     });
 
     refreshSongList();
 };
 // Category sort
 
-categoryButtons.forEach(button => {
-    const name = button.innerText.trim();
+categoryButtons.forEach(buttons => {
+    const name = buttons.innerText.trim();
     sortState[name] = "none";
 
-    button.addEventListener("click", () => {
+    buttons.addEventListener("click", () => {
         const keyMap = {
             "Artist": "artist",
             "Genre": "genre",
@@ -135,13 +135,13 @@ categoryButtons.forEach(button => {
         else if (sortState[name] === "asc") sortState[name] = "desc";
         else sortState[name] = "none";
 
-        setButtonIcon(button, sortState[name] === "none" ? "default" : (sortState[name] === "asc" ? "up" : "down"));
+        setButtonIcon(buttons, sortState[name] === "none" ? "default" : (sortState[name] === "asc" ? "up" : "down"));
 
         // reset other buttons
-        categoryButtons.forEach(btn => {
-            if (btn !== button) {
-                sortState[btn.innerText.trim()] = "none";
-                setButtonIcon(btn, "default");
+        categoryButtons.forEach(buttons => {
+            if (buttons !== buttons) {
+                sortState[buttons.innerText.trim()] = "none";
+                setButtonIcon(buttons, "default");
             }
         });
 
@@ -211,48 +211,13 @@ function renderSongCardsNoAnimation(addPlaceholders = true) {
             });
         }
     }
-
-    listToRender.forEach((song, i) => {
-        let card = document.createElement("button");
-        card.className = "songCard" + (song.isPlaceholder ? " placeholder" : "");
-
-        // Build songBottom HTML
-        let songBottomClass = "songBottom";
-        if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop")){
-            songBottomClass += " pop";
-            console.log(song.genre);
-        }
-        card.innerHTML = `
-            <div class="songTop">${song.title}</div>
-            <div class="${songBottomClass}">
-                <span class="artistText">${song.artist}</span>
-                <div class="songInfoRight">
-                    <span class="difficultyText">${song.difficulty}</span>
-                    <span class="languageText">${song.language}</span>
-                    <span class="genre">${song.genre}</span>
-                </div>
-                <button class="favoriteBtn">
-                    <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
-                </button>
-            </div>
-        `;
-        if (!song.isPlaceholder) {
-            card.onclick = () => {
-                const clickedIndex = currentList.indexOf(song);
-                if (clickedIndex !== -1) {
-                    currentIndex = clickedIndex;
-                    updateTrackSelect();
-                }
-            };
-        }
-        songListInner.appendChild(card);
-    });
+    // Create song cards
+    addSongCard(currentList);
     // Center first real song
     const cards = document.querySelectorAll(".songCard");
     cards.forEach(card => card.style.transition = "none");
 
     updateTrackSelect();
-
     // re-enable transitions
     requestAnimationFrame(() => {
         cards.forEach(card => card.style.transition = "");
@@ -308,44 +273,7 @@ function refreshSongList() {
     }
 
     // Create song cards
-    songListInner.innerHTML = "";
-    currentList.forEach(song => {
-        let card = document.createElement("button");
-        card.className = "songCard";
-        let songBottomClass = "songBottom";
-        if (song.isPlaceholder) card.classList.add("placeholder");
-
-        card.innerHTML = `
-            <div class="songTop">${song.title}</div>
-            <div class="${songBottomClass}">
-                <span class="artistText">${song.artist}</span>
-                <div class="songInfoRight">
-                    <span class="difficultyText">${song.difficulty}</span>
-                    <span class="languageText">${song.language}</span>
-                    <span class="genre">${song.genre}</span>
-                </div>
-                <button class="favoriteBtn">
-                    <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
-                </button>
-            </div>
-        `;
-        // Add genre class
-        if (!song.isPlaceholder && song.genre?.trim().toLowerCase() === "pop") {
-            const bottomDiv = card.querySelector(".songBottom");
-            if (bottomDiv) bottomDiv.classList.add("pop");
-        }
-        if (!song.isPlaceholder) {
-            card.onclick = () => {
-                const clickedIndex = currentList.indexOf(song);
-                if (clickedIndex !== -1) {
-                    currentIndex = clickedIndex;
-                    updateTrackSelect();
-                }
-            };
-        }
-
-        songListInner.appendChild(card);
-    });
+    addSongCard(currentList);
     // Temporarily disable transitions to prevent animation
     const cards = document.querySelectorAll(".songCard");
     cards.forEach(card => {
@@ -360,6 +288,50 @@ function refreshSongList() {
         cards.forEach(card => {
             card.style.transition = "";
         });
+    });
+}
+function addSongCard(listToRender){
+
+    songListInner.innerHTML = "";
+    listToRender.forEach((song, i) => {
+        let card = document.createElement("button");
+        card.className = "songCard" + (song.isPlaceholder ? " placeholder" : "");
+
+        // Build songBottom HTML
+        let songBottomClass = "songBottom";
+        let songCardClass = "songCard";
+        if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop")){
+            songBottomClass += " pop";
+            songCardClass += " pop";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("rock")) {
+            songBottomClass += " rock";
+            songCardClass += " rock";
+        }
+        card.className = songCardClass + (song.isPlaceholder ? " placeholder" : "");
+        card.innerHTML = `
+            <div class="songTop">${song.title}</div>
+            <div class="${songBottomClass}">
+                <span class="artistText">${song.artist}</span>
+                <div class="songInfoRight">
+                    <span class="difficultyText">${song.difficulty}</span>
+                    <span class="genre">${song.genre}</span>
+                    <span class="languageText">${song.language}</span>
+                </div>
+                <button class="favoriteButton">
+                    <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
+                </button>
+            </div>
+        `;
+        if (!song.isPlaceholder) {
+            card.onclick = () => {
+                const clickedIndex = currentList.indexOf(song);
+                if (clickedIndex !== -1) {
+                    currentIndex = clickedIndex;
+                    updateTrackSelect();
+                }
+            };
+        }
+        songListInner.appendChild(card);
     });
 }
 
@@ -381,7 +353,7 @@ function selectSong(song, card) {
         if (distance > currentList.length / 2) distance -= currentList.length;
         if (distance < -currentList.length / 2) distance += currentList.length;
 
-        // Move the carousel step by step to bring clicked song to center
+        // Move the track selection step by step to bring clicked song to center
         currentIndex = clickedIndex;
         updateTrackSelect();
     }
@@ -390,9 +362,7 @@ function selectSong(song, card) {
 }
 
 singButton.onclick = ()=>{
-
     if(!selectedSong) return
-
     window.location.href = "/musicplayer?song=" + selectedSong.id
 
 }
@@ -489,7 +459,6 @@ function moveUp(){
     if(currentIndex < 0) currentIndex = currentList.length - 1
     updateTrackSelect()
 }
-
 
 
 async function loadSongsFromAPI() {

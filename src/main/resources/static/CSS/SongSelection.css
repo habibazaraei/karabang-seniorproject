@@ -2,15 +2,16 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden; /* prevent scrolling */
+  overflow: hidden;
 }
 
 body {
   font-family: Arial, sans-serif;
-  background: #0f0f1a;
+
   color: white;
   display: flex;
   flex-direction: column;
+  background: radial-gradient(circle at top right, #403e47, #030003 70%);
 }
 
 /* container */
@@ -18,7 +19,6 @@ body {
   width: 100%;
   overflow: hidden;
   position: relative;
-
   flex: 1;
 }
 
@@ -68,6 +68,10 @@ body {
   transform: none;
   box-shadow: none;
   border-color: transparent;
+}
+
+.songCard.rock {
+  border: 0.1em solid purple;
 }
 /* track selection like cards */
 
@@ -146,7 +150,6 @@ body {
   font-size: clamp(10px, 0.8vw, 16px);
   color: #fff;
   background: #e94c4c;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -197,7 +200,7 @@ body {
   flex-shrink: 0;
 }
 /* favorite heart button */
-.songBottom .favoriteBtn {
+.songBottom .favoriteButton {
   background: transparent;
   border: none;
   cursor: pointer;
@@ -208,14 +211,19 @@ body {
   margin-left: 24px;
 }
 
-.songBottom .favoriteBtn img {
+.songBottom .favoriteButton img {
   display: block;
   max-height: 80%;
   vertical-align: middle;
 }
 .songBottom.pop {
   background: url('../images/red_background_2.svg');
-  background-size: cover;
+  background-size: contain;
+}
+.songBottom.rock {
+  background: url('../images/purple_background.svg');
+  background-size: contain;
+  border-color: #920A65;
 }
 /* invisible hover zones for scrolling */
 .scrollZone {
@@ -252,7 +260,7 @@ body {
   display: flex;
 }
 /* Buttons in top bar */
-.topBtn {
+.topButton {
   width: 60px;
   height: 60px;
   padding: 4px;
@@ -273,7 +281,7 @@ body {
     padding: 10px;
   }
 
-  .topBtn {
+  .topButton {
     width: 100%;
   }
 }
@@ -292,7 +300,7 @@ body {
   justify-content: flex-start;
 }
 
-.categoryBtn {
+.categoryButton {
   padding: 6px 12px;
   border-radius: 6px;
   border: none;
@@ -304,11 +312,11 @@ body {
   gap: 4px;
   font-size: 14px;
 }
-.categoryBtn .sortIcon {
+.categoryButton .sortIcon {
   width: 15px;
   height: 15px;
 }
-.categoryBtn:hover {
+.categoryButton:hover {
   background: #2a2a55;
   color: white;
 }
