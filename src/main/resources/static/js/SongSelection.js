@@ -215,9 +215,16 @@ function renderSongCardsNoAnimation(addPlaceholders = true) {
     listToRender.forEach((song, i) => {
         let card = document.createElement("button");
         card.className = "songCard" + (song.isPlaceholder ? " placeholder" : "");
+
+        // Build songBottom HTML
+        let songBottomClass = "songBottom";
+        if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop")){
+            songBottomClass += " pop";
+            console.log(song.genre);
+        }
         card.innerHTML = `
             <div class="songTop">${song.title}</div>
-            <div class="songBottom">
+            <div class="${songBottomClass}">
                 <span class="artistText">${song.artist}</span>
                 <div class="songInfoRight">
                     <span class="difficultyText">${song.difficulty}</span>
@@ -260,11 +267,11 @@ function refreshSongList() {
 
     // Filter real songs
     let realSongs = songs.filter(s =>
-        s.title.toLowerCase().includes(query) ||
-        s.artist.toLowerCase().includes(query) ||
-        s.difficulty.toLowerCase().includes(query) ||
-        s.genre.toLowerCase().includes(query) ||
-        s.language.toLowerCase().includes(query)
+        s.title?.toLowerCase().includes(query) ||
+        s.artist?.toLowerCase().includes(query) ||
+        s.difficulty?.toLowerCase().includes(query) ||
+        s.genre?.toLowerCase().includes(query) ||
+        s.language?.toLowerCase().includes(query)
     );
 
     if (realSongs.length === 0) {
@@ -305,11 +312,12 @@ function refreshSongList() {
     currentList.forEach(song => {
         let card = document.createElement("button");
         card.className = "songCard";
+        let songBottomClass = "songBottom";
         if (song.isPlaceholder) card.classList.add("placeholder");
 
         card.innerHTML = `
             <div class="songTop">${song.title}</div>
-            <div class="songBottom">
+            <div class="${songBottomClass}">
                 <span class="artistText">${song.artist}</span>
                 <div class="songInfoRight">
                     <span class="difficultyText">${song.difficulty}</span>
@@ -320,7 +328,12 @@ function refreshSongList() {
                     <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
                 </button>
             </div>
-`;
+        `;
+        // Add genre class
+        if (!song.isPlaceholder && song.genre?.trim().toLowerCase() === "pop") {
+            const bottomDiv = card.querySelector(".songBottom");
+            if (bottomDiv) bottomDiv.classList.add("pop");
+        }
         if (!song.isPlaceholder) {
             card.onclick = () => {
                 const clickedIndex = currentList.indexOf(song);
@@ -393,7 +406,11 @@ function updateTrackSelect() {
     const baseX = 30;
 
     cards.forEach((card, i) => {
-        card.className = "songCard" + (card.classList.contains("placeholder") ? " placeholder" : "");
+        card.classList.remove("selected");
+
+        if (i === currentIndex) {
+            card.classList.add("selected");
+        }
 
         let offset = i - currentIndex;
         if (offset > total / 2) offset -= total;
@@ -478,8 +495,8 @@ function moveUp(){
 async function loadSongsFromAPI() {
     try {
         const res = await fetch('/api/songs');
-        songs = await res.json();      // all songs
-        refreshSongList();             // rebuild carousel
+        songs = await res.json();
+        refreshSongList();
     } catch (err) {
         console.error("Failed to load songs from API:", err);
     }

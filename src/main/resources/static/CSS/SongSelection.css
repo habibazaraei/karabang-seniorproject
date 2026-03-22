@@ -124,7 +124,9 @@ body {
   font-weight: bold;
   font-size: clamp(14px, 1.2vw, 22px);
   color: black;
-  background: #e0e0e0;
+  /*background: #e0e0e0; */
+  background: url('../images/white_background.svg');
+  background-size: cover;
   flex: 1;
   display: flex;
   align-items: center;
@@ -142,9 +144,9 @@ body {
 .songBottom {
   padding: 0 12px;
   font-size: clamp(10px, 0.8vw, 16px);
-
   color: #fff;
   background: #e94c4c;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -152,6 +154,7 @@ body {
   width: 100%;
   height: 30%;
   overflow: hidden;
+
 }
 
 /* artist on the left */
@@ -209,6 +212,10 @@ body {
   display: block;
   max-height: 80%;
   vertical-align: middle;
+}
+.songBottom.pop {
+  background: url('../images/red_background_2.svg');
+  background-size: cover;
 }
 /* invisible hover zones for scrolling */
 .scrollZone {
@@ -308,8 +315,8 @@ body {
 /* Search Field */
 
 #searchField {
-  width: 100%;          /* fill parent (#leftTop) */
-  max-width: none;      /* remove any inherited max-width */
+  width: 100%;
+  max-width: none;
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #555;
