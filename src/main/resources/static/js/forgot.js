@@ -12,7 +12,7 @@ form.addEventListener("submit", async (e) => {
     try {
         await sendPasswordResetEmail(auth, emailInput.value);
         alert("Password reset email sent!");
-        window.location.href = "login.html";
+        window.location.href = "login";
     } catch (error) {
         alert(error.message);
     }
@@ -21,5 +21,5 @@ form.addEventListener("submit", async (e) => {
 
 //Home Button
 homeBtn.addEventListener("click", () => {
-      window.location.href = "login.html"; 
+      window.location.href = "login";
     });

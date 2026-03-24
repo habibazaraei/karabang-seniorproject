@@ -10,6 +10,14 @@ public class PageController {
     public String login() {
         return "login";
     }
+    @GetMapping("/signup")
+    public String signup() {
+        return "signup";
+    }
+    @GetMapping("/forgot")
+    public String forgot() {
+        return "forgot";
+    }
     @GetMapping("/musicplayer")
     public String musicPlayer() {
         return "musicplayer";

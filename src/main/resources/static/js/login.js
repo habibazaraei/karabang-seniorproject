@@ -68,7 +68,7 @@ loginBtn.addEventListener("click", async () => {
         );
 
         alert("Login successful!");
-        window.location.href = "/templates/SongSelection.html";
+        window.location.href = "songselection";
 
 
         

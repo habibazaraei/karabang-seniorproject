@@ -29,7 +29,7 @@ signupBtn.addEventListener("click", async () => {
         });
 
         alert("User created!");
-        window.location.href = "login.html";
+        window.location.href = "login";
 
     } catch (error) {
         alert(error.message);
@@ -39,5 +39,5 @@ signupBtn.addEventListener("click", async () => {
  
 //Home Button
 homeBtn.addEventListener("click", () => {
-      window.location.href = "login.html"; 
+      window.location.href = "login";
     });
