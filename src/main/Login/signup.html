@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign Up</title>
+        <style>
+       *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body{
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background: radial-gradient(circle at top right, #1b1b1f, #050505 70%);
+            color:white;
+            overflow:hidden;
+            position:relative;
+        }
+
+        /* 🔥 MANY FLOATING ICONS */
+
+        .icon{
+            position:absolute;
+            font-size:26px;
+            opacity:0.15;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .icon:nth-child(1){ top:5%; left:10%; }
+        .icon:nth-child(2){ top:20%; left:25%; }
+        .icon:nth-child(3){ top:40%; left:5%; }
+        .icon:nth-child(4){ bottom:10%; left:20%; }
+
+        .icon:nth-child(5){ top:15%; right:15%; }
+        .icon:nth-child(6){ top:50%; right:10%; }
+        .icon:nth-child(7){ bottom:20%; right:25%; }
+        .icon:nth-child(8){ top:70%; left:45%; }
+
+        .icon:nth-child(9){ top:30%; right:40%; }
+        .icon:nth-child(10){ bottom:5%; right:5%; }
+        .icon:nth-child(11){ top:60%; left:60%; }
+        .icon:nth-child(12){ top:10%; left:70%; }
+
+        @keyframes float{
+            0%{ transform:translateY(0); }
+            50%{ transform:translateY(-20px); }
+            100%{ transform:translateY(0); }
+        }
+
+        /* 🔴 glow background circles */
+        .glow{
+            position:absolute;
+            width:300px;
+            height:300px;
+            background: radial-gradient(circle, rgba(255,0,0,0.25), transparent 70%);
+            filter: blur(80px);
+        }
+
+        .glow1{ top:-100px; left:-100px; }
+        .glow2{ bottom:-120px; right:-120px; }
+
+        /* main container */
+        .signup-wrapper{
+            display:flex;
+            width:1000px;
+            max-width:95%;
+            min-height:560px;
+            background: rgba(255,255,255,0.03);
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:28px;
+            overflow:hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        /* LEFT SIDE */
+        .left-panel{
+            flex:1;
+            padding:50px 40px;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+        }
+
+        .brand{
+            font-size:36px;
+            font-weight:700;
+        }
+
+        .brand span{
+            color:#ff3b30;
+        }
+
+        .subtitle{
+            color:#aaa;
+            margin:15px 0 30px;
+            line-height:1.6;
+        }
+
+        /* inputs */
+       
+        input{
+            width:100%;
+            padding:12px;
+            margin:10px 0;
+            border-radius:10px;
+            border:1px solid #ddd;
+            font-size:14px;
+        }
+
+        input:focus{
+            border:1px solid #ff3b30;
+        }
+
+        /* button */
+        button{
+            width:100%;
+            padding:14px;
+            border:none;
+            margin-top:10px;
+            border-radius:12px;
+            background: linear-gradient(90deg,#ff3b30,#d91e18);
+            color:white;
+            font-size:16px;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        button:hover{
+            transform:scale(1.05);
+        }
+
+        .links{
+            text-align:right;
+            margin-bottom:10px;
+        }
+
+        .links a{
+            color:#ff5a52;
+            font-size:13px;
+            text-decoration:none;
+        }
+
+        .signup{
+            margin-top:15px;
+            color:#aaa;
+        }
+
+        .signup a{
+            color:#ff5a52;
+            text-decoration:none;
+        }
+
+        /* RIGHT SIDE */
+        .right-panel{
+            flex:1;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            position:relative;
+        }
+
+        /* album card */
+        .album-card{
+            width:320px;
+            background:#0f0f0f;
+            border-radius:25px;
+            padding:20px;
+            text-align:center;
+            box-shadow:0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .album-card img{
+            width:100%;
+            height:300px;
+            border-radius:15px;
+            object-fit:cover;
+            margin-bottom:15px;
+        }
+
+        .song-title{
+            font-size:22px;
+            font-weight:700;
+        }
+
+        .artist{
+            color:#aaa;
+            margin-bottom:15px;
+        }
+
+        .sing-btn{
+            background:white;
+            color:black;
+            padding:10px;
+            border-radius:10px;
+            font-weight:600;
+        }
+
+        @media(max-width:850px){
+            .login-wrapper{
+                flex-direction:column;
+            }
+        }
+
+    </style>
+    </style>
+
+</head>
+<body>
+
+
+
+
+<!-- 🔴 glow -->
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+
+<!-- 🎸 LOTS OF ICONS -->
+<div class="icon">🎸</div>
+<div class="icon">🎵</div>
+<div class="icon">🎤</div>
+<div class="icon">🎶</div>
+<div class="icon">🎸</div>
+<div class="icon">🎵</div>
+<div class="icon">🎤</div>
+<div class="icon">🎶</div>
+<div class="icon">🎸</div>
+<div class="icon">🎵</div>
+<div class="icon">🎤</div>
+<div class="icon">🎶</div>
+
+
+<div class ="signup-wrapper">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+        <h1 class="brand">🎤 Kara<span>Bang</span></h1>
+        <p class="subtitle">
+           Please enter your email and password to sign up.
+        </p>
+
+       <form id="signup-form">
+            <input id="email" type="email" placeholder="Email" required>
+            <input id="password" type="password" placeholder="Password" required>
+
+             <button id="signupBtn">Sign Up</button>
+
+                <a href="login.html">
+                     <button id="homeBtn">Home</button>
+                </a>
+
+        </form>
+ 
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+        <div class="album-card">
+            <img src="https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png">
+
+            <div class="song-title">Blinding Lights</div>
+            <div class="artist">The Weeknd</div>
+        </div>
+    </div>
+
+</div>
+<script>
+    const songs = [
+        {
+            title: "Blinding Lights",
+            artist: "The Weeknd",
+            image: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png"
+        },
+        {
+            title: "Bohemian Rhapsody",
+            artist: "Queen",
+            image: "https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png"
+        }
+    ];
+
+    const songTitle = document.querySelector(".song-title");
+    const artist = document.querySelector(".artist");
+    const image = document.querySelector(".album-card img");
+
+    let index = 0;
+
+    function changeSong(){
+        index = (index + 1) % songs.length;
+
+        songTitle.textContent = songs[index].title;
+        artist.textContent = songs[index].artist;
+        image.src = songs[index].image;
+    }
+
+    setInterval(changeSong, 15000);
+</script>
+
+
+<!--
+
+OLD CODE USED FOR REFRENCE
+
+<div class ="signup-box">   
+<h1>Create Account</h1>
+
+<form id="signup-form">
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="password" type="password" placeholder="Password" required>
+
+    <button id="signupBtn">Sign Up</button>
+
+    <a href="login.html">
+        <button id="homeBtn">Home</button>
+    </a>
+
+</form>
+</div>
+-->
+<script type="module" src="signup.js"></script>
+
+</body>
+</html>
