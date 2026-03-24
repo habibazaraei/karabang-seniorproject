@@ -22,6 +22,54 @@
     "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
     "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg",
     "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3"
+  },
+  {
+    "id": 3,
+    "title": "Starboy",
+    "artist": "The Weeknd",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/Starboy.mp3",
+    "lyricsPath": "/lyrics/Starboy.lrc",
+    "artCoverPath": "/artCover/starboyArtCover.jpg",
+    "songTeaserPath": "/teaser/starboyTeaser.mp3"
+  },
+  {
+    "id": 4,
+    "title": "Can't Feel My Face",
+    "artist": "The Weeknd",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/CantFeelMyFace.mp3",
+    "lyricsPath": "/lyrics/CantFeelMyFace.lrc",
+    "artCoverPath": "/artCover/cantFeelMyFaceArtCover.jpg",
+    "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3"
+  },
+  {
+    "id": 5,
+    "title": "We Will Rock You",
+    "artist": "Queen",
+    "genre": "Rock",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/WeWillRockYou.mp3",
+    "lyricsPath": "/lyrics/WeWillRockYou.lrc",
+    "artCoverPath": "/artCover/weWillRockYouArtCover.jpg",
+    "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3"
+  },
+  {
+    "id": 6,
+    "title": "We Are the Champions",
+    "artist": "Queen",
+    "genre": "Rock",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/WeAreTheChampions.mp3",
+    "lyricsPath": "/lyrics/WeAreTheChampions.lrc",
+    "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
+    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
   }
 
 ]
