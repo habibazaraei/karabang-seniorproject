@@ -70,6 +70,17 @@
     "lyricsPath": "/lyrics/WeAreTheChampions.lrc",
     "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
     "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
+  },
+  {
+    "id": 20,
+    "title": "Nagging",
+    "artist": "IU",
+    "genre": "Pop",
+    "difficulty": "Hard",
+    "language": "Korean",
+    "audioPath": "/audio/Nagging.mp3",
+    "lyricsPath": "/lyrics/Nagging.lrc",
+    "artCoverPath": "/artCover/naggingArtCover.jpg",
+    "songTeaserPath": "/teaser/naggingTeaser.mp3"
   }
-
 ]

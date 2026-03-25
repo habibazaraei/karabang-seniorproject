@@ -11,9 +11,15 @@ body {
   color: white;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at top right, #403e47, #030003 70%);
+  /*background: radial-gradient(circle at top right, #403e47, #030003 70%); */
+  background: radial-gradient(circle at top right, #403e47, #2d2c32,#030003 70%);
 }
-
+/* logo temp*/
+#webLogo {
+  color: #FFFFFF;
+  font-family: 'Futura', sans-serif;
+  font-size: 1em;
+}
 /* container */
 #songList {
   width: 100%;
@@ -69,9 +75,11 @@ body {
   box-shadow: none;
   border-color: transparent;
 }
-
+.songCard.pop {
+  border: 0.2em solid red;
+}
 .songCard.rock {
-  border: 0.1em solid purple;
+  border: 0.2em solid purple;
 }
 /* track selection like cards */
 
@@ -140,7 +148,6 @@ body {
           2px -2px 0 #ebebeb,
           -2px 2px 0 #ebebeb,
           2px 2px 0 #ebebeb;
-
 }
 
 /* bottom half */
@@ -148,7 +155,6 @@ body {
 .songBottom {
   padding: 0 12px;
   font-size: clamp(10px, 0.8vw, 16px);
-  color: #fff;
   background: #e94c4c;
   display: flex;
   align-items: center;
@@ -167,6 +173,7 @@ body {
   white-space: nowrap;
   margin-right: 12px;
   display: block;
+  color: #FFFFFF;
 }
 
 /* right group: difficulty, language, genre */
@@ -192,7 +199,7 @@ body {
   padding: 2px 8px;
   border-radius: 50% / 50%;
   font-size: clamp(9px, 0.7vw, 13px);
-
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,12 +225,12 @@ body {
 }
 .songBottom.pop {
   background: url('../images/red_background_2.svg');
-  background-size: contain;
+  background-size: cover;
+
 }
 .songBottom.rock {
   background: url('../images/purple_background.svg');
-  background-size: contain;
-  border-color: #920A65;
+  background-size: cover;
 }
 /* invisible hover zones for scrolling */
 .scrollZone {
@@ -249,11 +256,12 @@ body {
   width: 100%;
   display: flex;
   padding: 10px 20px;
-  background: #000043;
   z-index: 1000;
   height: 60px;
   box-sizing: border-box;
   align-items: center;
+  background-size: contain;
+
 }
 #rightButtons {
   margin-left: auto;
@@ -296,28 +304,31 @@ body {
 #categoryBar {
   display: flex;
   gap: 10px;
-  margin: 0 0 20px 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
   justify-content: flex-start;
+  border-radius: 20px;
 }
 
 .categoryButton {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: #1b1b3a;
-  color: #aaa;
-  cursor: pointer;
+  padding: clamp(6px, 1vw, 10px) clamp(6px, 1.5vw, 12px);
+  font-size: clamp(10px, 1vw, 14px);
+  border-radius: clamp(10px, 2vw, 40px);
+
+  background: #252222;
+  color: #ffffff;
+  border: 1px solid #555;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
+  gap: clamp(2px, 0.5vw, 6px);
+  flex-wrap: wrap-reverse;
 }
 .categoryButton .sortIcon {
-  width: 15px;
-  height: 15px;
+  width: clamp(15px, 1vw, 20px);
+  height: clamp(15px, 1vw, 20px);
 }
 .categoryButton:hover {
-  background: #2a2a55;
+  background: #7c7c7c;
   color: white;
 }
 /* Search Field */
@@ -326,19 +337,18 @@ body {
   width: 100%;
   max-width: none;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 999px;
   border: 1px solid #555;
-  background: #1b1b3a;
   color: white;
   font-size: 1rem;
   box-sizing: border-box;
   outline: none;
+  background: #252222;
 }
 
 /* Focus effect */
 #searchField:focus {
-  border-color: #e94c4c;
-  background: #2a2a55;
+  background: #282424;
 }
 /* Main Screen */
 #mainLayout {
@@ -348,6 +358,7 @@ body {
   height: calc(100% - 60px);
   margin-top: 60px;
   overflow: hidden;
+
 }
 /* LEFT SIDE */
 #leftPanel {
@@ -364,6 +375,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  border: 1.0em black;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+
 }
 /* RIGHT SIDE */
 #rightPanel {
