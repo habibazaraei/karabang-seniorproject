@@ -3,6 +3,7 @@
 <head>
     <link rel="stylesheet" href="css/SongSelection.css">
     <title>KaraBang</title>
+
 </head>
 <body>
 <!-- Top button bar -->
@@ -14,9 +15,18 @@
             <button id="profile" class="topButton" onclick="toggleDropdown()">
                 <img src="/images/blank_profile_icon.svg" alt="Profile">
             </button>
+
             <div class="dropdown-menu" id="myDropdown">
-                <a href="login">Login</a>
+                <div id="loggedOut">
+                    <a href="login">Login</a>
+                    <a href="signup">Sign Up</a>
+                </div>
+                <div id="loggedIn" style="display:none;">
+                    <a href="profile">Profile</a>
+                    <a href="#" id="logoutBtn">Logout</a>
+                </div>
             </div>
+
             <button id="settings" class="topButton">
                 <img src="/images/settings_icon.svg" alt="Settings">
             </button>
@@ -87,7 +97,7 @@
     <br>
 </div>
 
-<script src="/js/SongSelection.js"></script>
+<script type="module" src="/js/SongSelection.js"></script>
 
 </body>
 </html>

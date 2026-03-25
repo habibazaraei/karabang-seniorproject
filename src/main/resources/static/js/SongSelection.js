@@ -1,3 +1,5 @@
+import { db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut } from './firebase.js';
+
 let songList = document.getElementById("songList")
 let searchField = document.getElementById("searchField")
 
@@ -113,21 +115,47 @@ searchField.oninput = () => {
 
     refreshSongList();
 };
-// Category sort
 
+// Category sort
 categoryButtons.forEach(buttons => {
     const name = buttons.innerText.trim();
     sortState[name] = "none";
 
-    buttons.addEventListener("click", () => {
+    buttons.addEventListener("click", async () => {
         const keyMap = {
             "Artist": "artist",
             "Genre": "genre",
             "Difficulty": "difficulty",
             "Language": "language",
-            "Favorites": "title"
         };
         const key = keyMap[name];
+
+        //ADDED BY TYLER: Allows for Filtration of songs by favorite
+        if (name === "Favorites") {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to see favorites!");
+                return;
+            }
+            const snapshot = await getDocs(collection(db, "users", user.uid, "favorites"));
+            const favIds = snapshot.docs.map(d => d.id);
+            const favSongs = songs.filter(s => favIds.includes(String(s.id)));
+
+            if (favSongs.length === 0) {
+                songListInner.innerHTML = "<p>No favorites yet!</p>";
+                currentList = [];
+                currentIndex = 0;
+                return;
+            }
+
+            currentList = buildCurrentList(favSongs);
+            currentIndex = currentList.findIndex(s => !s.isPlaceholder);
+            if (currentIndex === -1) currentIndex = 0;
+            renderSongCardsNoAnimation(false);
+            loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
+            return; // stops rest of sort logic
+        }
+
         if (!key) return;
 
         // cycle asc → desc → none → asc ...
@@ -171,6 +199,7 @@ categoryButtons.forEach(buttons => {
         if (currentIndex === -1) currentIndex = 0;
 
         renderSongCardsNoAnimation(false);
+        loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
     });
 });
 // Helper: set SVG icon
@@ -289,6 +318,7 @@ function refreshSongList() {
             card.style.transition = "";
         });
     });
+    loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
 }
 function addSongCard(listToRender){
 
@@ -317,9 +347,9 @@ function addSongCard(listToRender){
                     <span class="genre">${song.genre}</span>
                     <span class="languageText">${song.language}</span>
                 </div>
-                <button class="favoriteButton">
-                    <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
-                </button>
+               <button class="favoriteButton" data-id="${song.id}">
+                   <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
+               </button>
             </div>
         `;
         if (!song.isPlaceholder) {
@@ -330,10 +360,45 @@ function addSongCard(listToRender){
                     updateTrackSelect();
                 }
             };
-        }
+
+            //EDITED BY TYLER
+           const favBtn = card.querySelector(".favoriteButton");
+              favBtn.onclick = async (e) => {
+                  e.stopPropagation();
+
+                  const user = auth.currentUser;
+                  if (!user) {
+                      alert("Please log in to favorite songs!");
+                      return;
+                  }
+
+                 const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
+                 const favSnap = await getDoc(favRef);
+                  const img = favBtn.querySelector("img");
+
+                  if (favSnap.exists()) {
+                      await deleteDoc(favRef);
+                      img.src = "/images/heart_gray_icon.svg";
+                      favBtn.classList.remove("active");
+                  } else {
+                      await setDoc(favRef, {
+                          title:      song.title,
+                          artist:     song.artist,
+                          mp3URL:     song.songPath     || "",
+                          coverURL:   song.artCoverPath || "",
+                          genre:      song.genre        || "",
+                          language:   song.language     || "",
+                          difficulty: song.difficulty   || ""
+                      });
+                      img.src = "/images/heart_icon.svg";
+                      favBtn.classList.add("active");
+                   }
+               };
+           }
         songListInner.appendChild(card);
     });
 }
+//END OF EDITING BY TYLER
 
 function selectSong(song, card) {
     selectedSong = song;
@@ -562,4 +627,40 @@ function playTeaserWithFade(song) {
 }
 
 
+
+
+
+// ADDED BY TYLER - LOAD FAVORITE STATE
+async function loadFavoriteStates() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const snapshot = await getDocs(collection(db, "users", user.uid, "favorites"));
+    const favIds = snapshot.docs.map(d => d.id);
+
+    document.querySelectorAll(".favoriteButton").forEach(btn => {
+        if (favIds.includes(String(btn.dataset.id))) {
+            btn.querySelector("img").src = "/images/heart_icon.svg";
+            btn.classList.add("active");
+        }
+    });
+}
+
+// ADDED BY TYLER
+
+onAuthStateChanged(auth, user => {
+    if (user) {
+        document.getElementById("loggedIn").style.display = "block";
+        document.getElementById("loggedOut").style.display = "none";
+        loadFavoriteStates();
+    } else {
+        document.getElementById("loggedIn").style.display = "none";
+        document.getElementById("loggedOut").style.display = "block";
+    }
+});
+
+document.getElementById("logoutBtn").onclick = async () => {
+    await signOut(auth);
+    location.reload();
+};
 
