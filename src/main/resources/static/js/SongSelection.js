@@ -440,10 +440,15 @@ document.getElementById("toggleVolumeBtn").addEventListener("click", function (e
     const volumeControl = document.getElementById("volumeControl");
     if (volumeControl.style.display === "none") {
         volumeControl.style.display = "flex";
+        // Start fade timer when opened
+        clearTimeout(volumeFadeTimeout);
+        volumeFadeTimeout = setTimeout(() => {
+            volumeControl.style.display = "none";
+        }, 3000);
     } else {
         volumeControl.style.display = "none";
     }
-});
+});;
 
 let volumeFadeTimeout = null;
 
@@ -464,11 +469,15 @@ document.getElementById("toggleScrollBtn").addEventListener("click", function (e
     const scrollControl = document.getElementById("scrollControl");
     if (scrollControl.style.display === "none") {
         scrollControl.style.display = "flex";
+        // Start fade timer when opened
+        clearTimeout(scrollFadeTimeout);
+        scrollFadeTimeout = setTimeout(() => {
+            scrollControl.style.display = "none";
+        }, 3000);
     } else {
         scrollControl.style.display = "none";
     }
 });
-
 let scrollFadeTimeout = null;
 
 document.getElementById("scrollSlider").addEventListener("input", function () {
@@ -487,6 +496,29 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
     scrollFadeTimeout = setTimeout(() => {
         document.getElementById("scrollControl").style.display = "none";
     }, 3000);
+});
+
+//Use for the Reset Preferences button, put it below the volume and speed sliders since those are the only two functionalities to be reset right now.
+document.getElementById("resetPrefsBtn").addEventListener("click", async function (e) {
+    e.preventDefault();
+
+    // Reset to defaults
+    userVolume = 1;
+    scrollSpeed = 200;
+
+    // Update sliders
+    document.getElementById("volumeSlider").value = 0.5;
+    document.getElementById("scrollSlider").value = 300; //
+    document.getElementById("scrollSpeedLabel").innerText = "Normal";
+
+    // Apply volume
+    teaserPlayer.volume = userVolume;
+
+    // Save defaults to Firebase
+    await saveUserPreferences();
+
+    // Close the dropdown
+    document.getElementById("settingsDropdown").classList.remove("show");
 });
 
 //END OF EDITING BY TYLER
