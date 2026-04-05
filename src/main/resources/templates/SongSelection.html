@@ -37,14 +37,24 @@
             </button>
             <div class="dropdown-menu" id="settingsDropdown">
                 <a href="#" id="toggleVolumeBtn">🔊 Volume Control</a>
-                <a href="#">Display Settings</a>
+                <a href="#" id="toggleScrollBtn">⏩ Scroll Speed</a>
             </div>
         </div>
 
             <!-- allows the volume controller to be hidden by degault but still exist -->
         <div id="volumeControl" style="display:none;">
-            <span>🔊</span>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            <div id="volumeInner">
+                <span id="volumeLabel">🔊 Volume</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            </div>
+        </div>
+
+        <!-- Scroll speed control hidden by default still exists -->
+        <div id="scrollControl" style="display:none;">
+            <div id="scrollInner">
+                <span id="scrollSpeedLabel">Normal</span>
+                <input type="range" id="scrollSlider" min="50" max="500" step="10" value="200">
+            </div>
         </div>
     </div>
 

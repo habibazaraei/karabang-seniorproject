@@ -258,6 +258,8 @@ body {
 #rightButtons {
   margin-left: auto;
   display: flex;
+  align-items: center;
+  height: 100%;
 }
 /* Buttons in top bar */
 .topButton {
@@ -439,18 +441,18 @@ body {
       display: inline-block;
     }
 
-    .dropdown-menu {
+  .dropdown-menu {
       display: none;
       position: absolute;
       background-color: #000043;
       min-width: 80px;
-      width: 100%;
+      width: auto;
       box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
       border-radius: 4px;
       z-index: 1;
       left: 50%;
-      transform: translateX(-75%);
-      op: 100%;
+      transform: translateX(-50%);
+      top: 100%;
     }
 
     .dropdown-menu a {
@@ -485,8 +487,32 @@ body {
         font-size: 14px;
     }
 
-    #volumeSlider {
-        width: 100px;
-        cursor: pointer;
-        accent-color: white;
-    }
+    #volumeControl, #scrollControl {
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         max-height: 60px;
+         box-sizing: border-box;
+     }
+
+     #volumeInner, #scrollInner {
+         display: flex;
+         flex-direction: row;
+         align-items: center;
+         gap: 8px;
+         padding: 0 8px;
+         max-height: 60px;
+         box-sizing: border-box;
+     }
+
+     #volumeSlider, #scrollSlider {
+         width: 100px;
+         cursor: pointer;
+         accent-color: white;
+     }
+
+     #volumeLabel, #scrollSpeedLabel {
+         white-space: nowrap;
+         font-size: 12px;
+         color: white;
+     }

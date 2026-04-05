@@ -14,6 +14,7 @@ let scrollBottomZone = document.getElementById("scrollBottom")
 
 let teaserPlayer = document.getElementById("teaserPlayer");
 
+let scrollSpeed = 200;
 
 let minSongs = 10
 let songs = []
@@ -95,11 +96,11 @@ songList.addEventListener("wheel", (e) => {
 // Hover-based auto scrolling
 
 scrollTopZone.onmouseenter = () => {
-    moveInterval = setInterval(moveUp, 200)
+    moveInterval = setInterval(moveUp, scrollSpeed)
 }
 
 scrollBottomZone.onmouseenter = () => {
-    moveInterval = setInterval(moveDown, 200)
+    moveInterval = setInterval(moveDown, scrollSpeed)
 }
 scrollTopZone.onmouseleave = () => clearInterval(moveInterval)
 scrollBottomZone.onmouseleave = () => clearInterval(moveInterval)
@@ -443,10 +444,49 @@ document.getElementById("toggleVolumeBtn").addEventListener("click", function (e
         volumeControl.style.display = "none";
     }
 });
+
+let volumeFadeTimeout = null;
+
 document.getElementById("volumeSlider").addEventListener("input", function () {
     userVolume = parseFloat(this.value);
     teaserPlayer.volume = userVolume;
     userInteracted = true;
+    saveUserPreferences();
+
+    clearTimeout(volumeFadeTimeout);
+    volumeFadeTimeout = setTimeout(() => {
+        document.getElementById("volumeControl").style.display = "none";
+    }, 3000);
+});
+
+document.getElementById("toggleScrollBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    const scrollControl = document.getElementById("scrollControl");
+    if (scrollControl.style.display === "none") {
+        scrollControl.style.display = "flex";
+    } else {
+        scrollControl.style.display = "none";
+    }
+});
+
+let scrollFadeTimeout = null;
+
+document.getElementById("scrollSlider").addEventListener("input", function () {
+    scrollSpeed = 550 - parseInt(this.value);
+    saveUserPreferences();
+
+    const val = parseInt(this.value);
+    let label;
+    if (val <= 150) label = "🐢 Slow";
+    else if (val <= 300) label = "Normal";
+    else if (val <= 450) label = "⚡ Fast";
+    else label = "🚀 Turbo";
+    document.getElementById("scrollSpeedLabel").innerText = label;
+
+    clearTimeout(scrollFadeTimeout);
+    scrollFadeTimeout = setTimeout(() => {
+        document.getElementById("scrollControl").style.display = "none";
+    }, 3000);
 });
 
 //END OF EDITING BY TYLER
@@ -703,6 +743,7 @@ onAuthStateChanged(auth, user => {
         document.getElementById("loggedIn").style.display = "block";
         document.getElementById("loggedOut").style.display = "none";
         loadFavoriteStates();
+        loadUserPreferences(user);
     } else {
         document.getElementById("loggedIn").style.display = "none";
         document.getElementById("loggedOut").style.display = "block";
@@ -714,3 +755,41 @@ document.getElementById("logoutBtn").onclick = async () => {
     location.reload();
 };
 
+
+//So we can save settings preferences to a users account.
+async function saveUserPreferences() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    await setDoc(doc(db, "users", user.uid, "preferences", "settings"), {
+        volume: userVolume,
+        scrollSpeed: scrollSpeed
+    });
+}
+
+//This loads the users preference settings to account.
+async function loadUserPreferences(user) {
+    const prefSnap = await getDoc(doc(db, "users", user.uid, "preferences", "settings"));
+    if (!prefSnap.exists()) return;
+
+    const prefs = prefSnap.data();
+
+    if (prefs.volume !== undefined) {
+        userVolume = prefs.volume;
+        teaserPlayer.volume = userVolume;
+        document.getElementById("volumeSlider").value = userVolume;
+    }
+
+    if (prefs.scrollSpeed !== undefined) {
+        scrollSpeed = prefs.scrollSpeed;
+        const sliderVal = 550 - scrollSpeed;
+        document.getElementById("scrollSlider").value = sliderVal;
+
+        let label;
+        if (sliderVal <= 150) label = "🐢 Slow";
+        else if (sliderVal <= 300) label = "Normal";
+        else if (sliderVal <= 450) label = "⚡ Fast";
+        else label = "🚀 Turbo";
+        document.getElementById("scrollSpeedLabel").innerText = label;
+    }
+}
