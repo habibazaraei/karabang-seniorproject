@@ -35,7 +35,7 @@ const TEASER_REPLAY_DELAY = 3000;
 let userInteracted = false;
 teaserPlayer.volume = 0;
 teaserPlayer.loop = false;
-
+let userVolume = 1;
 
 teaserPlayer.play().catch(() => {});
 teaserPlayer.pause();
@@ -398,27 +398,58 @@ function addSongCard(listToRender){
         songListInner.appendChild(card);
     });
 }
-//END OF EDITING BY TYLER
+
 
 
 //Initiates the toggle down menu itself.
 function toggleDropdown() {
-     document.getElementById("myDropdown").classList.toggle("show");
-   }
+    document.getElementById("myDropdown").classList.toggle("show");
+}
 
-   // Close dropdown if user clicks outside of it
- window.addEventListener("click", function (e) {
-       // Now checks for the correct button id
-       if (!e.target.closest("#profile")) {
-           const dropdown = document.getElementById("myDropdown");
-           if (dropdown.classList.contains("show")) {
-               dropdown.classList.remove("show");
-           }
-       }
-   });
+document.getElementById("profile").addEventListener("click", toggleDropdown);
+
+window.addEventListener("click", function (e) {
+    if (!e.target.closest("#profile")) {
+        const dropdown = document.getElementById("myDropdown");
+        if (dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
+
+// Settings dropdown
+function toggleSettingsDropdown() {
+    document.getElementById("settingsDropdown").classList.toggle("show");
+}
+
+document.getElementById("settings").addEventListener("click", toggleSettingsDropdown);
+
+window.addEventListener("click", function (e) {
+    if (!e.target.closest("#settings")) {
+        const dropdown = document.getElementById("settingsDropdown");
+        if (dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
 
 
+document.getElementById("toggleVolumeBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    const volumeControl = document.getElementById("volumeControl");
+    if (volumeControl.style.display === "none") {
+        volumeControl.style.display = "flex";
+    } else {
+        volumeControl.style.display = "none";
+    }
+});
+document.getElementById("volumeSlider").addEventListener("input", function () {
+    userVolume = parseFloat(this.value);
+    teaserPlayer.volume = userVolume;
+    userInteracted = true;
+});
 
+//END OF EDITING BY TYLER
 function selectSong(song, card) {
     selectedSong = song;
     // Remove previous selection
@@ -513,21 +544,21 @@ function updateTrackSelect() {
                 teaserPlayer.pause();
             }
         }
-    } else {
-        selectedSong = null;
-        singButton.disabled = true;
-        songName.innerText = "???";
-        artistName.innerText = "???";
-        songImage.src = "/images/questionmark_icon.svg";
+   } else {
+       selectedSong = null;
+       singButton.disabled = true;
+       songName.innerText = "???";
+       artistName.innerText = "???";
+       songImage.src = "/images/questionmark_icon.svg";
 
-        // Stop teaser
-        teaserPlayer.pause();
-        teaserPlayer.currentTime = 0;
-        teaserPlayer.volume = 1;
-        clearInterval(teaserFadeInterval);
-        clearTimeout(teaserReplayTimeout);
-        currentTeaserId = null;
-    }
+       // Stop teaser
+       teaserPlayer.pause();
+       teaserPlayer.currentTime = 0;
+       teaserPlayer.volume = userVolume; // ← change this from 1 to userVolume
+       clearInterval(teaserFadeInterval);
+       clearTimeout(teaserReplayTimeout);
+       currentTeaserId = null;
+   }
 }
 scrollTopZone.onmouseenter = () => moveUp()
 scrollBottomZone.onmouseenter = () => moveDown()
@@ -614,7 +645,7 @@ function playTeaserWithFade(song) {
     teaserPlayer.currentTime = 0;
 
     // Play muted if user hasn't interacted
-    teaserPlayer.volume = userInteracted ? 1 : 0;
+    teaserPlayer.volume = userInteracted ? userVolume : 0;
 
     teaserPlayer.play().catch(() => {});
 
@@ -628,7 +659,7 @@ function playTeaserWithFade(song) {
             let currentStep = 0;
             teaserFadeInterval = setInterval(() => {
                 currentStep++;
-                teaserPlayer.volume = Math.max(userInteracted ? 1 : 0, (userInteracted ? 1 : 0) * (1 - currentStep / fadeSteps));
+                teaserPlayer.volume = userVolume * (1 - currentStep / fadeSteps);
                 if (currentStep >= fadeSteps) {
                     clearInterval(teaserFadeInterval);
                     teaserFadeInterval = null;

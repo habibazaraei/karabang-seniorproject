@@ -469,3 +469,24 @@ body {
     .dropdown-menu.show {
       display: block;
     }
+
+    /*This is for the audio slider*/
+
+    #audioSetting {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+    }
+
+    #audioSetting label {
+        white-space: nowrap;
+        color: white;
+        font-size: 14px;
+    }
+
+    #volumeSlider {
+        width: 100px;
+        cursor: pointer;
+        accent-color: white;
+    }

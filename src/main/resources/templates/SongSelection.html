@@ -11,8 +11,10 @@
     <div id="webLogo">Karabang</div>
 
     <div id="rightButtons">
+
+        <!-- Profile dropdown -->
         <div class="dropdown">
-            <button id="profile" class="topButton" onclick="toggleDropdown()">
+            <button id="profile" class="topButton">
                 <img src="/images/blank_profile_icon.svg" alt="Profile">
             </button>
 
@@ -26,33 +28,27 @@
                     <a href="#" id="logoutBtn">Logout</a>
                 </div>
             </div>
+        </div>
 
+        <!-- Settings dropdown -->
+        <div class="dropdown">
             <button id="settings" class="topButton">
                 <img src="/images/settings_icon.svg" alt="Settings">
             </button>
+            <div class="dropdown-menu" id="settingsDropdown">
+                <a href="#" id="toggleVolumeBtn">🔊 Volume Control</a>
+                <a href="#">Display Settings</a>
+            </div>
+        </div>
+
+            <!-- allows the volume controller to be hidden by degault but still exist -->
+        <div id="volumeControl" style="display:none;">
+            <span>🔊</span>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
         </div>
     </div>
+
 </div>
-
-<script>
-    function toggleDropdown() {
-       document.getElementById("myDropdown").classList.toggle("show");
-   }
-
-   // Close dropdown if user clicks outside of it
-   window.addEventListener("click", function (e) {
-       // Now checks for the correct button id
-       if (!e.target.closest("#profile")) {
-           const dropdown = document.getElementById("myDropdown");
-           if (dropdown.classList.contains("show")) {
-               dropdown.classList.remove("show");
-           }
-       }
-   });
-</script>
-
-
-
 
 <div id="mainLayout">
 
