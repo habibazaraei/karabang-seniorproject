@@ -70,6 +70,18 @@
     "lyricsPath": "/lyrics/WeAreTheChampions.lrc",
     "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
     "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
+  },
+  {
+    "id": 7,
+    "title": "Square Up",
+    "artist": "Jamie Paige",
+    "genre": "Game",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/SquareUp.mp3",
+    "lyricsPath": "/lyrics/SquareUp.lrc",
+    "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
+    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
   }
 
 ]
