@@ -115,7 +115,23 @@ searchField.oninput = () => {
 
     refreshSongList();
 };
+//Initiates the toggle down menu itself.
+function toggleDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
 
+// toggle when clicking profile button
+document.getElementById("profile").addEventListener("click", (e) => {
+    e.stopPropagation(); // prevents immediate close
+    toggleDropdown();
+});
+
+// close when clicking outside
+window.addEventListener("click", function (e) {
+    if (!e.target.closest("#profile")) {
+        document.getElementById("myDropdown").classList.remove("show");
+    }
+});
 // Category sort
 categoryButtons.forEach(buttons => {
     const name = buttons.innerText.trim();
@@ -152,8 +168,9 @@ categoryButtons.forEach(buttons => {
             currentIndex = currentList.findIndex(s => !s.isPlaceholder);
             if (currentIndex === -1) currentIndex = 0;
             renderSongCardsNoAnimation(false);
-            loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
-            return; // stops rest of sort logic
+            //Loads favorites on icon (Shows red heart)
+            loadFavoriteStates();
+            return;
         }
 
         if (!key) return;
@@ -401,23 +418,6 @@ function addSongCard(listToRender){
 //END OF EDITING BY TYLER
 
 
-//Initiates the toggle down menu itself.
-function toggleDropdown() {
-     document.getElementById("myDropdown").classList.toggle("show");
-   }
-
-   // Close dropdown if user clicks outside of it
- window.addEventListener("click", function (e) {
-       // Now checks for the correct button id
-       if (!e.target.closest("#profile")) {
-           const dropdown = document.getElementById("myDropdown");
-           if (dropdown.classList.contains("show")) {
-               dropdown.classList.remove("show");
-           }
-       }
-   });
-
-
 
 function selectSong(song, card) {
     selectedSong = song;
@@ -647,8 +647,6 @@ function playTeaserWithFade(song) {
 
 
 
-
-
 // ADDED BY TYLER - LOAD FAVORITE STATE
 async function loadFavoriteStates() {
     const user = auth.currentUser;
@@ -682,4 +680,3 @@ document.getElementById("logoutBtn").onclick = async () => {
     await signOut(auth);
     location.reload();
 };
-

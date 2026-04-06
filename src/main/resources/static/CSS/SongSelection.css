@@ -1,23 +1,35 @@
+@font-face {
+  font-family: "VarelaRound";
+  src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Nirmala UI";
+  src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
+  font-weight: 700;
+}
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
+  font-family: "Nirmala UI", sans-serif;
+  font-weight: bold;
 }
 
 body {
-  font-family: Arial, sans-serif;
+  margin: 0;
 
-  color: white;
   display: flex;
   flex-direction: column;
-  /*background: radial-gradient(circle at top right, #403e47, #030003 70%); */
-  background: radial-gradient(circle at top right, #403e47, #2d2c32,#030003 70%);
+  background: #FFC83C;
+
 }
 /* logo temp*/
 #webLogo {
   color: #FFFFFF;
-  font-family: 'Futura', sans-serif;
+  font-family: 'Nirmala UI', sans-serif;
   font-size: 1em;
 }
 /* container */
@@ -26,6 +38,15 @@ body {
   overflow: hidden;
   position: relative;
   flex: 1;
+  /*
+  background-color: rgba(58, 32, 68, 0.8);
+  border-radius: 20px;
+  border: 1.0em black;
+
+   */
+  padding: 0 80px;
+  box-sizing: border-box;
+
 }
 
 /* inner scrolling wrapper */
@@ -33,6 +54,7 @@ body {
   position: relative;
   height: 100%;
   perspective: 1000px;
+  overflow: visible;
 }
 
 /* card */
@@ -41,7 +63,7 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(450px, 70%, 900px);
+  width: clamp(450px, 40vw, 900px);
   aspect-ratio: 6 / 1;
   height: auto;
   transition: all 0.3s ease;
@@ -220,7 +242,8 @@ body {
 
 .songBottom .favoriteButton img {
   display: block;
-  max-height: 80%;
+  height: 100%;
+  min-width: 20px;
   vertical-align: middle;
 }
 .songBottom.pop {
@@ -315,8 +338,8 @@ body {
   font-size: clamp(10px, 1vw, 14px);
   border-radius: clamp(10px, 2vw, 40px);
 
-  background: #252222;
-  color: #ffffff;
+  background: #ff9234;
+  color: #000000;
   border: 1px solid #555;
   display: inline-flex;
   align-items: center;
@@ -328,7 +351,7 @@ body {
   height: clamp(15px, 1vw, 20px);
 }
 .categoryButton:hover {
-  background: #7c7c7c;
+  background: #efa15f;
   color: white;
 }
 /* Search Field */
@@ -343,7 +366,7 @@ body {
   font-size: 1rem;
   box-sizing: border-box;
   outline: none;
-  background: #252222;
+  background: #ff9234;
 }
 
 /* Focus effect */
@@ -431,13 +454,55 @@ body {
 
 /* information of the song under image */
 #songInfo {
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+  background: #ff9234;
+  border-radius: 10px;
+  padding: 10px;
+}
+#songText {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
+  gap: 2px;
+}
+#songName,
+#artistName {
+  text-align: left;
+}
+#songName {
+  font-size: 2em;
+  line-height: 1;
+  margin: 0;
 }
 
+#artistName {
+  font-size: 1em;
+  line-height: 1;
+  margin: 0;
+}
+.favoriteButtonLeft {
+  margin-left: auto;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.favoriteButtonLeft img {
+  width: 34px;
+  height: 34px;
+  display: block;
+}
 /* button that goes to song */
 #singButton {
   width: 100%;
@@ -450,37 +515,47 @@ body {
 
 /*Dropdown Menu*/
 .dropdown {
-      position: relative;
-      display: inline-block;
-    }
+  position: relative;
+  display: inline-block;
+}
 
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      background-color: #000043;
-      min-width: 80px;
-      width: 100%;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-      border-radius: 4px;
-      z-index: 1;
-      left: 50%;
-      transform: translateX(-75%);
-      op: 100%;
-    }
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #000043;
+  min-width: 80px;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+  border-radius: 4px;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-75%);
 
-    .dropdown-menu a {
-      display: block;
-      padding: 5px 10px;
-      font-size: 13px;
-      color: #fff;
-      text-decoration: none;
-      text-align: center;
-    }
+}
 
-    .dropdown-menu a:hover {
-      background-color: #f1f1f1;
-    }
+.dropdown-menu a {
+  display: block;
+  padding: 5px 10px;
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+}
 
-    .dropdown-menu.show {
-      display: block;
-    }
+.dropdown-menu a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+/* BottomBar */
+#bottomBar {
+  width: 100%;
+  height: 5%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: url("../images/yellow_song_selection_background.svg") no-repeat center;
+  background-size: cover;
+}
