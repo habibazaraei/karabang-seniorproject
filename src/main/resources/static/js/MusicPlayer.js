@@ -158,32 +158,26 @@ function parseLyrics(text){
         const lineTime = lineMatch ? parseInt(lineMatch[1])*60 + parseFloat(lineMatch[2]) : 0
 
         // Word timestamps <mm:ss.xxx>word
-        const wordPattern = /<(\d+):(\d+\.\d+)>([^<]+)/g
+        const wordPattern = /<(\d+):(\d+\.\d+)>([^<\[]+)/g
         let words = []
         let match
         while((match = wordPattern.exec(l)) !== null){
             const time = parseInt(match[1])*60 + parseFloat(match[2])
-            const text = match[3].trim()
-            if(text) words.push({time, text})
+            const word = match[3].trim()
+            if(word) words.push({time, text: word})
         }
 
-        // If there are word timestamps, make sure first word matches line start
-        if(words.length){
-            const lineTextAfterBracket = l.replace(/\[\d+:\d+\.\d+\]/, "").trim()
-            const firstWord = lineTextAfterBracket.split(" ")[0]
-            if(firstWord && words[0].text !== firstWord){
-                words.unshift({time: lineTime, text: firstWord})
-            }
-        }
         // If no word timestamps, just use whole line
         if(words.length === 0){
-            const lineTextAfterBracket = l.replace(/\[\d+:\d+\.\d+\]/, "").trim()
+            const lineTextAfterBracket = l.replace(/\[[\d:\.]+\]/, "").trim()
             if(lineTextAfterBracket){
                 words.push({time: lineTime, text: lineTextAfterBracket})
             }
         }
 
-        lyrics.push({startTime: lineTime, words})
+        if(words.length > 0){
+            lyrics.push({startTime: lineTime, words})
+        }
     }
 }
 

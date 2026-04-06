@@ -80,8 +80,8 @@
     "language": "English",
     "audioPath": "/audio/SquareUp.mp3",
     "lyricsPath": "/lyrics/SquareUp.lrc",
-    "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
-    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
+    "artCoverPath": "/artCover/squareUpCover.jpg",
+    "songTeaserPath": "/teaser/squareUpTeaser.mp3"
   }
 
 ]
