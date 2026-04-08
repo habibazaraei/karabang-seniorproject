@@ -479,21 +479,6 @@ function addSongCard(listToRender){
 
 
 
-//Initiates the toggle down menu itself.
-function toggleDropdown() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-
-document.getElementById("profile").addEventListener("click", toggleDropdown);
-
-window.addEventListener("click", function (e) {
-    if (!e.target.closest("#profile")) {
-        const dropdown = document.getElementById("myDropdown");
-        if (dropdown.classList.contains("show")) {
-            dropdown.classList.remove("show");
-        }
-    }
-});
 
 // Settings dropdown
 function toggleSettingsDropdown() {
