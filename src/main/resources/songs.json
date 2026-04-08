@@ -72,15 +72,16 @@
     "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
   },
   {
-    "id": 20,
-    "title": "Nagging",
-    "artist": "IU",
-    "genre": "Pop",
-    "difficulty": "Hard",
-    "language": "Korean",
-    "audioPath": "/audio/Nagging.mp3",
-    "lyricsPath": "/lyrics/Nagging.lrc",
-    "artCoverPath": "/artCover/naggingArtCover.jpg",
-    "songTeaserPath": "/teaser/naggingTeaser.mp3"
+    "id": 7,
+    "title": "Square Up",
+    "artist": "Jamie Paige",
+    "genre": "Game",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/SquareUp.mp3",
+    "lyricsPath": "/lyrics/SquareUp.lrc",
+    "artCoverPath": "/artCover/squareUpCover.jpg",
+    "songTeaserPath": "/teaser/squareUpTeaser.mp3"
   }
+
 ]

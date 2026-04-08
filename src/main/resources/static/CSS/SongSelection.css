@@ -1,46 +1,25 @@
-@font-face {
-  font-family: "VarelaRound";
-  src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Nirmala UI";
-  src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
-  font-weight: 700;
-}
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
-  font-family: "Nirmala UI", sans-serif;
-  font-weight: bold;
 }
 
 body {
-  margin: 0;
-  flex-direction: column;
-  background: url("../images/purple_song_selection_background.svg") no-repeat center;
-  background-size: cover;
+  font-family: Arial, sans-serif;
+
+  color: white;
   display: flex;
-
-
+  flex-direction: column;
+  background: radial-gradient(circle at top right, #403e47, #030003 70%);
 }
-/* logo temp*/
-#webLogo {
-  color: #FFFFFF;
-  font-family: 'Nirmala UI', sans-serif;
-  font-size: 1em;
-}
+
 /* container */
 #songList {
   width: 100%;
   overflow: hidden;
   position: relative;
   flex: 1;
-  box-sizing: border-box;
-
 }
 
 /* inner scrolling wrapper */
@@ -48,8 +27,6 @@ body {
   position: relative;
   height: 100%;
   perspective: 1000px;
-  overflow: visible;
-
 }
 
 /* card */
@@ -58,8 +35,8 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(450px, 40vw, 900px);
-  aspect-ratio: 7 / 1;
+  width: clamp(450px, 70%, 900px);
+  aspect-ratio: 6 / 1;
   height: auto;
   transition: all 0.3s ease;
   opacity: 0;
@@ -67,7 +44,7 @@ body {
   cursor: pointer;
   box-sizing: border-box;
   pointer-events: auto;
-  background: #e94c4c;
+
   /* Reset button defaults */
   padding: 0;
   margin: 0;
@@ -85,30 +62,16 @@ body {
   opacity: 0.4;
   filter: grayscale(100%);
   cursor: default;
-  border: 0.2em solid #6d6d6d;
 }
 
-.songCard:hover {
+.songCard.placeholder:hover {
   transform: none;
   box-shadow: none;
   border-color: transparent;
-  transition-duration: 0.4s;
 }
-.songCard.pop {
-  border: 0.2em solid #FF5252;
-}
-.songCard.pop:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: #fcdbdb;
-}
+
 .songCard.rock {
-  border: 0.2em solid #920A65;
-}
-.songCard.rock:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: #ffbae7;
+  border: 0.1em solid purple;
 }
 /* track selection like cards */
 
@@ -177,6 +140,7 @@ body {
           2px -2px 0 #ebebeb,
           -2px 2px 0 #ebebeb,
           2px 2px 0 #ebebeb;
+
 }
 
 /* bottom half */
@@ -184,6 +148,7 @@ body {
 .songBottom {
   padding: 0 12px;
   font-size: clamp(10px, 0.8vw, 16px);
+  color: #fff;
   background: #e94c4c;
   display: flex;
   align-items: center;
@@ -202,7 +167,6 @@ body {
   white-space: nowrap;
   margin-right: 12px;
   display: block;
-  color: #FFFFFF;
 }
 
 /* right group: difficulty, language, genre */
@@ -228,7 +192,7 @@ body {
   padding: 2px 8px;
   border-radius: 50% / 50%;
   font-size: clamp(9px, 0.7vw, 13px);
-  color: #FFFFFF;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -249,18 +213,17 @@ body {
 
 .songBottom .favoriteButton img {
   display: block;
-  height: 100%;
-  min-width: 20px;
+  max-height: 80%;
   vertical-align: middle;
 }
 .songBottom.pop {
   background: url('../images/red_background_2.svg');
-  background-size: cover;
-
+  background-size: contain;
 }
 .songBottom.rock {
   background: url('../images/purple_background.svg');
-  background-size: cover;
+  background-size: contain;
+  border-color: #920A65;
 }
 /* invisible hover zones for scrolling */
 .scrollZone {
@@ -286,16 +249,17 @@ body {
   width: 100%;
   display: flex;
   padding: 10px 20px;
+  background: #000043;
   z-index: 1000;
   height: 60px;
   box-sizing: border-box;
   align-items: center;
-  background-size: contain;
-
 }
 #rightButtons {
   margin-left: auto;
   display: flex;
+  align-items: center;
+  height: 100%;
 }
 /* Buttons in top bar */
 .topButton {
@@ -333,94 +297,50 @@ body {
 /* Category bar */
 #categoryBar {
   display: flex;
-
-
-  padding-bottom: 10px;
+  gap: 10px;
+  margin: 0 0 20px 0;
   justify-content: flex-start;
-  border-radius: 20px;
-  position: relative;
-  z-index: 2;
-}
-
-/* Category tabs visual */
-#categoryTabs {
-  height: 0;
-  overflow: hidden;
-  background: #523da2;
-
-  transition: all 0.3s ease;
-  position: relative;
-  top: 10px;
-  z-index: 1;
-}
-
-#leftTop:hover #categoryTabs {
-  height: 40px;
-}
-
-.categoryButton.active {
-  background: #523da2;
-}
-
-.categoryButton:hover {
-  background: #523da2;
-  color: white;
-  border-radius: 0 0 15px 15px; /
 }
 
 .categoryButton {
-  padding: clamp(6px, 1vw, 10px) clamp(6px, 1.5vw, 12px);
-  font-size: clamp(0.5rem, 0.5vw + 0.5rem, 3rem);
-
-  border-bottom-right-radius: 30px;
-  border-bottom-left-radius: 30px;
-  font-weight: 1000;
+  padding: 6px 12px;
+  border-radius: 6px;
   border: none;
-  outline: none;
-  background: transparent;
-  color: #ffffff;
-  /*border: 1px solid #2b176f;*/
-  display: flex;
-  gap: clamp(2px, 0.5vw, 6px);
-
-  transition-duration: 0.4s;
-  flex-direction: column;
+  background: #1b1b3a;
+  color: #aaa;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-
-  width: 15%;
-}
-
-.categoryButton:first-child {
-  margin-left: 20px;
-}
-.categoryButton:last-child {
-  margin-right: 20px;
+  gap: 4px;
+  font-size: 14px;
 }
 .categoryButton .sortIcon {
-  width:  clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
-  height: clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
+  width: 15px;
+  height: 15px;
 }
-
+.categoryButton:hover {
+  background: #2a2a55;
+  color: white;
+}
 /* Search Field */
 
 #searchField {
   width: 100%;
-  height: 60%;
   max-width: none;
   padding: 8px 12px;
-  border-radius: 20px;
-  border: 1px solid #2b176f;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #1b1b3a;
   color: white;
   font-size: 1rem;
   box-sizing: border-box;
   outline: none;
-  background: #17094E;
 }
 
 /* Focus effect */
 #searchField:focus {
-  background: #523da2;
+  border-color: #e94c4c;
+  background: #2a2a55;
 }
 /* Main Screen */
 #mainLayout {
@@ -430,7 +350,6 @@ body {
   height: calc(100% - 60px);
   margin-top: 60px;
   overflow: hidden;
-
 }
 /* LEFT SIDE */
 #leftPanel {
@@ -447,11 +366,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  border: 1.0em black;
-  background: #17094E;
-
-  /**/
-  border-radius: 20px;
 }
 /* RIGHT SIDE */
 #rightPanel {
@@ -464,7 +378,7 @@ body {
   padding-top: 20px;
   max-height: 80vh;
   box-sizing: border-box;
-  overflow: visible;
+  overflow: hidden;
 }
 
 #rightTop {
@@ -482,9 +396,8 @@ body {
 }
 /* Wider screens → adjust left/right ratio */
 @media (min-aspect-ratio: 4/3) {
-  #leftPanel { width: 65%; }
-  #rightPanel { width: 35%; }
-
+  #leftPanel { width: 60%; }
+  #rightPanel { width: 40%; }
 }
 
 @media (min-aspect-ratio: 16/9) {
@@ -505,60 +418,13 @@ body {
 
 /* information of the song under image */
 #songInfo {
-  width: 100%;
-  max-width: 600px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: space-between;
-  background-image: url("../images/song_info_plate.svg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  border-radius: 10px;
-  padding: 10px;
-  height: 20%;
-}
-#songText {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-left: 25%;
-}
-#songName,
-#artistName {
-
-}
-#songName {
-  font-size: 1.8em;
-  line-height: 1;
-  margin: 0;
-}
-
-#artistName {
-  font-size: 1em;
-  line-height: 2;
-  margin: 0;
-  transform: translateY(4px);
-}
-.favoriteButtonRight {
-  margin-left: auto;
-
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-
-  display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
 }
-.favoriteButtonRight img {
-  width: 34px;
-  height: 34px;
-  display: block;
-}
+
 /* button that goes to song */
 #singButton {
   width: 100%;
@@ -566,44 +432,87 @@ body {
   padding: 10px 20px;
   box-sizing: border-box;
   flex-shrink: 0;
-  background-color: yellow;
-  border-radius: 10px;
 }
 
 
 /*Dropdown Menu*/
 .dropdown {
-  position: relative;
-  display: inline-block;
-}
+      position: relative;
+      display: inline-block;
+    }
 
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  background-color: #000043;
-  min-width: 80px;
-  width: 100%;
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-  border-radius: 4px;
-  z-index: 1;
-  left: 50%;
-  transform: translateX(-75%);
+  .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: #000043;
+      min-width: 80px;
+      width: auto;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      border-radius: 4px;
+      z-index: 1;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 100%;
+    }
 
-}
+    .dropdown-menu a {
+      display: block;
+      padding: 5px 10px;
+      font-size: 13px;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+    }
 
-.dropdown-menu a {
-  display: block;
-  padding: 5px 10px;
-  font-size: 13px;
-  color: #fff;
-  text-decoration: none;
-  text-align: center;
-}
+    .dropdown-menu a:hover {
+      background-color: #f1f1f1;
+    }
 
-.dropdown-menu a:hover {
-  background-color: #f1f1f1;
-}
+    .dropdown-menu.show {
+      display: block;
+    }
 
-.dropdown-menu.show {
-  display: block;
-}
+    /*This is for the audio slider*/
+
+    #audioSetting {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+    }
+
+    #audioSetting label {
+        white-space: nowrap;
+        color: white;
+        font-size: 14px;
+    }
+
+    #volumeControl, #scrollControl {
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         max-height: 60px;
+         box-sizing: border-box;
+     }
+
+     #volumeInner, #scrollInner {
+         display: flex;
+         flex-direction: row;
+         align-items: center;
+         gap: 8px;
+         padding: 0 8px;
+         max-height: 60px;
+         box-sizing: border-box;
+     }
+
+     #volumeSlider, #scrollSlider {
+         width: 100px;
+         cursor: pointer;
+         accent-color: white;
+     }
+
+     #volumeLabel, #scrollSpeedLabel {
+         white-space: nowrap;
+         font-size: 12px;
+         color: white;
+     }

@@ -11,8 +11,10 @@
     <div id="webLogo">Karabang</div>
 
     <div id="rightButtons">
+
+        <!-- Profile dropdown -->
         <div class="dropdown">
-            <button id="profile" class="topButton" onclick="toggleDropdown()">
+            <button id="profile" class="topButton">
                 <img src="/images/blank_profile_icon.svg" alt="Profile">
             </button>
             <div class="dropdown-menu" id="myDropdown">
@@ -25,12 +27,37 @@
                     <a href="#" id="logoutBtn">Logout</a>
                 </div>
             </div>
+        </div>
 
+        <!-- Settings dropdown -->
+        <div class="dropdown">
             <button id="settings" class="topButton">
                 <img src="/images/settings_icon.svg" alt="Settings">
             </button>
+            <div class="dropdown-menu" id="settingsDropdown">
+                <a href="#" id="toggleVolumeBtn">🔊 Volume Control</a>
+                <a href="#" id="toggleScrollBtn">⏩ Scroll Speed</a>
+                <a href="#" id="resetPrefsBtn">🔄 Reset Defaults</a>
+            </div>
+        </div>
+
+            <!-- allows the volume controller to be hidden by degault but still exist -->
+        <div id="volumeControl" style="display:none;">
+            <div id="volumeInner">
+                <span id="volumeLabel">🔊 Volume</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            </div>
+        </div>
+
+        <!-- Scroll speed control hidden by default still exists -->
+        <div id="scrollControl" style="display:none;">
+            <div id="scrollInner">
+                <span id="scrollSpeedLabel">Normal</span>
+                <input type="range" id="scrollSlider" min="50" max="500" step="10" value="200">
+            </div>
         </div>
     </div>
+
 </div>
 
 <div id="mainLayout">

@@ -14,6 +14,7 @@ let scrollBottomZone = document.getElementById("scrollBottom")
 
 let teaserPlayer = document.getElementById("teaserPlayer");
 
+let scrollSpeed = 200;
 
 let minSongs = 10
 let songs = []
@@ -28,8 +29,6 @@ let currentList = []
 const categoryButtons = document.querySelectorAll(".categoryButton");
 const sortState = {};
 
-const favoriteButtonRight = document.querySelector(".favoriteButtonRight");
-
 const TEASER_FADE_DURATION = 2000;
 const TEASER_REPLAY_DELAY = 3000;
 
@@ -37,7 +36,7 @@ const TEASER_REPLAY_DELAY = 3000;
 let userInteracted = false;
 teaserPlayer.volume = 0;
 teaserPlayer.loop = false;
-
+let userVolume = 1;
 
 teaserPlayer.play().catch(() => {});
 teaserPlayer.pause();
@@ -46,8 +45,7 @@ let teaserFadeInterval = null;
 let teaserReplayTimeout = null;
 let currentTeaserId = null;
 
-
-
+searchField.oninput = refreshSongList
 // DRAG SCROLLING
 let isDragging = false;
 let startY = 0;
@@ -97,67 +95,34 @@ songList.addEventListener("wheel", (e) => {
 });
 // Hover-based auto scrolling
 
-scrollTopZone.onmouseenter = () => {
-    moveInterval = setInterval(moveUp, 200)
+function restartScrollInterval(direction) {
+    clearInterval(moveInterval);
+    moveInterval = setInterval(direction === "up" ? moveUp : moveDown, scrollSpeed);
 }
 
-scrollBottomZone.onmouseenter = () => {
-    moveInterval = setInterval(moveDown, 200)
-}
-scrollTopZone.onmouseleave = () => clearInterval(moveInterval)
-scrollBottomZone.onmouseleave = () => clearInterval(moveInterval)
+scrollTopZone.onmouseenter = () => restartScrollInterval("up");
+scrollBottomZone.onmouseenter = () => restartScrollInterval("down");
+scrollTopZone.onmouseleave = () => clearInterval(moveInterval);
+scrollBottomZone.onmouseleave = () => clearInterval(moveInterval);
 
 
 // Restart Category when searching
-
 searchField.oninput = () => {
+    // reset all category buttons
     categoryButtons.forEach(button => {
         sortState[button.innerText.trim()] = "none";
-        button.classList.remove("active");
         setButtonIcon(button, "default");
-
     });
 
     refreshSongList();
 };
-//Initiates the toggle down menu itself.
-function toggleDropdown() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
 
-// toggle when clicking profile button
-document.getElementById("profile").addEventListener("click", (e) => {
-    e.stopPropagation(); // prevents immediate close
-    toggleDropdown();
-});
-
-// close when clicking outside
-window.addEventListener("click", function (e) {
-    if (!e.target.closest("#profile")) {
-        document.getElementById("myDropdown").classList.remove("show");
-    }
-});
 // Category sort
 categoryButtons.forEach(buttons => {
-
     const name = buttons.innerText.trim();
     sortState[name] = "none";
 
     buttons.addEventListener("click", async () => {
-        document.querySelectorAll(".categoryButton").forEach(b => b.classList.remove("active"));
-        // cycle asc → desc → none → asc ...
-        if (sortState[name] === "none") sortState[name] = "asc";
-        else if (sortState[name] === "asc") sortState[name] = "desc";
-        else sortState[name] = "none";
-
-        if (sortState[name] !== "none") {
-            buttons.classList.add("active");
-        } else {
-            buttons.classList.remove("active");
-        }
-
-        document.getElementById("categoryTabs").style.height =
-            sortState[name] === "none" ? "0px" : "40px";
         const keyMap = {
             "Artist": "artist",
             "Genre": "genre",
@@ -170,10 +135,6 @@ categoryButtons.forEach(buttons => {
         if (name === "Favorites") {
             const user = auth.currentUser;
             if (!user) {
-                sortState[name] = "none";
-                setButtonIcon(buttons, "default");
-                buttons.classList.remove("active");
-                document.getElementById("categoryTabs").style.height = "0px";
                 alert("Please log in to see favorites!");
                 return;
             }
@@ -192,22 +153,24 @@ categoryButtons.forEach(buttons => {
             currentIndex = currentList.findIndex(s => !s.isPlaceholder);
             if (currentIndex === -1) currentIndex = 0;
             renderSongCardsNoAnimation(false);
-            //Loads favorites on icon (Shows red heart)
-            loadFavoriteStates();
-            return;
+            loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
+            return; // stops rest of sort logic
         }
 
         if (!key) return;
 
+        // cycle asc → desc → none → asc ...
+        if (sortState[name] === "none") sortState[name] = "asc";
+        else if (sortState[name] === "asc") sortState[name] = "desc";
+        else sortState[name] = "none";
 
         setButtonIcon(buttons, sortState[name] === "none" ? "default" : (sortState[name] === "asc" ? "up" : "down"));
 
         // reset other buttons
-        categoryButtons.forEach(b => {
-            if (b !== buttons) {
-                sortState[b.innerText.trim()] = "none";
-                setButtonIcon(b, "default");
-                b.classList.remove("active");
+        categoryButtons.forEach(buttons => {
+            if (buttons !== buttons) {
+                sortState[buttons.innerText.trim()] = "none";
+                setButtonIcon(buttons, "default");
             }
         });
 
@@ -239,43 +202,6 @@ categoryButtons.forEach(buttons => {
         renderSongCardsNoAnimation(false);
         loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
     });
-});
-
-// favorite button Right
-favoriteButtonRight.addEventListener("click", async () => {
-    if (!selectedSong) return;
-
-    const user = auth.currentUser;
-    if (!user) {
-        alert("Please log in to favorite songs!");
-        return;
-    }
-
-    const favRef = doc(db, "users", user.uid, "favorites", String(selectedSong.id));
-    const favSnap = await getDoc(favRef);
-
-    const img = favoriteButtonRight.querySelector("img");
-
-    if (favSnap.exists()) {
-        await deleteDoc(favRef);
-        img.src = "/images/heart_gray_icon.svg";
-        favoriteButtonRight.classList.remove("active");
-    } else {
-        await setDoc(favRef, {
-            title: selectedSong.title,
-            artist: selectedSong.artist,
-            mp3URL: selectedSong.songPath || "",
-            coverURL: selectedSong.artCoverPath || "",
-            genre: selectedSong.genre || "",
-            language: selectedSong.language || "",
-            difficulty: selectedSong.difficulty || ""
-        });
-
-        img.src = "/images/heart_icon.svg";
-        favoriteButtonRight.classList.add("active");
-    }
-
-    loadFavoriteStates();
 });
 // Helper: set SVG icon
 function setButtonIcon(button, state) {
@@ -388,7 +314,6 @@ function refreshSongList() {
     currentIndex = currentList.findIndex(s => !s.isPlaceholder);
     updateTrackSelect();
     // Re-enable transitions on next frame
-
     requestAnimationFrame(() => {
         cards.forEach(card => {
             card.style.transition = "";
@@ -469,16 +394,139 @@ function addSongCard(listToRender){
                       img.src = "/images/heart_icon.svg";
                       favBtn.classList.add("active");
                    }
-                   loadFavoriteStates();
                };
            }
         songListInner.appendChild(card);
     });
 }
+
+
+
+//Initiates the toggle down menu itself.
+function toggleDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+document.getElementById("profile").addEventListener("click", toggleDropdown);
+
+window.addEventListener("click", function (e) {
+    if (!e.target.closest("#profile")) {
+        const dropdown = document.getElementById("myDropdown");
+        if (dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
+
+// Settings dropdown
+function toggleSettingsDropdown() {
+    document.getElementById("settingsDropdown").classList.toggle("show");
+}
+
+document.getElementById("settings").addEventListener("click", toggleSettingsDropdown);
+
+window.addEventListener("click", function (e) {
+    if (!e.target.closest("#settings")) {
+        const dropdown = document.getElementById("settingsDropdown");
+        if (dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
+
+
+document.getElementById("toggleVolumeBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    const volumeControl = document.getElementById("volumeControl");
+    if (volumeControl.style.display === "none") {
+        volumeControl.style.display = "flex";
+        // Start fade timer when opened
+        clearTimeout(volumeFadeTimeout);
+        volumeFadeTimeout = setTimeout(() => {
+            volumeControl.style.display = "none";
+        }, 3000);
+    } else {
+        volumeControl.style.display = "none";
+    }
+});;
+
+let volumeFadeTimeout = null;
+
+document.getElementById("volumeSlider").addEventListener("input", function () {
+    userVolume = parseFloat(this.value);
+    teaserPlayer.volume = userVolume;
+    userInteracted = true;
+    saveUserPreferences();
+
+    clearTimeout(volumeFadeTimeout);
+    volumeFadeTimeout = setTimeout(() => {
+        document.getElementById("volumeControl").style.display = "none";
+    }, 3000);
+});
+
+document.getElementById("toggleScrollBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    const scrollControl = document.getElementById("scrollControl");
+    if (scrollControl.style.display === "none") {
+        scrollControl.style.display = "flex";
+        // Start fade timer when opened
+        clearTimeout(scrollFadeTimeout);
+        scrollFadeTimeout = setTimeout(() => {
+            scrollControl.style.display = "none";
+        }, 3000);
+    } else {
+        scrollControl.style.display = "none";
+    }
+});
+let scrollFadeTimeout = null;
+
+document.getElementById("scrollSlider").addEventListener("input", function () {
+    scrollSpeed = 550 - parseInt(this.value);
+        if (moveInterval) {
+            const isTop = scrollTopZone.matches(":hover");
+            if (isTop) restartScrollInterval("up");
+            else restartScrollInterval("down");
+        }
+    saveUserPreferences();
+
+    const val = parseInt(this.value);
+    let label;
+    if (val <= 150) label = "🐢 Slow";
+    else if (val <= 300) label = "Normal";
+    else if (val <= 450) label = "⚡ Fast";
+    else label = "🚀 Turbo";
+    document.getElementById("scrollSpeedLabel").innerText = label;
+
+    clearTimeout(scrollFadeTimeout);
+    scrollFadeTimeout = setTimeout(() => {
+        document.getElementById("scrollControl").style.display = "none";
+    }, 3000);
+});
+
+//Use for the Reset Preferences button, put it below the volume and speed sliders since those are the only two functionalities to be reset right now.
+document.getElementById("resetPrefsBtn").addEventListener("click", async function (e) {
+    e.preventDefault();
+
+    // Reset to defaults
+    userVolume = 1;
+    scrollSpeed = 200;
+
+    // Update sliders
+    document.getElementById("volumeSlider").value = 0.5;
+    document.getElementById("scrollSlider").value = 300; //
+    document.getElementById("scrollSpeedLabel").innerText = "Normal";
+
+    // Apply volume
+    teaserPlayer.volume = userVolume;
+
+    // Save defaults to Firebase
+    await saveUserPreferences();
+
+    // Close the dropdown
+    document.getElementById("settingsDropdown").classList.remove("show");
+});
+
 //END OF EDITING BY TYLER
-
-
-
 function selectSong(song, card) {
     selectedSong = song;
     // Remove previous selection
@@ -529,16 +577,8 @@ function updateTrackSelect() {
         let offset = i - currentIndex;
         if (offset > total / 2) offset -= total;
         if (offset < -total / 2) offset += total;
-        // it disables transition for wrapping cards
-        let prevOffset = card._prevOffset ?? offset;
-        if (Math.abs(offset - prevOffset) > total / 2) {
-            card.style.transition = "none";
-        }
-        else {
-            card.style.transition = "";
-        }
-        card._prevOffset = offset;
-        const rotY = 0;
+
+        const rotY = -offset * 10;
         const scaleValues = [1.1, 0.95, 0.85, 0.7, 0.6];
         const opacityValues = [1, 0.8, 0.6, 0.4, 0.3];
 
@@ -547,7 +587,7 @@ function updateTrackSelect() {
         const zIndex = 5 - Math.abs(offset);
 
         const y = offset * baseY;
-        const x = -Math.abs(offset);
+        const x = offset * baseX;
 
         card.style.transform = `translate(-50%, calc(-50% + ${y}px)) translateX(${x}px) rotateY(${rotY}deg) scale(${scale})`;
         card.style.zIndex = zIndex;
@@ -555,8 +595,6 @@ function updateTrackSelect() {
     });
 
     const centerSong = currentList[currentIndex];
-
-
 
     if (centerSong && !centerSong.isPlaceholder) {
         selectedSong = centerSong;
@@ -567,8 +605,6 @@ function updateTrackSelect() {
         songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
         singButton.disabled = false;
-        favoriteButtonRight.dataset.id = String(centerSong.id);
-        loadFavoriteStates();
 
         // --- Teaser logic ---
         if (currentTeaserId !== centerSong.id) {
@@ -585,25 +621,23 @@ function updateTrackSelect() {
                 teaserPlayer.pause();
             }
         }
-    } else {
-        selectedSong = null;
-        singButton.disabled = true;
-        songName.innerText = "???";
-        artistName.innerText = "???";
-        songImage.src = "/images/questionmark_icon.svg";
+   } else {
+       selectedSong = null;
+       singButton.disabled = true;
+       songName.innerText = "???";
+       artistName.innerText = "???";
+       songImage.src = "/images/questionmark_icon.svg";
 
-        // Stop teaser
-        teaserPlayer.pause();
-        teaserPlayer.currentTime = 0;
-        teaserPlayer.volume = 1;
-        clearInterval(teaserFadeInterval);
-        clearTimeout(teaserReplayTimeout);
-        currentTeaserId = null;
-    }
-
+       // Stop teaser
+       teaserPlayer.pause();
+       teaserPlayer.currentTime = 0;
+       teaserPlayer.volume = userVolume; // ← change this from 1 to userVolume
+       clearInterval(teaserFadeInterval);
+       clearTimeout(teaserReplayTimeout);
+       currentTeaserId = null;
+   }
 }
-scrollTopZone.onmouseenter = () => moveUp()
-scrollBottomZone.onmouseenter = () => moveDown()
+
 
 function moveDown(){
     currentIndex++
@@ -687,7 +721,7 @@ function playTeaserWithFade(song) {
     teaserPlayer.currentTime = 0;
 
     // Play muted if user hasn't interacted
-    teaserPlayer.volume = userInteracted ? 1 : 0;
+    teaserPlayer.volume = userInteracted ? userVolume : 0;
 
     teaserPlayer.play().catch(() => {});
 
@@ -701,7 +735,7 @@ function playTeaserWithFade(song) {
             let currentStep = 0;
             teaserFadeInterval = setInterval(() => {
                 currentStep++;
-                teaserPlayer.volume = Math.max(userInteracted ? 1 : 0, (userInteracted ? 1 : 0) * (1 - currentStep / fadeSteps));
+                teaserPlayer.volume = userVolume * (1 - currentStep / fadeSteps);
                 if (currentStep >= fadeSteps) {
                     clearInterval(teaserFadeInterval);
                     teaserFadeInterval = null;
@@ -720,6 +754,8 @@ function playTeaserWithFade(song) {
 
 
 
+
+
 // ADDED BY TYLER - LOAD FAVORITE STATE
 async function loadFavoriteStates() {
     const user = auth.currentUser;
@@ -729,31 +765,9 @@ async function loadFavoriteStates() {
     const favIds = snapshot.docs.map(d => d.id);
 
     document.querySelectorAll(".favoriteButton").forEach(btn => {
-        const isFav = favIds.includes(String(btn.dataset.id));
-        const img = btn.querySelector("img");
-        if (isFav) {
-            img.src = "/images/heart_icon.svg";
+        if (favIds.includes(String(btn.dataset.id))) {
+            btn.querySelector("img").src = "/images/heart_icon.svg";
             btn.classList.add("active");
-        } else {
-            img.src = "/images/heart_gray_icon.svg";
-            btn.classList.remove("active");
-        }
-    });
-    document.querySelectorAll(".favoriteButtonRight").forEach(btn => {
-        const id = btn.dataset.id;
-
-        if (!id) return;
-
-        const isFav = favIds.includes(String(id));
-
-        const img = btn.querySelector("img");
-
-        if (isFav) {
-            img.src = "/images/heart_icon.svg";
-            btn.classList.add("active");
-        } else {
-            img.src = "/images/heart_gray_icon.svg";
-            btn.classList.remove("active");
         }
     });
 }
@@ -765,6 +779,7 @@ onAuthStateChanged(auth, user => {
         document.getElementById("loggedIn").style.display = "block";
         document.getElementById("loggedOut").style.display = "none";
         loadFavoriteStates();
+        loadUserPreferences(user);
     } else {
         document.getElementById("loggedIn").style.display = "none";
         document.getElementById("loggedOut").style.display = "block";
@@ -775,3 +790,42 @@ document.getElementById("logoutBtn").onclick = async () => {
     await signOut(auth);
     location.reload();
 };
+
+
+//So we can save settings preferences to a users account.
+async function saveUserPreferences() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    await setDoc(doc(db, "users", user.uid, "preferences", "settings"), {
+        volume: userVolume,
+        scrollSpeed: scrollSpeed
+    });
+}
+
+//This loads the users preference settings to account.
+async function loadUserPreferences(user) {
+    const prefSnap = await getDoc(doc(db, "users", user.uid, "preferences", "settings"));
+    if (!prefSnap.exists()) return;
+
+    const prefs = prefSnap.data();
+
+    if (prefs.volume !== undefined) {
+        userVolume = prefs.volume;
+        teaserPlayer.volume = userVolume;
+        document.getElementById("volumeSlider").value = userVolume;
+    }
+
+    if (prefs.scrollSpeed !== undefined) {
+        scrollSpeed = prefs.scrollSpeed;
+        const sliderVal = 550 - scrollSpeed;
+        document.getElementById("scrollSlider").value = sliderVal;
+
+        let label;
+        if (sliderVal <= 150) label = "🐢 Slow";
+        else if (sliderVal <= 300) label = "Normal";
+        else if (sliderVal <= 450) label = "⚡ Fast";
+        else label = "🚀 Turbo";
+        document.getElementById("scrollSpeedLabel").innerText = label;
+    }
+}
