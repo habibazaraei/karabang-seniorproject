@@ -95,15 +95,15 @@ songList.addEventListener("wheel", (e) => {
 });
 // Hover-based auto scrolling
 
-scrollTopZone.onmouseenter = () => {
-    moveInterval = setInterval(moveUp, scrollSpeed)
+function restartScrollInterval(direction) {
+    clearInterval(moveInterval);
+    moveInterval = setInterval(direction === "up" ? moveUp : moveDown, scrollSpeed);
 }
 
-scrollBottomZone.onmouseenter = () => {
-    moveInterval = setInterval(moveDown, scrollSpeed)
-}
-scrollTopZone.onmouseleave = () => clearInterval(moveInterval)
-scrollBottomZone.onmouseleave = () => clearInterval(moveInterval)
+scrollTopZone.onmouseenter = () => restartScrollInterval("up");
+scrollBottomZone.onmouseenter = () => restartScrollInterval("down");
+scrollTopZone.onmouseleave = () => clearInterval(moveInterval);
+scrollBottomZone.onmouseleave = () => clearInterval(moveInterval);
 
 
 // Restart Category when searching
@@ -482,6 +482,11 @@ let scrollFadeTimeout = null;
 
 document.getElementById("scrollSlider").addEventListener("input", function () {
     scrollSpeed = 550 - parseInt(this.value);
+        if (moveInterval) {
+            const isTop = scrollTopZone.matches(":hover");
+            if (isTop) restartScrollInterval("up");
+            else restartScrollInterval("down");
+        }
     saveUserPreferences();
 
     const val = parseInt(this.value);
@@ -632,8 +637,7 @@ function updateTrackSelect() {
        currentTeaserId = null;
    }
 }
-scrollTopZone.onmouseenter = () => moveUp()
-scrollBottomZone.onmouseenter = () => moveDown()
+
 
 function moveDown(){
     currentIndex++
