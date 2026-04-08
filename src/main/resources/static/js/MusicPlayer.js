@@ -28,6 +28,31 @@ let heartButton = document.getElementById("heart");
 
 let lyrics = []
 
+let settingsButton = document.getElementById("settings");
+let settingsMenu = document.getElementById("settingsMenu");
+let fontSizeSlider = document.getElementById("fontSize");
+
+// toggle settings menu
+settingsButton.onclick = () => {
+    settingsMenu.style.display =
+        settingsMenu.style.display === "block" ? "none" : "block";
+};
+
+// close when clicking outside
+window.addEventListener("click", (e) => {
+    if (
+        !settingsButton.contains(e.target) &&
+        !settingsMenu.contains(e.target)
+    ) {
+        settingsMenu.style.display = "none";
+    }
+});
+
+// change font size LIVE
+fontSizeSlider.oninput = () => {
+    subtitle.style.fontSize = fontSizeSlider.value + "vw";
+};
+
 // Top Bar
 // Go back to Song Selection
 goBackButton.onclick = () =>{
@@ -227,3 +252,4 @@ document.addEventListener("DOMContentLoaded", () => {
 audio.volume = 0.5
 volume.value = 50
 updateVolumeUI()
+subtitle.style.fontSize = "5vw";
