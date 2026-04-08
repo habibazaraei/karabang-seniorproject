@@ -192,11 +192,20 @@ function parseLyrics(text){
             if(word) words.push({time, text: word})
         }
 
-        // If no word timestamps, just use whole line
+        // If no word timestamps, split line into words and distribute evenly
         if(words.length === 0){
             const lineTextAfterBracket = l.replace(/\[[\d:\.]+\]/, "").trim()
             if(lineTextAfterBracket){
-                words.push({time: lineTime, text: lineTextAfterBracket})
+                const splitWords = lineTextAfterBracket.split(/\s+/)
+                const nextLineMatch = lines[lines.indexOf(l) + 1]?.match(/\[(\d+):(\d+\.\d+)\]/)
+                const nextTime = nextLineMatch
+                    ? parseInt(nextLineMatch[1])*60 + parseFloat(nextLineMatch[2])
+                    : lineTime + 5
+                const duration = Math.min(nextTime - lineTime, 10) * 0.9
+                const interval = duration / splitWords.length
+                for(let j = 0; j < splitWords.length; j++){
+                    words.push({time: lineTime + j * interval, text: splitWords[j]})
+                }
             }
         }
 
