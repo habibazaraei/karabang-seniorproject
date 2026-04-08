@@ -82,6 +82,18 @@
     "lyricsPath": "/lyrics/SquareUp.lrc",
     "artCoverPath": "/artCover/squareUpCover.jpg",
     "songTeaserPath": "/teaser/squareUpTeaser.mp3"
+  },
+  {
+    "id": 20,
+    "title": "Nagging",
+    "artist": "IU",
+    "genre": "Pop",
+    "difficulty": "Hard",
+    "language": "Korean",
+    "audioPath": "/audio/Nagging.mp3",
+    "lyricsPath": "/lyrics/Nagging.lrc",
+    "artCoverPath": "/artCover/naggingArtCover.jpg",
+    "songTeaserPath": "/teaser/naggingTeaser.mp3"
   }
 
 ]

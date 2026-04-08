@@ -29,6 +29,8 @@ let currentList = []
 const categoryButtons = document.querySelectorAll(".categoryButton");
 const sortState = {};
 
+const favoriteButtonRight = document.querySelector(".favoriteButtonRight");
+
 const TEASER_FADE_DURATION = 2000;
 const TEASER_REPLAY_DELAY = 3000;
 
@@ -45,7 +47,8 @@ let teaserFadeInterval = null;
 let teaserReplayTimeout = null;
 let currentTeaserId = null;
 
-searchField.oninput = refreshSongList
+
+
 // DRAG SCROLLING
 let isDragging = false;
 let startY = 0;
@@ -107,22 +110,55 @@ scrollBottomZone.onmouseleave = () => clearInterval(moveInterval);
 
 
 // Restart Category when searching
+
 searchField.oninput = () => {
-    // reset all category buttons
     categoryButtons.forEach(button => {
         sortState[button.innerText.trim()] = "none";
+        button.classList.remove("active");
         setButtonIcon(button, "default");
+
     });
 
     refreshSongList();
 };
+//Initiates the toggle down menu itself.
+function toggleDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
 
+// toggle when clicking profile button
+document.getElementById("profile").addEventListener("click", (e) => {
+    e.stopPropagation(); // prevents immediate close
+    toggleDropdown();
+});
+
+// close when clicking outside
+window.addEventListener("click", function (e) {
+    if (!e.target.closest("#profile")) {
+        document.getElementById("myDropdown").classList.remove("show");
+    }
+});
 // Category sort
 categoryButtons.forEach(buttons => {
+
     const name = buttons.innerText.trim();
     sortState[name] = "none";
 
     buttons.addEventListener("click", async () => {
+        document.querySelectorAll(".categoryButton").forEach(b => b.classList.remove("active"));
+        // cycle asc → desc → none → asc ...
+        if (sortState[name] === "none") sortState[name] = "asc";
+        else if (sortState[name] === "asc") sortState[name] = "desc";
+        else sortState[name] = "none";
+
+        if (sortState[name] !== "none") {
+            buttons.classList.add("active");
+        } else {
+            buttons.classList.remove("active");
+        }
+
+        document.getElementById("categoryTabs").style.height =
+            sortState[name] === "none" ? "0px" : "40px";
         const keyMap = {
             "Artist": "artist",
             "Genre": "genre",
@@ -135,6 +171,10 @@ categoryButtons.forEach(buttons => {
         if (name === "Favorites") {
             const user = auth.currentUser;
             if (!user) {
+                sortState[name] = "none";
+                setButtonIcon(buttons, "default");
+                buttons.classList.remove("active");
+                document.getElementById("categoryTabs").style.height = "0px";
                 alert("Please log in to see favorites!");
                 return;
             }
@@ -153,24 +193,22 @@ categoryButtons.forEach(buttons => {
             currentIndex = currentList.findIndex(s => !s.isPlaceholder);
             if (currentIndex === -1) currentIndex = 0;
             renderSongCardsNoAnimation(false);
-            loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
-            return; // stops rest of sort logic
+            //Loads favorites on icon (Shows red heart)
+            loadFavoriteStates();
+            return;
         }
 
         if (!key) return;
 
-        // cycle asc → desc → none → asc ...
-        if (sortState[name] === "none") sortState[name] = "asc";
-        else if (sortState[name] === "asc") sortState[name] = "desc";
-        else sortState[name] = "none";
 
         setButtonIcon(buttons, sortState[name] === "none" ? "default" : (sortState[name] === "asc" ? "up" : "down"));
 
         // reset other buttons
-        categoryButtons.forEach(buttons => {
-            if (buttons !== buttons) {
-                sortState[buttons.innerText.trim()] = "none";
-                setButtonIcon(buttons, "default");
+        categoryButtons.forEach(b => {
+            if (b !== buttons) {
+                sortState[b.innerText.trim()] = "none";
+                setButtonIcon(b, "default");
+                b.classList.remove("active");
             }
         });
 
@@ -202,6 +240,43 @@ categoryButtons.forEach(buttons => {
         renderSongCardsNoAnimation(false);
         loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
     });
+});
+
+// favorite button Right
+favoriteButtonRight.addEventListener("click", async () => {
+    if (!selectedSong) return;
+
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Please log in to favorite songs!");
+        return;
+    }
+
+    const favRef = doc(db, "users", user.uid, "favorites", String(selectedSong.id));
+    const favSnap = await getDoc(favRef);
+
+    const img = favoriteButtonRight.querySelector("img");
+
+    if (favSnap.exists()) {
+        await deleteDoc(favRef);
+        img.src = "/images/heart_gray_icon.svg";
+        favoriteButtonRight.classList.remove("active");
+    } else {
+        await setDoc(favRef, {
+            title: selectedSong.title,
+            artist: selectedSong.artist,
+            mp3URL: selectedSong.songPath || "",
+            coverURL: selectedSong.artCoverPath || "",
+            genre: selectedSong.genre || "",
+            language: selectedSong.language || "",
+            difficulty: selectedSong.difficulty || ""
+        });
+
+        img.src = "/images/heart_icon.svg";
+        favoriteButtonRight.classList.add("active");
+    }
+
+    loadFavoriteStates();
 });
 // Helper: set SVG icon
 function setButtonIcon(button, state) {
@@ -314,6 +389,7 @@ function refreshSongList() {
     currentIndex = currentList.findIndex(s => !s.isPlaceholder);
     updateTrackSelect();
     // Re-enable transitions on next frame
+
     requestAnimationFrame(() => {
         cards.forEach(card => {
             card.style.transition = "";
@@ -394,6 +470,7 @@ function addSongCard(listToRender){
                       img.src = "/images/heart_icon.svg";
                       favBtn.classList.add("active");
                    }
+                   loadFavoriteStates();
                };
            }
         songListInner.appendChild(card);
@@ -577,8 +654,16 @@ function updateTrackSelect() {
         let offset = i - currentIndex;
         if (offset > total / 2) offset -= total;
         if (offset < -total / 2) offset += total;
-
-        const rotY = -offset * 10;
+        // it disables transition for wrapping cards
+        let prevOffset = card._prevOffset ?? offset;
+        if (Math.abs(offset - prevOffset) > total / 2) {
+            card.style.transition = "none";
+        }
+        else {
+            card.style.transition = "";
+        }
+        card._prevOffset = offset;
+        const rotY = 0;
         const scaleValues = [1.1, 0.95, 0.85, 0.7, 0.6];
         const opacityValues = [1, 0.8, 0.6, 0.4, 0.3];
 
@@ -587,7 +672,7 @@ function updateTrackSelect() {
         const zIndex = 5 - Math.abs(offset);
 
         const y = offset * baseY;
-        const x = offset * baseX;
+        const x = -Math.abs(offset);
 
         card.style.transform = `translate(-50%, calc(-50% + ${y}px)) translateX(${x}px) rotateY(${rotY}deg) scale(${scale})`;
         card.style.zIndex = zIndex;
@@ -595,6 +680,8 @@ function updateTrackSelect() {
     });
 
     const centerSong = currentList[currentIndex];
+
+
 
     if (centerSong && !centerSong.isPlaceholder) {
         selectedSong = centerSong;
@@ -605,6 +692,8 @@ function updateTrackSelect() {
         songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
         singButton.disabled = false;
+        favoriteButtonRight.dataset.id = String(centerSong.id);
+        loadFavoriteStates();
 
         // --- Teaser logic ---
         if (currentTeaserId !== centerSong.id) {
@@ -754,8 +843,6 @@ function playTeaserWithFade(song) {
 
 
 
-
-
 // ADDED BY TYLER - LOAD FAVORITE STATE
 async function loadFavoriteStates() {
     const user = auth.currentUser;
@@ -765,9 +852,31 @@ async function loadFavoriteStates() {
     const favIds = snapshot.docs.map(d => d.id);
 
     document.querySelectorAll(".favoriteButton").forEach(btn => {
-        if (favIds.includes(String(btn.dataset.id))) {
-            btn.querySelector("img").src = "/images/heart_icon.svg";
+        const isFav = favIds.includes(String(btn.dataset.id));
+        const img = btn.querySelector("img");
+        if (isFav) {
+            img.src = "/images/heart_icon.svg";
             btn.classList.add("active");
+        } else {
+            img.src = "/images/heart_gray_icon.svg";
+            btn.classList.remove("active");
+        }
+    });
+    document.querySelectorAll(".favoriteButtonRight").forEach(btn => {
+        const id = btn.dataset.id;
+
+        if (!id) return;
+
+        const isFav = favIds.includes(String(id));
+
+        const img = btn.querySelector("img");
+
+        if (isFav) {
+            img.src = "/images/heart_icon.svg";
+            btn.classList.add("active");
+        } else {
+            img.src = "/images/heart_gray_icon.svg";
+            btn.classList.remove("active");
         }
     });
 }
