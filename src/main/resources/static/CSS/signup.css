@@ -16,7 +16,7 @@
             position:relative;
         }
 
-        /* 🔥 MANY FLOATING ICONS */
+        /*  MANY FLOATING ICONS */
 
         .icon{
             position:absolute;
@@ -167,6 +167,7 @@
             padding:20px;
             text-align:center;
             box-shadow:0 20px 40px rgba(0,0,0,0.6);
+
         }
 
         .album-card img{
@@ -175,6 +176,13 @@
             border-radius:15px;
             object-fit:cover;
             margin-bottom:15px;
+        }
+
+        .album-card img,
+        .song-title,
+        .artist {
+            opacity: 1;
+            transition: opacity 0.6s ease;
         }
 
         .song-title{

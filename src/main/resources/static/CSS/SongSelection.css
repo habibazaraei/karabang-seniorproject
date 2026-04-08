@@ -334,6 +334,7 @@ body {
 #categoryBar {
   display: flex;
 
+
   padding-bottom: 10px;
   justify-content: flex-start;
   border-radius: 20px;
@@ -346,8 +347,7 @@ body {
   height: 0;
   overflow: hidden;
   background: #523da2;
-  border-radius: 15px 15px 0 0;
-  margin: 0 20px;
+
   transition: all 0.3s ease;
   position: relative;
   top: 10px;
@@ -387,7 +387,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
+
   width: 15%;
 }
 
@@ -409,7 +409,7 @@ body {
   height: 60%;
   max-width: none;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 20px;
   border: 1px solid #2b176f;
   color: white;
   font-size: 1rem;
@@ -449,6 +449,8 @@ body {
   gap: 5px;
   border: 1.0em black;
   background: #17094E;
+
+  /**/
   border-radius: 20px;
 }
 /* RIGHT SIDE */
@@ -510,32 +512,37 @@ body {
   align-items: center;
   gap: 10px;
   justify-content: space-between;
-  background: #55e7ff;
+  background-image: url("../images/song_info_plate.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
   border-radius: 10px;
   padding: 10px;
+  height: 20%;
 }
 #songText {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
+  margin-left: 25%;
 }
 #songName,
 #artistName {
-  text-align: left;
+
 }
 #songName {
-  font-size: 2em;
+  font-size: 1.8em;
   line-height: 1;
   margin: 0;
 }
 
 #artistName {
   font-size: 1em;
-  line-height: 1;
+  line-height: 2;
   margin: 0;
+  transform: translateY(4px);
 }
-.favoriteButtonLeft {
+.favoriteButtonRight {
   margin-left: auto;
 
   background: transparent;
@@ -547,7 +554,7 @@ body {
   align-items: center;
   justify-content: center;
 }
-.favoriteButtonLeft img {
+.favoriteButtonRight img {
   width: 34px;
   height: 34px;
   display: block;

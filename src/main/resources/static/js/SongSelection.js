@@ -28,7 +28,7 @@ let currentList = []
 const categoryButtons = document.querySelectorAll(".categoryButton");
 const sortState = {};
 
-const favoriteButtonLeft = document.querySelector(".favoriteButtonLeft");
+const favoriteButtonRight = document.querySelector(".favoriteButtonRight");
 
 const TEASER_FADE_DURATION = 2000;
 const TEASER_REPLAY_DELAY = 3000;
@@ -111,10 +111,11 @@ scrollBottomZone.onmouseleave = () => clearInterval(moveInterval)
 // Restart Category when searching
 
 searchField.oninput = () => {
-
     categoryButtons.forEach(button => {
         sortState[button.innerText.trim()] = "none";
+        button.classList.remove("active");
         setButtonIcon(button, "default");
+
     });
 
     refreshSongList();
@@ -148,6 +149,7 @@ categoryButtons.forEach(buttons => {
         if (sortState[name] === "none") sortState[name] = "asc";
         else if (sortState[name] === "asc") sortState[name] = "desc";
         else sortState[name] = "none";
+
         if (sortState[name] !== "none") {
             buttons.classList.add("active");
         } else {
@@ -160,7 +162,7 @@ categoryButtons.forEach(buttons => {
             "Artist": "artist",
             "Genre": "genre",
             "Difficulty": "difficulty",
-
+            "Language": "language",
         };
         const key = keyMap[name];
 
@@ -239,8 +241,8 @@ categoryButtons.forEach(buttons => {
     });
 });
 
-// favorite button left
-favoriteButtonLeft.addEventListener("click", async () => {
+// favorite button Right
+favoriteButtonRight.addEventListener("click", async () => {
     if (!selectedSong) return;
 
     const user = auth.currentUser;
@@ -252,12 +254,12 @@ favoriteButtonLeft.addEventListener("click", async () => {
     const favRef = doc(db, "users", user.uid, "favorites", String(selectedSong.id));
     const favSnap = await getDoc(favRef);
 
-    const img = favoriteButtonLeft.querySelector("img");
+    const img = favoriteButtonRight.querySelector("img");
 
     if (favSnap.exists()) {
         await deleteDoc(favRef);
         img.src = "/images/heart_gray_icon.svg";
-        favoriteButtonLeft.classList.remove("active");
+        favoriteButtonRight.classList.remove("active");
     } else {
         await setDoc(favRef, {
             title: selectedSong.title,
@@ -270,7 +272,7 @@ favoriteButtonLeft.addEventListener("click", async () => {
         });
 
         img.src = "/images/heart_icon.svg";
-        favoriteButtonLeft.classList.add("active");
+        favoriteButtonRight.classList.add("active");
     }
 
     loadFavoriteStates();
@@ -729,7 +731,7 @@ async function loadFavoriteStates() {
             btn.classList.add("active");
         }
     });
-    document.querySelectorAll(".favoriteButtonLeft").forEach(btn => {
+    document.querySelectorAll(".favoriteButtonRight").forEach(btn => {
         const id = btn.dataset.id;
 
         if (!id) return;
