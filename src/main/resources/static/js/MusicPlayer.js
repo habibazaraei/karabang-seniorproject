@@ -202,10 +202,13 @@ function parseLyrics(text){
                     ? parseInt(nextLineMatch[1])*60 + parseFloat(nextLineMatch[2])
                     : lineTime + 5
                 const duration = Math.min(nextTime - lineTime, 10) * 0.9
-                const interval = duration / splitWords.length
-                for(let j = 0; j < splitWords.length; j++){
-                    words.push({time: lineTime + j * interval, text: splitWords[j]})
-                }
+                const totalChars = splitWords.reduce((sum, w) => sum + w.length, 0)
+                        let elapsed = 0
+                        for(let j = 0; j < splitWords.length; j++){
+                            words.push({time: lineTime + elapsed, text: splitWords[j]})
+                            const weight = splitWords[j].length / totalChars
+                            elapsed += weight * duration
+                        }
             }
         }
 
