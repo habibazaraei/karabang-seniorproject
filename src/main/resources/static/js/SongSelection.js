@@ -469,6 +469,7 @@ function addSongCard(listToRender){
                       img.src = "/images/heart_icon.svg";
                       favBtn.classList.add("active");
                    }
+                   loadFavoriteStates();
                };
            }
         songListInner.appendChild(card);
@@ -566,6 +567,8 @@ function updateTrackSelect() {
         songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
         singButton.disabled = false;
+        favoriteButtonRight.dataset.id = String(centerSong.id);
+        loadFavoriteStates();
 
         // --- Teaser logic ---
         if (currentTeaserId !== centerSong.id) {
@@ -726,9 +729,14 @@ async function loadFavoriteStates() {
     const favIds = snapshot.docs.map(d => d.id);
 
     document.querySelectorAll(".favoriteButton").forEach(btn => {
-        if (favIds.includes(String(btn.dataset.id))) {
-            btn.querySelector("img").src = "/images/heart_icon.svg";
+        const isFav = favIds.includes(String(btn.dataset.id));
+        const img = btn.querySelector("img");
+        if (isFav) {
+            img.src = "/images/heart_icon.svg";
             btn.classList.add("active");
+        } else {
+            img.src = "/images/heart_gray_icon.svg";
+            btn.classList.remove("active");
         }
     });
     document.querySelectorAll(".favoriteButtonRight").forEach(btn => {
