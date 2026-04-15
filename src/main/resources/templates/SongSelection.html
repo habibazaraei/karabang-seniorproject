@@ -30,30 +30,33 @@
         </div>
 
         <!-- Settings dropdown -->
-        <div class="dropdown">
-            <button id="settings" class="topButton">
-                <img src="/images/settings_icon.svg" alt="Settings">
-            </button>
-            <div class="dropdown-menu" id="settingsDropdown">
-                <a href="#" id="toggleVolumeBtn">🔊 Volume Control</a>
-                <a href="#" id="toggleScrollBtn">⏩ Scroll Speed</a>
-                <a href="#" id="resetPrefsBtn">🔄 Reset Defaults</a>
-            </div>
-        </div>
+        <!-- Settings button -->
+        <button id="settings" class="topButton">
+            <img src="/images/settings_icon.svg" alt="Settings">
+        </button>
 
-            <!-- allows the volume controller to be hidden by degault but still exist -->
-        <div id="volumeControl" style="display:none;">
-            <div id="volumeInner">
-                <span id="volumeLabel">🔊 Volume</span>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
-            </div>
-        </div>
-
-        <!-- Scroll speed control hidden by default still exists -->
-        <div id="scrollControl" style="display:none;">
-            <div id="scrollInner">
-                <span id="scrollSpeedLabel">Normal</span>
-                <input type="range" id="scrollSlider" min="50" max="500" step="10" value="200">
+        <!-- Settings modal -->
+        <!-- Style Sheet is in the code here because everytime I tried converting it to the CSS itself it just broke -->
+        <div id="settingsModal" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:11vw; height:13.5vw; background:rgba(123, 39, 245, 0.75); z-index:1000; display:flex; align-items:center; justify-content:center; visibility:hidden; border-radius:8px">
+            <div id="settingsPanel" style="background:var(--color-background-primary); border:50px solid var(--color-border-secondary); border-radius:12px; padding:1.5rem;  max-width:90vw;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                    <h2 style="background:white; font-size:16px; font-weight:500; margin:0; padding:2px 6px; border-radius:8px">Settings</h2>
+                    <button id="closeSettingsBtn" style="background:white; border:none; cursor:pointer; font-size:18px; color:var(--color-text-secondary); padding:2px 6px; border-radius:8px; line-height:1;">&#x2715;</button>
+                </div>
+                <div style="margin-bottom:1.25rem;">
+                    <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">
+                        <span>Volume</span><span id="volumeLabel">50%</span>
+                    </div>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" style="width:100%;">
+                </div>
+                <div style="margin-bottom:1.25rem;">
+                    <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">
+                        <span>Scroll speed</span><span id="scrollSpeedLabel">Normal</span>
+                    </div>
+                    <input type="range" id="scrollSlider" min="50" max="500" step="10" value="300" style="width:100%;">
+                </div>
+                <hr style="border:none; border-top:0.5px solid var(--color-border-tertiary); margin:1rem 0;">
+                <button id="resetPrefsBtn" style="width:100%; padding:8px; font-size:14px; cursor:pointer; border-radius:8px; border:0.5px solid var(--color-border-secondary); background:rgba(194, 154, 252, 1); color:var(--color-text-primary);">Reset to defaults</button>
             </div>
         </div>
     </div>

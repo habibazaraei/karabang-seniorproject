@@ -75,8 +75,8 @@ function onDrag(e) {
     let currentY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
     let delta = currentY - startY;
 
-    const threshold = 80; // pixels per one song step
-    let step = Math.round(-delta / threshold); // negative because dragging down moves up
+    const threshold = 80;
+    let step = Math.round(-delta / threshold);
     currentIndex = (startIndex + step + currentList.length) % currentList.length;
     updateTrackSelect();
 }
@@ -96,7 +96,6 @@ songList.addEventListener("wheel", (e) => {
     if (e.deltaY > 0) moveDown();
     else moveUp();
 });
-// Hover-based auto scrolling
 
 function restartScrollInterval(direction) {
     clearInterval(moveInterval);
@@ -109,44 +108,36 @@ scrollTopZone.onmouseleave = () => clearInterval(moveInterval);
 scrollBottomZone.onmouseleave = () => clearInterval(moveInterval);
 
 
-// Restart Category when searching
-
 searchField.oninput = () => {
     categoryButtons.forEach(button => {
         sortState[button.innerText.trim()] = "none";
         button.classList.remove("active");
         setButtonIcon(button, "default");
-
     });
-
     refreshSongList();
 };
-//Initiates the toggle down menu itself.
+
 function toggleDropdown() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
-// toggle when clicking profile button
 document.getElementById("profile").addEventListener("click", (e) => {
-    e.stopPropagation(); // prevents immediate close
+    e.stopPropagation();
     toggleDropdown();
 });
 
-// close when clicking outside
 window.addEventListener("click", function (e) {
     if (!e.target.closest("#profile")) {
         document.getElementById("myDropdown").classList.remove("show");
     }
 });
-// Category sort
-categoryButtons.forEach(buttons => {
 
+categoryButtons.forEach(buttons => {
     const name = buttons.innerText.trim();
     sortState[name] = "none";
 
     buttons.addEventListener("click", async () => {
         document.querySelectorAll(".categoryButton").forEach(b => b.classList.remove("active"));
-        // cycle asc → desc → none → asc ...
         if (sortState[name] === "none") sortState[name] = "asc";
         else if (sortState[name] === "asc") sortState[name] = "desc";
         else sortState[name] = "none";
@@ -167,7 +158,6 @@ categoryButtons.forEach(buttons => {
         };
         const key = keyMap[name];
 
-        //ADDED BY TYLER: Allows for Filtration of songs by favorite
         if (name === "Favorites") {
             const user = auth.currentUser;
             if (!user) {
@@ -193,17 +183,14 @@ categoryButtons.forEach(buttons => {
             currentIndex = currentList.findIndex(s => !s.isPlaceholder);
             if (currentIndex === -1) currentIndex = 0;
             renderSongCardsNoAnimation(false);
-            //Loads favorites on icon (Shows red heart)
             loadFavoriteStates();
             return;
         }
 
         if (!key) return;
 
-
         setButtonIcon(buttons, sortState[name] === "none" ? "default" : (sortState[name] === "asc" ? "up" : "down"));
 
-        // reset other buttons
         categoryButtons.forEach(b => {
             if (b !== buttons) {
                 sortState[b.innerText.trim()] = "none";
@@ -212,7 +199,6 @@ categoryButtons.forEach(buttons => {
             }
         });
 
-        // filter & sort
         let query = searchField.value.toLowerCase();
         let filtered = songs.filter(s =>
             s.title.toLowerCase().includes(query) ||
@@ -232,17 +218,15 @@ categoryButtons.forEach(buttons => {
             });
         }
 
-        // rebuild list
         currentList = buildCurrentList(filtered);
         currentIndex = currentList.findIndex(s => !s.isPlaceholder);
         if (currentIndex === -1) currentIndex = 0;
 
         renderSongCardsNoAnimation(false);
-        loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
+        loadFavoriteStates();
     });
 });
 
-// favorite button Right
 favoriteButtonRight.addEventListener("click", async () => {
     if (!selectedSong) return;
 
@@ -278,7 +262,7 @@ favoriteButtonRight.addEventListener("click", async () => {
 
     loadFavoriteStates();
 });
-// Helper: set SVG icon
+
 function setButtonIcon(button, state) {
     const img = button.querySelector(".sortIcon");
     if (!img) return;
@@ -286,7 +270,7 @@ function setButtonIcon(button, state) {
     else if (state === "down") img.src = "/images/AtoZ_down_icon.svg";
     else img.src = "/images/AtoZ_icon.svg";
 }
-// Render songs without ??? placeholders
+
 function renderSongCardsNoAnimation(addPlaceholders = true) {
     songListInner.innerHTML = "";
     let listToRender = currentList.slice();
@@ -296,46 +280,26 @@ function renderSongCardsNoAnimation(addPlaceholders = true) {
         const half = Math.floor(placeholdersNeeded / 2);
 
         for (let i = 0; i < half; i++) {
-            listToRender.unshift({
-                title: "???",
-                artist: "Unknown Artist",
-                genre: "???",
-                difficulty: "???",
-                language: "???",
-                isPlaceholder: true
-            });
+            listToRender.unshift({ title: "???", artist: "Unknown Artist", genre: "???", difficulty: "???", language: "???", isPlaceholder: true });
         }
         for (let i = half; i < placeholdersNeeded; i++) {
-            listToRender.push({
-                title: "???",
-                artist: "Unknown Artist",
-                genre: "???",
-                difficulty: "???",
-                language: "???",
-                isPlaceholder: true
-            });
+            listToRender.push({ title: "???", artist: "Unknown Artist", genre: "???", difficulty: "???", language: "???", isPlaceholder: true });
         }
     }
-    // Create song cards
     addSongCard(currentList);
-    // Center first real song
     const cards = document.querySelectorAll(".songCard");
     cards.forEach(card => card.style.transition = "none");
-
     updateTrackSelect();
-    // re-enable transitions
     requestAnimationFrame(() => {
         cards.forEach(card => card.style.transition = "");
     });
 }
 
-// Refresh Song List
 function refreshSongList() {
     songListInner.innerHTML = "";
 
     let query = searchField.value.toLowerCase();
 
-    // Filter real songs
     let realSongs = songs.filter(s =>
         s.title?.toLowerCase().includes(query) ||
         s.artist?.toLowerCase().includes(query) ||
@@ -351,66 +315,42 @@ function refreshSongList() {
         return;
     }
 
-    // Fill in placeholders
     currentList = [...realSongs];
     const placeholdersNeeded = Math.max(minSongs - currentList.length, 0);
     const half = Math.floor(placeholdersNeeded / 2);
 
     for (let i = 0; i < half; i++) {
-        currentList.unshift({
-            title: "???",
-            artist: "Unknown Artist",
-            genre: "???",
-            difficulty: "???",
-            language: "???",
-            isPlaceholder: true
-        });
+        currentList.unshift({ title: "???", artist: "Unknown Artist", genre: "???", difficulty: "???", language: "???", isPlaceholder: true });
     }
     for (let i = half; i < placeholdersNeeded; i++) {
-        currentList.push({
-            title: "???",
-            artist: "Unknown Artist",
-            genre: "???",
-            difficulty: "???",
-            language: "???",
-            isPlaceholder: true
-        });
+        currentList.push({ title: "???", artist: "Unknown Artist", genre: "???", difficulty: "???", language: "???", isPlaceholder: true });
     }
 
-    // Create song cards
     addSongCard(currentList);
-    // Temporarily disable transitions to prevent animation
     const cards = document.querySelectorAll(".songCard");
-    cards.forEach(card => {
-        card.style.transition = "none";
-    });
+    cards.forEach(card => { card.style.transition = "none"; });
 
-    // Center the first real song
     currentIndex = currentList.findIndex(s => !s.isPlaceholder);
     updateTrackSelect();
-    // Re-enable transitions on next frame
 
     requestAnimationFrame(() => {
-        cards.forEach(card => {
-            card.style.transition = "";
-        });
+        cards.forEach(card => { card.style.transition = ""; });
     });
-    loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
+    loadFavoriteStates();
 }
-function addSongCard(listToRender){
 
+function addSongCard(listToRender) {
     songListInner.innerHTML = "";
     listToRender.forEach((song, i) => {
         let card = document.createElement("button");
         card.className = "songCard" + (song.isPlaceholder ? " placeholder" : "");
 
-        // Build songBottom HTML
         let songBottomClass = "songBottom";
         let songCardClass = "songCard";
-        if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop")){
+        if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop")) {
             songBottomClass += " pop";
             songCardClass += " pop";
-        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("rock")) {
+        } else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("rock")) {
             songBottomClass += " rock";
             songCardClass += " rock";
         }
@@ -438,118 +378,81 @@ function addSongCard(listToRender){
                 }
             };
 
-            //EDITED BY TYLER
-           const favBtn = card.querySelector(".favoriteButton");
-              favBtn.onclick = async (e) => {
-                  e.stopPropagation();
+            const favBtn = card.querySelector(".favoriteButton");
+            favBtn.onclick = async (e) => {
+                e.stopPropagation();
 
-                  const user = auth.currentUser;
-                  if (!user) {
-                      alert("Please log in to favorite songs!");
-                      return;
-                  }
+                const user = auth.currentUser;
+                if (!user) {
+                    alert("Please log in to favorite songs!");
+                    return;
+                }
 
-                 const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
-                 const favSnap = await getDoc(favRef);
-                  const img = favBtn.querySelector("img");
+                const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
+                const favSnap = await getDoc(favRef);
+                const img = favBtn.querySelector("img");
 
-                  if (favSnap.exists()) {
-                      await deleteDoc(favRef);
-                      img.src = "/images/heart_gray_icon.svg";
-                      favBtn.classList.remove("active");
-                  } else {
-                      await setDoc(favRef, {
-                          title:      song.title,
-                          artist:     song.artist,
-                          mp3URL:     song.songPath     || "",
-                          coverURL:   song.artCoverPath || "",
-                          genre:      song.genre        || "",
-                          language:   song.language     || "",
-                          difficulty: song.difficulty   || ""
-                      });
-                      img.src = "/images/heart_icon.svg";
-                      favBtn.classList.add("active");
-                   }
-                   loadFavoriteStates();
-               };
-           }
+                if (favSnap.exists()) {
+                    await deleteDoc(favRef);
+                    img.src = "/images/heart_gray_icon.svg";
+                    favBtn.classList.remove("active");
+                } else {
+                    await setDoc(favRef, {
+                        title:      song.title,
+                        artist:     song.artist,
+                        mp3URL:     song.songPath     || "",
+                        coverURL:   song.artCoverPath || "",
+                        genre:      song.genre        || "",
+                        language:   song.language     || "",
+                        difficulty: song.difficulty   || ""
+                    });
+                    img.src = "/images/heart_icon.svg";
+                    favBtn.classList.add("active");
+                }
+                loadFavoriteStates();
+            };
+        }
         songListInner.appendChild(card);
     });
 }
 
 
+// ─── SETTINGS MODAL ───────────────────────────────────────────────────────────
 
+// Open modal
+document.getElementById("settings").addEventListener("click", () => {
+    document.getElementById("settingsModal").style.visibility = "visible";
+});
 
-// Settings dropdown
-function toggleSettingsDropdown() {
-    document.getElementById("settingsDropdown").classList.toggle("show");
-}
+// Close on X button
+document.getElementById("closeSettingsBtn").addEventListener("click", () => {
+    document.getElementById("settingsModal").style.visibility = "hidden";
+});
 
-document.getElementById("settings").addEventListener("click", toggleSettingsDropdown);
-
-window.addEventListener("click", function (e) {
-    if (!e.target.closest("#settings")) {
-        const dropdown = document.getElementById("settingsDropdown");
-        if (dropdown.classList.contains("show")) {
-            dropdown.classList.remove("show");
-        }
+// Close when clicking the dark overlay outside the panel
+document.getElementById("settingsModal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("settingsModal")) {
+        document.getElementById("settingsModal").style.visibility = "hidden";
     }
 });
 
-
-document.getElementById("toggleVolumeBtn").addEventListener("click", function (e) {
-    e.preventDefault();
-    const volumeControl = document.getElementById("volumeControl");
-    if (volumeControl.style.display === "none") {
-        volumeControl.style.display = "flex";
-        // Start fade timer when opened
-        clearTimeout(volumeFadeTimeout);
-        volumeFadeTimeout = setTimeout(() => {
-            volumeControl.style.display = "none";
-        }, 3000);
-    } else {
-        volumeControl.style.display = "none";
-    }
-});;
-
-let volumeFadeTimeout = null;
-
+// UPDATED: volume slider now also updates the volumeLabel text
 document.getElementById("volumeSlider").addEventListener("input", function () {
     userVolume = parseFloat(this.value);
     teaserPlayer.volume = userVolume;
     userInteracted = true;
+    document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
     saveUserPreferences();
-
-    clearTimeout(volumeFadeTimeout);
-    volumeFadeTimeout = setTimeout(() => {
-        document.getElementById("volumeControl").style.display = "none";
-    }, 3000);
 });
 
-document.getElementById("toggleScrollBtn").addEventListener("click", function (e) {
-    e.preventDefault();
-    const scrollControl = document.getElementById("scrollControl");
-    if (scrollControl.style.display === "none") {
-        scrollControl.style.display = "flex";
-        // Start fade timer when opened
-        clearTimeout(scrollFadeTimeout);
-        scrollFadeTimeout = setTimeout(() => {
-            scrollControl.style.display = "none";
-        }, 3000);
-    } else {
-        scrollControl.style.display = "none";
-    }
-});
-let scrollFadeTimeout = null;
-
+// UPDATED: scroll slider (unchanged logic, kept here for clarity)
 document.getElementById("scrollSlider").addEventListener("input", function () {
     scrollSpeed = 550 - parseInt(this.value);
-        if (moveInterval) {
-            const isTop = scrollTopZone.matches(":hover");
-            if (isTop) restartScrollInterval("up");
-            else restartScrollInterval("down");
-        }
-    saveUserPreferences();
+    if (moveInterval) {
+        const isTop = scrollTopZone.matches(":hover");
+        if (isTop) restartScrollInterval("up");
+        else restartScrollInterval("down");
+    }
 
     const val = parseInt(this.value);
     let label;
@@ -559,55 +462,44 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
     else label = "🚀 Turbo";
     document.getElementById("scrollSpeedLabel").innerText = label;
 
-    clearTimeout(scrollFadeTimeout);
-    scrollFadeTimeout = setTimeout(() => {
-        document.getElementById("scrollControl").style.display = "none";
-    }, 3000);
+    saveUserPreferences();
 });
 
-//Use for the Reset Preferences button, put it below the volume and speed sliders since those are the only two functionalities to be reset right now.
+// UPDATED: reset button now also updates volumeLabel and closes the modal
 document.getElementById("resetPrefsBtn").addEventListener("click", async function (e) {
     e.preventDefault();
 
-    // Reset to defaults
     userVolume = 1;
     scrollSpeed = 200;
 
-    // Update sliders
-    document.getElementById("volumeSlider").value = 0.5;
-    document.getElementById("scrollSlider").value = 300; //
+    document.getElementById("volumeSlider").value = 1;
+    document.getElementById("volumeLabel").innerText = "100%";
+    document.getElementById("scrollSlider").value = 300;
     document.getElementById("scrollSpeedLabel").innerText = "Normal";
 
-    // Apply volume
     teaserPlayer.volume = userVolume;
 
-    // Save defaults to Firebase
     await saveUserPreferences();
 
-    // Close the dropdown
-    document.getElementById("settingsDropdown").classList.remove("show");
+    document.getElementById("settingsModal").style.visibility = "hidden";
 });
 
-//END OF EDITING BY TYLER
+// ─────────────────────────────────────────────────────────────────────────────
+
+
 function selectSong(song, card) {
     selectedSong = song;
-    // Remove previous selection
     document.querySelectorAll(".songCard").forEach(c => c.classList.remove("selected"));
     card.classList.add("selected");
 
-    // Update song info
     songName.innerText = song.title;
     artistName.innerText = song.artist;
 
     const clickedIndex = currentList.indexOf(song);
     if (clickedIndex !== -1) {
         let distance = clickedIndex - currentIndex;
-
-        // Handle wrapping for circular carousel
         if (distance > currentList.length / 2) distance -= currentList.length;
         if (distance < -currentList.length / 2) distance += currentList.length;
-
-        // Move the track selection step by step to bring clicked song to center
         currentIndex = clickedIndex;
         updateTrackSelect();
     }
@@ -615,11 +507,10 @@ function selectSong(song, card) {
     singButton.disabled = false;
 }
 
-singButton.onclick = ()=>{
-    if(!selectedSong) return
-    window.location.href = "/musicplayer?song=" + selectedSong.id
-
-}
+singButton.onclick = () => {
+    if (!selectedSong) return;
+    window.location.href = "/musicplayer?song=" + selectedSong.id;
+};
 
 function updateTrackSelect() {
     const cards = document.querySelectorAll(".songCard");
@@ -639,16 +530,15 @@ function updateTrackSelect() {
         let offset = i - currentIndex;
         if (offset > total / 2) offset -= total;
         if (offset < -total / 2) offset += total;
-        // it disables transition for wrapping cards
+
         let prevOffset = card._prevOffset ?? offset;
         if (Math.abs(offset - prevOffset) > total / 2) {
             card.style.transition = "none";
-        }
-        else {
+        } else {
             card.style.transition = "";
         }
         card._prevOffset = offset;
-        const rotY = 0;
+
         const scaleValues = [1.1, 0.95, 0.85, 0.7, 0.6];
         const opacityValues = [1, 0.8, 0.6, 0.4, 0.3];
 
@@ -659,14 +549,12 @@ function updateTrackSelect() {
         const y = offset * baseY;
         const x = -Math.abs(offset);
 
-        card.style.transform = `translate(-50%, calc(-50% + ${y}px)) translateX(${x}px) rotateY(${rotY}deg) scale(${scale})`;
+        card.style.transform = `translate(-50%, calc(-50% + ${y}px)) translateX(${x}px) rotateY(0deg) scale(${scale})`;
         card.style.zIndex = zIndex;
         card.style.opacity = opacity;
     });
 
     const centerSong = currentList[currentIndex];
-
-
 
     if (centerSong && !centerSong.isPlaceholder) {
         selectedSong = centerSong;
@@ -680,51 +568,44 @@ function updateTrackSelect() {
         favoriteButtonRight.dataset.id = String(centerSong.id);
         loadFavoriteStates();
 
-        // --- Teaser logic ---
         if (currentTeaserId !== centerSong.id) {
             currentTeaserId = centerSong.id;
-
-            // If user already interacted, play normally
             if (userInteracted) {
                 playTeaserWithFade(centerSong);
             } else {
-                // preload muted teaser so future autoplay works
                 teaserPlayer.src = centerSong.songTeaserPath;
                 teaserPlayer.volume = 0;
                 teaserPlayer.play().catch(() => {});
                 teaserPlayer.pause();
             }
         }
-   } else {
-       selectedSong = null;
-       singButton.disabled = true;
-       songName.innerText = "???";
-       artistName.innerText = "???";
-       songImage.src = "/images/questionmark_icon.svg";
+    } else {
+        selectedSong = null;
+        singButton.disabled = true;
+        songName.innerText = "???";
+        artistName.innerText = "???";
+        songImage.src = "/images/questionmark_icon.svg";
 
-       // Stop teaser
-       teaserPlayer.pause();
-       teaserPlayer.currentTime = 0;
-       teaserPlayer.volume = userVolume; // ← change this from 1 to userVolume
-       clearInterval(teaserFadeInterval);
-       clearTimeout(teaserReplayTimeout);
-       currentTeaserId = null;
-   }
+        teaserPlayer.pause();
+        teaserPlayer.currentTime = 0;
+        teaserPlayer.volume = userVolume;
+        clearInterval(teaserFadeInterval);
+        clearTimeout(teaserReplayTimeout);
+        currentTeaserId = null;
+    }
 }
 
-
-function moveDown(){
-    currentIndex++
-    if(currentIndex >= currentList.length) currentIndex = 0
-    updateTrackSelect()
+function moveDown() {
+    currentIndex++;
+    if (currentIndex >= currentList.length) currentIndex = 0;
+    updateTrackSelect();
 }
 
-function moveUp(){
-    currentIndex--
-    if(currentIndex < 0) currentIndex = currentList.length - 1
-    updateTrackSelect()
+function moveUp() {
+    currentIndex--;
+    if (currentIndex < 0) currentIndex = currentList.length - 1;
+    updateTrackSelect();
 }
-
 
 async function loadSongsFromAPI() {
     try {
@@ -736,44 +617,23 @@ async function loadSongsFromAPI() {
     }
 }
 
-
 loadSongsFromAPI();
 
-//setInterval(loadSongsFromAPI, 10000);
-
 function buildCurrentList(filteredSongs) {
-    // Make a fresh copy
     let list = [...filteredSongs];
-
-    // Add placeholders if needed
     const placeholdersNeeded = Math.max(minSongs - list.length, 0);
     const half = Math.floor(placeholdersNeeded / 2);
 
     for (let i = 0; i < half; i++) {
-        list.unshift({
-            title: "???",
-            artist: "Unknown Artist",
-            genre: "???",
-            difficulty: "???",
-            language: "???",
-            isPlaceholder: true
-        });
+        list.unshift({ title: "???", artist: "Unknown Artist", genre: "???", difficulty: "???", language: "???", isPlaceholder: true });
     }
     for (let i = half; i < placeholdersNeeded; i++) {
-        list.push({
-            title: "???",
-            artist: "Unknown Artist",
-            genre: "???",
-            difficulty: "???",
-            language: "???",
-            isPlaceholder: true
-        });
+        list.push({ title: "???", artist: "Unknown Artist", genre: "???", difficulty: "???", language: "???", isPlaceholder: true });
     }
 
     return list;
 }
-// replays song teaser
-// unlock teaser on first click/touch
+
 document.addEventListener("click", () => { userInteracted = true; playCurrentTeaser(); }, { once: true });
 document.addEventListener("touchstart", () => { userInteracted = true; playCurrentTeaser(); }, { once: true });
 
@@ -793,15 +653,11 @@ function playTeaserWithFade(song) {
     teaserPlayer.pause();
     teaserPlayer.src = song.songTeaserPath;
     teaserPlayer.currentTime = 0;
-
-    // Play muted if user hasn't interacted
     teaserPlayer.volume = userInteracted ? userVolume : 0;
-
     teaserPlayer.play().catch(() => {});
 
-    // Fade out near the end
     teaserPlayer.ontimeupdate = () => {
-        if (teaserPlayer.duration && teaserPlayer.currentTime >= teaserPlayer.duration - TEASER_FADE_DURATION/1000) {
+        if (teaserPlayer.duration && teaserPlayer.currentTime >= teaserPlayer.duration - TEASER_FADE_DURATION / 1000) {
             if (teaserFadeInterval) return;
 
             const fadeSteps = 20;
@@ -818,7 +674,6 @@ function playTeaserWithFade(song) {
         }
     };
 
-    // Replay after delay
     teaserPlayer.onended = () => {
         teaserReplayTimeout = setTimeout(() => {
             playTeaserWithFade(song);
@@ -826,9 +681,6 @@ function playTeaserWithFade(song) {
     };
 }
 
-
-
-// ADDED BY TYLER - LOAD FAVORITE STATE
 async function loadFavoriteStates() {
     const user = auth.currentUser;
     if (!user) return;
@@ -847,15 +699,12 @@ async function loadFavoriteStates() {
             btn.classList.remove("active");
         }
     });
+
     document.querySelectorAll(".favoriteButtonRight").forEach(btn => {
         const id = btn.dataset.id;
-
         if (!id) return;
-
         const isFav = favIds.includes(String(id));
-
         const img = btn.querySelector("img");
-
         if (isFav) {
             img.src = "/images/heart_icon.svg";
             btn.classList.add("active");
@@ -865,8 +714,6 @@ async function loadFavoriteStates() {
         }
     });
 }
-
-// ADDED BY TYLER
 
 onAuthStateChanged(auth, user => {
     if (user) {
@@ -885,8 +732,6 @@ document.getElementById("logoutBtn").onclick = async () => {
     location.reload();
 };
 
-
-//So we can save settings preferences to a users account.
 async function saveUserPreferences() {
     const user = auth.currentUser;
     if (!user) return;
@@ -897,7 +742,7 @@ async function saveUserPreferences() {
     });
 }
 
-//This loads the users preference settings to account.
+// UPDATED: also syncs volumeLabel when loading saved preferences
 async function loadUserPreferences(user) {
     const prefSnap = await getDoc(doc(db, "users", user.uid, "preferences", "settings"));
     if (!prefSnap.exists()) return;
@@ -908,6 +753,7 @@ async function loadUserPreferences(user) {
         userVolume = prefs.volume;
         teaserPlayer.volume = userVolume;
         document.getElementById("volumeSlider").value = userVolume;
+        document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
     }
 
     if (prefs.scrollSpeed !== undefined) {
