@@ -9,7 +9,8 @@
     "audioPath": "/audio/BlindingLights.mp3",
     "lyricsPath": "/lyrics/BlindingLights.lrc",
     "artCoverPath": "/artCover/blindingLightsArtCover.jpg",
-    "songTeaserPath": "/teaser/blindingLightsTeaser.mp3"
+    "songTeaserPath": "/teaser/blindingLightsTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 2,
@@ -21,7 +22,8 @@
     "audioPath": "/audio/BohemianRhapsody.mp3",
     "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
     "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg",
-    "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3"
+    "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3",
+    "pitchesPath": "/audio/BohemianRhapsody_pitches.json"
   },
   {
     "id": 3,
@@ -33,7 +35,8 @@
     "audioPath": "/audio/Starboy.mp3",
     "lyricsPath": "/lyrics/Starboy.lrc",
     "artCoverPath": "/artCover/starboyArtCover.jpg",
-    "songTeaserPath": "/teaser/starboyTeaser.mp3"
+    "songTeaserPath": "/teaser/starboyTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 4,
@@ -45,7 +48,8 @@
     "audioPath": "/audio/CantFeelMyFace.mp3",
     "lyricsPath": "/lyrics/CantFeelMyFace.lrc",
     "artCoverPath": "/artCover/cantFeelMyFaceArtCover.jpg",
-    "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3"
+    "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 5,
@@ -57,7 +61,8 @@
     "audioPath": "/audio/WeWillRockYou.mp3",
     "lyricsPath": "/lyrics/WeWillRockYou.lrc",
     "artCoverPath": "/artCover/weWillRockYouArtCover.jpg",
-    "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3"
+    "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 6,
@@ -69,7 +74,8 @@
     "audioPath": "/audio/WeAreTheChampions.mp3",
     "lyricsPath": "/lyrics/WeAreTheChampions.lrc",
     "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
-    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
+    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 7,
@@ -81,7 +87,8 @@
     "audioPath": "/audio/SquareUp.mp3",
     "lyricsPath": "/lyrics/SquareUp.lrc",
     "artCoverPath": "/artCover/squareUpCover.jpg",
-    "songTeaserPath": "/teaser/squareUpTeaser.mp3"
+    "songTeaserPath": "/teaser/squareUpTeaser.mp3",
+    "pitchesPath": "/audio/SquareUp_pitches.json"
   },
   {
     "id": 20,
@@ -93,7 +100,20 @@
     "audioPath": "/audio/Nagging.mp3",
     "lyricsPath": "/lyrics/Nagging.lrc",
     "artCoverPath": "/artCover/naggingArtCover.jpg",
-    "songTeaserPath": "/teaser/naggingTeaser.mp3"
+    "songTeaserPath": "/teaser/naggingTeaser.mp3",
+    "pitchesPath": "/audio/Nagging_pitches.json"
+  },
+  {
+    "id": 12,
+    "title": "Firework",
+    "artist": "Katy Perry",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/Firework.mp3",
+    "lyricsPath": "/lyrics/Firework.lrc",
+    "artCoverPath": "/artCover/fireworkArtCover.jpg",
+    "songTeaserPath": "/teaser/fireworkTeaser.mp3",
+    "pitchesPath": "/audio/Firework_pitches.json"
   }
-
 ]
