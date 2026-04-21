@@ -97,7 +97,6 @@ songList.addEventListener("wheel", (e) => {
     else moveUp();
 });
 // Hover-based auto scrolling
-
 function restartScrollInterval(direction) {
     clearInterval(moveInterval);
     moveInterval = setInterval(direction === "up" ? moveUp : moveDown, scrollSpeed);
@@ -672,8 +671,20 @@ function updateTrackSelect() {
         selectedSong = centerSong;
         cards[currentIndex].classList.add("selected");
 
+        const songTextEl = document.getElementById("songName").parentElement;
+        const artistTextEl = document.getElementById("artistName").parentElement;
+
+        // reset old scroll state FIRST
+        resetScroll(songTextEl);
+        resetScroll(artistTextEl);
+
         songName.innerText = centerSong.title || "???";
         artistName.innerText = centerSong.artist || "???";
+        
+        // after songCard it updates scroll if name is long
+        requestAnimationFrame(() => {
+            scheduleScrollCheck();
+        });
         songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
         singButton.disabled = false;
@@ -731,6 +742,8 @@ async function loadSongsFromAPI() {
         const res = await fetch('/api/songs');
         songs = await res.json();
         refreshSongList();
+
+
     } catch (err) {
         console.error("Failed to load songs from API:", err);
     }
@@ -921,5 +934,130 @@ async function loadUserPreferences(user) {
         else if (sliderVal <= 450) label = "⚡ Fast";
         else label = "🚀 Turbo";
         document.getElementById("scrollSpeedLabel").innerText = label;
+    }
+}
+// Scroll for right Info pane
+// Listener if the screen change width
+let resizeTimeout;
+
+
+let lastOverflowState = null;
+
+function getOverflowState() {
+    const scrollEls = document.querySelectorAll(".scroll");
+
+    return Array.from(scrollEls).map(el => {
+        const child = el.firstElementChild;
+        if (!child) return false;
+        return child.scrollWidth > el.clientWidth;
+    }).join("|");
+}
+
+window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+
+    resizeTimeout = setTimeout(() => {
+        const newState = getOverflowState();
+
+        // ONLY run if overflow behavior changed
+        if (newState !== lastOverflowState) {
+            lastOverflowState = newState;
+
+            const scrollEls = document.querySelectorAll(".scroll");
+            scrollEls.forEach(resetScroll);
+            scheduleScrollCheck();
+        }
+    }, 150);
+});
+
+// If song or artist is too long it will scroll instead
+function updateScrollCheck() {
+    maxScrollWidth = 0;
+
+    const scrollEls = document.querySelectorAll(".scroll");
+
+    // Check if ANY needs scrolling
+    let shouldScroll = false;
+
+    scrollEls.forEach(el => {
+        const child = el.firstElementChild;
+        if (!child) return;
+
+        if (child.scrollWidth > el.clientWidth) {
+            shouldScroll = true;
+        }
+
+        // Track max width regardless
+        maxScrollWidth = Math.max(maxScrollWidth, child.scrollWidth);
+    });
+
+    // Apply SAME behavior to ALL
+    scrollEls.forEach(el => {
+        setupInfiniteScroll(el, shouldScroll);
+    });
+}
+let scrollCheckQueued = false;
+
+// This adds debounce to the scroll so there is no spam
+function scheduleScrollCheck() {
+    if (scrollCheckQueued) return;
+    scrollCheckQueued = true;
+
+    requestAnimationFrame(() => {
+        updateScrollCheck();
+        scrollCheckQueued = false;
+    });
+}
+
+// Restarts scroll when song changes
+function resetScroll(el) {
+    const clone = el.querySelector(".clone");
+    if (clone) clone.remove();
+
+    el.classList.remove("can-scroll");
+
+    const child = el.firstElementChild;
+    if (!child) return;
+
+    // reset animation completely
+    child.style.animation = "none";
+    child.style.minWidth = "";
+
+    // force reflow so animation reset applies
+    void child.offsetWidth;
+
+    child.style.animation = "";
+}
+// Loops the Song name or artist if too long
+let maxScrollWidth = 0;
+
+function setupInfiniteScroll(el, forceScroll = false) {
+    const child = el.firstElementChild;
+    if (!child) return;
+
+    const existingClone = el.querySelector(".clone");
+    if (existingClone) existingClone.remove();
+
+    if (forceScroll) {
+        el.classList.add("can-scroll");
+
+        const clone = child.cloneNode(true);
+        clone.classList.add("clone");
+        el.appendChild(clone);
+
+        const speed = 30;
+        const duration = maxScrollWidth / speed;
+
+        child.style.animationDuration = duration + "s";
+        clone.style.animationDuration = duration + "s";
+
+        child.style.minWidth = maxScrollWidth + "px";
+        clone.style.minWidth = maxScrollWidth + "px";
+
+    } else {
+        el.classList.remove("can-scroll");
+
+        child.style.animation = "none";
+        child.style.minWidth = "";
     }
 }

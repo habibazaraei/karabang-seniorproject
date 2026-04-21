@@ -95,9 +95,17 @@
             <img id="songImage" src="/images/questionmark_icon.svg">
             <!-- Selected song info -->
             <div id="songInfo">
-                <div id="songText">
-                    <h3 id="songName"></h3>
-                    <p id="artistName"></p>
+                <div class = "grid-container">
+                    <div id="songInfoLeftTop"> </div>
+                    <div id="songInfoLeftBottom"> </div>
+                    <div id="songText">
+                        <div class="scroll">
+                            <h3 id="songName"></h3>
+                        </div>
+                        <div class="scroll">
+                            <p id="artistName"></p>
+                        </div>
+                    </div>
                 </div>
                 <button class="favoriteButtonRight" data-id="">
                     <img src="/images/heart_gray_icon.svg" alt="favorite">
