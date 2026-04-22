@@ -10,7 +10,7 @@
     "lyricsPath": "/lyrics/BlindingLights.lrc",
     "artCoverPath": "/artCover/blindingLightsArtCover.jpg",
     "songTeaserPath": "/teaser/blindingLightsTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/BlindingLights_pitches.json"
   },
   {
     "id": 2,
