@@ -201,7 +201,7 @@
     "audioPath": "/audio/Woo.mp3",
     "lyricsPath": "/lyrics/Woo.lrc",
     "artCoverPath": "/artCover/wooArtCover.jpg",
-    "songTeaserPath": "/teaser/wooOkayTeaser.mp3"
+    "songTeaserPath": "/teaser/wooTeaser.mp3"
   },
   {
     "id": 32,
