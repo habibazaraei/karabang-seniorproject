@@ -145,11 +145,63 @@ categoryButtons.forEach(buttons => {
     sortState[name] = "none";
 
     buttons.addEventListener("click", async () => {
-        document.querySelectorAll(".categoryButton").forEach(b => b.classList.remove("active"));
+        resetAllExcept(buttons);
+        document.querySelectorAll(".categoryButton").forEach(b => {
+            if (b.innerText.trim() !== "Favorites") {
+                b.classList.remove("active");
+            }
+        });
         // cycle asc → desc → none → asc ...
-        if (sortState[name] === "none") sortState[name] = "asc";
-        else if (sortState[name] === "asc") sortState[name] = "desc";
-        else sortState[name] = "none";
+        // Favorites should NOT cycle sort
+        if (name !== "Favorites") {
+            if (sortState[name] === "none") sortState[name] = "asc";
+            else if (sortState[name] === "asc") sortState[name] = "desc";
+            else sortState[name] = "none";
+        }
+
+        if (name === "Favorites") {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to see favorites!");
+                return;
+            }
+
+            const isOn = sortState[name] === "on";
+            sortState[name] = isOn ? "none" : "on";
+
+            const heart = buttons.querySelector(".sortIconHeart");
+            if (heart) {
+                heart.src = sortState[name] === "on"
+                    ? "/images/heart_icon.svg"
+                    : "/images/heart_gray_icon.svg";
+            }
+
+            buttons.classList.toggle("active", sortState[name] === "on");
+
+            document.getElementById("categoryTabs").style.height =
+                sortState[name] === "on" ? "40px" : "0px";
+
+            const snapshot = await getDocs(collection(db, "users", user.uid, "favorites"));
+            const favIds = snapshot.docs.map(d => d.id);
+
+            let filtered;
+
+            if (sortState[name] === "on") {
+                filtered = songs.filter(s => favIds.includes(String(s.id)));
+            } else {
+                filtered = songs;
+            }
+
+            filtered.sort((a, b) => a.id - b.id);
+
+            currentList = buildCurrentList(filtered);
+            currentIndex = currentList.findIndex(s => !s.isPlaceholder);
+            if (currentIndex === -1) currentIndex = 0;
+
+            renderSongCardsNoAnimation(false);
+            loadFavoriteStates();
+            return;
+        }
 
         if (sortState[name] !== "none") {
             buttons.classList.add("active");
@@ -168,35 +220,7 @@ categoryButtons.forEach(buttons => {
         const key = keyMap[name];
 
         //ADDED BY TYLER: Allows for Filtration of songs by favorite
-        if (name === "Favorites") {
-            const user = auth.currentUser;
-            if (!user) {
-                sortState[name] = "none";
-                setButtonIcon(buttons, "default");
-                buttons.classList.remove("active");
-                document.getElementById("categoryTabs").style.height = "0px";
-                alert("Please log in to see favorites!");
-                return;
-            }
-            const snapshot = await getDocs(collection(db, "users", user.uid, "favorites"));
-            const favIds = snapshot.docs.map(d => d.id);
-            const favSongs = songs.filter(s => favIds.includes(String(s.id)));
 
-            if (favSongs.length === 0) {
-                songListInner.innerHTML = "<p>No favorites yet!</p>";
-                currentList = [];
-                currentIndex = 0;
-                return;
-            }
-
-            currentList = buildCurrentList(favSongs);
-            currentIndex = currentList.findIndex(s => !s.isPlaceholder);
-            if (currentIndex === -1) currentIndex = 0;
-            renderSongCardsNoAnimation(false);
-            //Loads favorites on icon (Shows red heart)
-            loadFavoriteStates();
-            return;
-        }
 
         if (!key) return;
 
@@ -204,13 +228,22 @@ categoryButtons.forEach(buttons => {
         setButtonIcon(buttons, sortState[name] === "none" ? "default" : (sortState[name] === "asc" ? "up" : "down"));
 
         // reset other buttons
-        categoryButtons.forEach(b => {
-            if (b !== buttons) {
-                sortState[b.innerText.trim()] = "none";
-                setButtonIcon(b, "default");
-                b.classList.remove("active");
-            }
-        });
+        function resetAllExcept(activeButton) {
+            categoryButtons.forEach(b => {
+                const bName = b.innerText.trim();
+
+                if (b !== activeButton) {
+                    sortState[bName] = "none";
+                    setButtonIcon(b, "default");
+                    b.classList.remove("active");
+
+                    const heart = b.querySelector(".sortIconHeart");
+                    if (heart) {
+                        heart.src = "/images/heart_gray_icon.svg";
+                    }
+                }
+            });
+        }
 
         // filter & sort
         let query = searchField.value.toLowerCase();

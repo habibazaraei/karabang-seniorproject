@@ -30,9 +30,10 @@ body {
 }
 /* logo temp*/
 #webLogo {
-  color: #FFFFFF;
-  font-family: 'Nirmala UI', sans-serif;
-  font-size: 1em;
+  background: url("../images/KaraBangLogoRetouched.png") no-repeat center;
+  background-size: cover;
+  height: 100%;
+  width: 60px;
 }
 /* container */
 #songList {
@@ -406,7 +407,10 @@ body {
   width:  clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
   height: clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
 }
-
+.categoryButton .sortIconHeart {
+  width:  clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
+  height: clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
+}
 /* Search Field */
 
 #searchField {
