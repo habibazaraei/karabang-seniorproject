@@ -26,4 +26,6 @@ public class PageController {
     public String songSelection() {
         return "songselection";
     }
+    @GetMapping("/profilepage")
+    public String profilePage() { return "profilepage"; }
 }
