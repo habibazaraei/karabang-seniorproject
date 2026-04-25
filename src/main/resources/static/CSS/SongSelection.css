@@ -731,4 +731,88 @@ body {
          color: white;
      }
 
+/* Settings modal */
+#settingsModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 11vw;
+  height: 13.5vw;
+  background: rgba(123, 39, 245, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  border-radius: 8px;
+}
 
+#settingsPanel {
+ /* background: var(--color-background-primary); */
+  border: 50px solid black;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 90vw;
+}
+
+.settingsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.settingsTitle {
+  background: white;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+#closeSettingsBtn {
+  background: white;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: black;
+  padding: 2px 6px;
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.settingsSection {
+  margin-bottom: 1.25rem;
+}
+
+.settingsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: PINK;
+  margin-bottom: 8px;
+}
+
+#volumeSlider,
+#scrollSlider {
+  width: 100%;
+}
+
+.divider {
+  border: none;
+  border-top: 0.5px solid #ccc; /* replaced --color-border-tertiary */
+  margin: 1rem 0;
+}
+
+#resetPrefsBtn {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 0.5px solid black;
+  background: rgba(194, 154, 252, 1);
+  color: pink;
+}

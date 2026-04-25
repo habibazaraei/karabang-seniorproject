@@ -495,39 +495,6 @@ document.getElementById("settingsModal").addEventListener("click", (e) => {
         document.getElementById("settingsModal").style.visibility = "hidden";
     }
 });
-// Settings dropdown
-function toggleSettingsDropdown() {
-    document.getElementById("settingsDropdown").classList.toggle("show");
-}
-
-document.getElementById("settings").addEventListener("click", toggleSettingsDropdown);
-
-window.addEventListener("click", function (e) {
-    if (!e.target.closest("#settings")) {
-        const dropdown = document.getElementById("settingsDropdown");
-        if (dropdown.classList.contains("show")) {
-            dropdown.classList.remove("show");
-        }
-    }
-});
-
-
-document.getElementById("toggleVolumeBtn").addEventListener("click", function (e) {
-    e.preventDefault();
-    const volumeControl = document.getElementById("volumeControl");
-    if (volumeControl.style.display === "none") {
-        volumeControl.style.display = "flex";
-        // Start fade timer when opened
-        clearTimeout(volumeFadeTimeout);
-        volumeFadeTimeout = setTimeout(() => {
-            volumeControl.style.display = "none";
-        }, 3000);
-    } else {
-        volumeControl.style.display = "none";
-    }
-});;
-
-let volumeFadeTimeout = null;
 
 // UPDATED: volume slider now also updates the volumeLabel text
 document.getElementById("volumeSlider").addEventListener("input", function () {
@@ -536,50 +503,26 @@ document.getElementById("volumeSlider").addEventListener("input", function () {
     userInteracted = true;
     document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
     saveUserPreferences();
-    clearTimeout(volumeFadeTimeout);
-    volumeFadeTimeout = setTimeout(() => {
-        document.getElementById("volumeControl").style.display = "none";
-    }, 3000);
 });
 
-
-document.getElementById("toggleScrollBtn").addEventListener("click", function (e) {
-    e.preventDefault();
-    const scrollControl = document.getElementById("scrollControl");
-    if (scrollControl.style.display === "none") {
-        scrollControl.style.display = "flex";
-        // Start fade timer when opened
-        clearTimeout(scrollFadeTimeout);
-        scrollFadeTimeout = setTimeout(() => {
-            scrollControl.style.display = "none";
-        }, 3000);
-    } else {
-        scrollControl.style.display = "none";
-    }
-});
-let scrollFadeTimeout = null;
-
+// UPDATED: scroll slider (unchanged logic, kept here for clarity)
 document.getElementById("scrollSlider").addEventListener("input", function () {
     scrollSpeed = 550 - parseInt(this.value);
-        if (moveInterval) {
-            const isTop = scrollTopZone.matches(":hover");
-            if (isTop) restartScrollInterval("up");
-            else restartScrollInterval("down");
-        }
-
+    if (moveInterval) {
+        const isTop = scrollTopZone.matches(":hover");
+        if (isTop) restartScrollInterval("up");
+        else restartScrollInterval("down");
+    }
 
     const val = parseInt(this.value);
     let label;
-    if (val <= 150) label = "🐢 Slow";
-    else if (val <= 300) label = "Normal";
-    else if (val <= 450) label = "⚡ Fast";
+    if (val <= 150) label = "🐢 Slow"+ val;
+    else if (val <= 300) label = "Normal"+ val;
+    else if (val <= 450) label = "⚡ Fast"+ val;
     else label = "🚀 Turbo";
     document.getElementById("scrollSpeedLabel").innerText = label;
+
     saveUserPreferences();
-    clearTimeout(scrollFadeTimeout);
-    scrollFadeTimeout = setTimeout(() => {
-        document.getElementById("scrollControl").style.display = "none";
-    }, 3000);
 });
 
 // UPDATED: reset button now also updates volumeLabel and closes the modal
@@ -601,26 +544,22 @@ document.getElementById("resetPrefsBtn").addEventListener("click", async functio
     document.getElementById("settingsModal").style.visibility = "hidden";
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 //END OF EDITING BY TYLER
 function selectSong(song, card) {
     selectedSong = song;
-    // Remove previous selection
     document.querySelectorAll(".songCard").forEach(c => c.classList.remove("selected"));
     card.classList.add("selected");
 
-    // Update song info
     songName.innerText = song.title;
     artistName.innerText = song.artist;
 
     const clickedIndex = currentList.indexOf(song);
     if (clickedIndex !== -1) {
         let distance = clickedIndex - currentIndex;
-
-        // Handle wrapping for circular carousel
         if (distance > currentList.length / 2) distance -= currentList.length;
         if (distance < -currentList.length / 2) distance += currentList.length;
-
-        // Move the track selection step by step to bring clicked song to center
         currentIndex = clickedIndex;
         updateTrackSelect();
     }
@@ -743,6 +682,7 @@ async function loadSongsFromAPI() {
         const res = await fetch('/api/songs');
         songs = await res.json();
         refreshSongList();
+
     } catch (err) {
         console.error("Failed to load songs from API:", err);
     }
@@ -937,7 +877,6 @@ async function loadUserPreferences(user) {
 // Scroll for right Info pane
 // Listener if the screen change width
 let resizeTimeout;
-
 
 let lastOverflowState = null;
 
