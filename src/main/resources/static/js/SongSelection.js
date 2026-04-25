@@ -504,7 +504,7 @@ document.getElementById("volumeSlider").addEventListener("input", function () {
     document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
     saveUserPreferences();
 });
-
+let scrollFadeTimeout = null;
 // UPDATED: scroll slider (unchanged logic, kept here for clarity)
 document.getElementById("scrollSlider").addEventListener("input", function () {
     scrollSpeed = 550 - parseInt(this.value);
@@ -523,6 +523,10 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
     document.getElementById("scrollSpeedLabel").innerText = label;
 
     saveUserPreferences();
+    clearTimeout(scrollFadeTimeout);
+    scrollFadeTimeout = setTimeout(() => {
+        document.getElementById("scrollControl").style.display = "none";
+    }, 3000);
 });
 
 // UPDATED: reset button now also updates volumeLabel and closes the modal
@@ -623,8 +627,20 @@ function updateTrackSelect() {
         selectedSong = centerSong;
         cards[currentIndex].classList.add("selected");
 
+        const songTextEl = document.getElementById("songName").parentElement;
+        const artistTextEl = document.getElementById("artistName").parentElement;
+
+        // reset old scroll state FIRST
+        resetScroll(songTextEl);
+        resetScroll(artistTextEl);
+
         songName.innerText = centerSong.title || "???";
         artistName.innerText = centerSong.artist || "???";
+
+        // after songCard it updates scroll if name is long
+        requestAnimationFrame(() => {
+            scheduleScrollCheck();
+        });
         songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
         singButton.disabled = false;

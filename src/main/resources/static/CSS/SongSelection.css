@@ -163,9 +163,11 @@ body {
 
 .songTop {
   padding: 12px;
+  white-space: nowrap;
   font-weight: bold;
   font-size: clamp(14px, 1.2vw, 22px);
   color: black;
+
   /*background: #e0e0e0; */
   background: url('../images/white_background.svg');
   background-size: cover;
