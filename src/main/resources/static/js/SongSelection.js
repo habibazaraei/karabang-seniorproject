@@ -516,9 +516,9 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
 
     const val = parseInt(this.value);
     let label;
-    if (val <= 150) label = "🐢 Slow"+ val;
-    else if (val <= 300) label = "Normal"+ val;
-    else if (val <= 450) label = "⚡ Fast"+ val;
+    if (val <= 150) label = "🐢 Slow";
+    else if (val <= 300) label = "Normal";
+    else if (val <= 450) label = "⚡ Fast";
     else label = "🚀 Turbo";
     document.getElementById("scrollSpeedLabel").innerText = label;
 
