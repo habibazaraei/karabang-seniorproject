@@ -75,8 +75,8 @@ function onDrag(e) {
     let currentY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
     let delta = currentY - startY;
 
-    const threshold = 80; // pixels per one song step
-    let step = Math.round(-delta / threshold); // negative because dragging down moves up
+    const threshold = 80;
+    let step = Math.round(-delta / threshold);
     currentIndex = (startIndex + step + currentList.length) % currentList.length;
     updateTrackSelect();
 }
@@ -97,6 +97,7 @@ songList.addEventListener("wheel", (e) => {
     else moveUp();
 });
 // Hover-based auto scrolling
+
 function restartScrollInterval(direction) {
     clearInterval(moveInterval);
     moveInterval = setInterval(direction === "up" ? moveUp : moveDown, scrollSpeed);
@@ -437,48 +438,63 @@ function addSongCard(listToRender){
                 }
             };
 
-            //EDITED BY TYLER
-           const favBtn = card.querySelector(".favoriteButton");
-              favBtn.onclick = async (e) => {
-                  e.stopPropagation();
+            const favBtn = card.querySelector(".favoriteButton");
+            favBtn.onclick = async (e) => {
+                e.stopPropagation();
 
-                  const user = auth.currentUser;
-                  if (!user) {
-                      alert("Please log in to favorite songs!");
-                      return;
-                  }
+                const user = auth.currentUser;
+                if (!user) {
+                    alert("Please log in to favorite songs!");
+                    return;
+                }
 
-                 const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
-                 const favSnap = await getDoc(favRef);
-                  const img = favBtn.querySelector("img");
+                const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
+                const favSnap = await getDoc(favRef);
+                const img = favBtn.querySelector("img");
 
-                  if (favSnap.exists()) {
-                      await deleteDoc(favRef);
-                      img.src = "/images/heart_gray_icon.svg";
-                      favBtn.classList.remove("active");
-                  } else {
-                      await setDoc(favRef, {
-                          title:      song.title,
-                          artist:     song.artist,
-                          mp3URL:     song.songPath     || "",
-                          coverURL:   song.artCoverPath || "",
-                          genre:      song.genre        || "",
-                          language:   song.language     || "",
-                          difficulty: song.difficulty   || ""
-                      });
-                      img.src = "/images/heart_icon.svg";
-                      favBtn.classList.add("active");
-                   }
-                   loadFavoriteStates();
-               };
-           }
+                if (favSnap.exists()) {
+                    await deleteDoc(favRef);
+                    img.src = "/images/heart_gray_icon.svg";
+                    favBtn.classList.remove("active");
+                } else {
+                    await setDoc(favRef, {
+                        title:      song.title,
+                        artist:     song.artist,
+                        mp3URL:     song.songPath     || "",
+                        coverURL:   song.artCoverPath || "",
+                        genre:      song.genre        || "",
+                        language:   song.language     || "",
+                        difficulty: song.difficulty   || ""
+                    });
+                    img.src = "/images/heart_icon.svg";
+                    favBtn.classList.add("active");
+                }
+                loadFavoriteStates();
+            };
+        }
         songListInner.appendChild(card);
     });
 }
 
 
+// ─── SETTINGS MODAL ───────────────────────────────────────────────────────────
 
+// Open modal
+document.getElementById("settings").addEventListener("click", () => {
+    document.getElementById("settingsModal").style.visibility = "visible";
+});
 
+// Close on X button
+document.getElementById("closeSettingsBtn").addEventListener("click", () => {
+    document.getElementById("settingsModal").style.visibility = "hidden";
+});
+
+// Close when clicking the dark overlay outside the panel
+document.getElementById("settingsModal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("settingsModal")) {
+        document.getElementById("settingsModal").style.visibility = "hidden";
+    }
+});
 // Settings dropdown
 function toggleSettingsDropdown() {
     document.getElementById("settingsDropdown").classList.toggle("show");
@@ -513,17 +529,19 @@ document.getElementById("toggleVolumeBtn").addEventListener("click", function (e
 
 let volumeFadeTimeout = null;
 
+// UPDATED: volume slider now also updates the volumeLabel text
 document.getElementById("volumeSlider").addEventListener("input", function () {
     userVolume = parseFloat(this.value);
     teaserPlayer.volume = userVolume;
     userInteracted = true;
+    document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
     saveUserPreferences();
-
     clearTimeout(volumeFadeTimeout);
     volumeFadeTimeout = setTimeout(() => {
         document.getElementById("volumeControl").style.display = "none";
     }, 3000);
 });
+
 
 document.getElementById("toggleScrollBtn").addEventListener("click", function (e) {
     e.preventDefault();
@@ -548,7 +566,7 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
             if (isTop) restartScrollInterval("up");
             else restartScrollInterval("down");
         }
-    saveUserPreferences();
+
 
     const val = parseInt(this.value);
     let label;
@@ -557,34 +575,30 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
     else if (val <= 450) label = "⚡ Fast";
     else label = "🚀 Turbo";
     document.getElementById("scrollSpeedLabel").innerText = label;
-
+    saveUserPreferences();
     clearTimeout(scrollFadeTimeout);
     scrollFadeTimeout = setTimeout(() => {
         document.getElementById("scrollControl").style.display = "none";
     }, 3000);
 });
 
-//Use for the Reset Preferences button, put it below the volume and speed sliders since those are the only two functionalities to be reset right now.
+// UPDATED: reset button now also updates volumeLabel and closes the modal
 document.getElementById("resetPrefsBtn").addEventListener("click", async function (e) {
     e.preventDefault();
 
-    // Reset to defaults
     userVolume = 1;
     scrollSpeed = 200;
 
-    // Update sliders
-    document.getElementById("volumeSlider").value = 0.5;
-    document.getElementById("scrollSlider").value = 300; //
+    document.getElementById("volumeSlider").value = 1;
+    document.getElementById("volumeLabel").innerText = "100%";
+    document.getElementById("scrollSlider").value = 300;
     document.getElementById("scrollSpeedLabel").innerText = "Normal";
 
-    // Apply volume
     teaserPlayer.volume = userVolume;
 
-    // Save defaults to Firebase
     await saveUserPreferences();
 
-    // Close the dropdown
-    document.getElementById("settingsDropdown").classList.remove("show");
+    document.getElementById("settingsModal").style.visibility = "hidden";
 });
 
 //END OF EDITING BY TYLER
@@ -614,11 +628,10 @@ function selectSong(song, card) {
     singButton.disabled = false;
 }
 
-singButton.onclick = ()=>{
-    if(!selectedSong) return
-    window.location.href = "/musicplayer?song=" + selectedSong.id
-
-}
+singButton.onclick = () => {
+    if (!selectedSong) return;
+    window.location.href = "/musicplayer?song=" + selectedSong.id;
+};
 
 function updateTrackSelect() {
     const cards = document.querySelectorAll(".songCard");
@@ -671,20 +684,8 @@ function updateTrackSelect() {
         selectedSong = centerSong;
         cards[currentIndex].classList.add("selected");
 
-        const songTextEl = document.getElementById("songName").parentElement;
-        const artistTextEl = document.getElementById("artistName").parentElement;
-
-        // reset old scroll state FIRST
-        resetScroll(songTextEl);
-        resetScroll(artistTextEl);
-
         songName.innerText = centerSong.title || "???";
         artistName.innerText = centerSong.artist || "???";
-        
-        // after songCard it updates scroll if name is long
-        requestAnimationFrame(() => {
-            scheduleScrollCheck();
-        });
         songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
         singButton.disabled = false;
@@ -742,8 +743,6 @@ async function loadSongsFromAPI() {
         const res = await fetch('/api/songs');
         songs = await res.json();
         refreshSongList();
-
-
     } catch (err) {
         console.error("Failed to load songs from API:", err);
     }
@@ -866,9 +865,7 @@ async function loadFavoriteStates() {
         if (!id) return;
 
         const isFav = favIds.includes(String(id));
-
         const img = btn.querySelector("img");
-
         if (isFav) {
             img.src = "/images/heart_icon.svg";
             btn.classList.add("active");
@@ -910,7 +907,7 @@ async function saveUserPreferences() {
     });
 }
 
-//This loads the users preference settings to account.
+// UPDATED: also syncs volumeLabel when loading saved preferences
 async function loadUserPreferences(user) {
     const prefSnap = await getDoc(doc(db, "users", user.uid, "preferences", "settings"));
     if (!prefSnap.exists()) return;
@@ -921,6 +918,7 @@ async function loadUserPreferences(user) {
         userVolume = prefs.volume;
         teaserPlayer.volume = userVolume;
         document.getElementById("volumeSlider").value = userVolume;
+        document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
     }
 
     if (prefs.scrollSpeed !== undefined) {

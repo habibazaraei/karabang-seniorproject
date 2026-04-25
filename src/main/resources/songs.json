@@ -9,7 +9,8 @@
     "audioPath": "/audio/BlindingLights.mp3",
     "lyricsPath": "/lyrics/BlindingLights.lrc",
     "artCoverPath": "/artCover/blindingLightsArtCover.jpg",
-    "songTeaserPath": "/teaser/blindingLightsTeaser.mp3"
+    "songTeaserPath": "/teaser/blindingLightsTeaser.mp3",
+    "pitchesPath": "/audio/BlindingLights_pitches.json"
   },
   {
     "id": 2,
@@ -21,7 +22,8 @@
     "audioPath": "/audio/BohemianRhapsody.mp3",
     "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
     "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg",
-    "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3"
+    "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3",
+    "pitchesPath": "/audio/BohemianRhapsody_pitches.json"
   },
   {
     "id": 3,
@@ -33,7 +35,8 @@
     "audioPath": "/audio/Starboy.mp3",
     "lyricsPath": "/lyrics/Starboy.lrc",
     "artCoverPath": "/artCover/starboyArtCover.jpg",
-    "songTeaserPath": "/teaser/starboyTeaser.mp3"
+    "songTeaserPath": "/teaser/starboyTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 4,
@@ -45,7 +48,8 @@
     "audioPath": "/audio/CantFeelMyFace.mp3",
     "lyricsPath": "/lyrics/CantFeelMyFace.lrc",
     "artCoverPath": "/artCover/cantFeelMyFaceArtCover.jpg",
-    "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3"
+    "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 5,
@@ -57,7 +61,8 @@
     "audioPath": "/audio/WeWillRockYou.mp3",
     "lyricsPath": "/lyrics/WeWillRockYou.lrc",
     "artCoverPath": "/artCover/weWillRockYouArtCover.jpg",
-    "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3"
+    "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 6,
@@ -69,79 +74,46 @@
     "audioPath": "/audio/WeAreTheChampions.mp3",
     "lyricsPath": "/lyrics/WeAreTheChampions.lrc",
     "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
-    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
+    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3",
+    "pitchesPath": null
   },
   {
-    "id": 21,
-    "title": "Grenade",
-    "artist": "Bruno Mars",
-    "genre": "Pop",
-    "difficulty": "Easy",
+    "id": 7,
+    "title": "Square Up",
+    "artist": "Jamie Paige",
+    "genre": "Game",
+    "difficulty": "Medium",
     "language": "English",
-    "audioPath": "/audio/Grenade.mp3",
-    "lyricsPath": "/lyrics/Grenade.lrc",
-    "artCoverPath": "/artCover/grenadeArtCover.jpg",
-    "songTeaserPath": "/teaser/grenadeTeaser.mp3"
+    "audioPath": "/audio/SquareUp.mp3",
+    "lyricsPath": "/lyrics/SquareUp.lrc",
+    "artCoverPath": "/artCover/squareUpCover.jpg",
+    "songTeaserPath": "/teaser/squareUpTeaser.mp3",
+    "pitchesPath": "/audio/SquareUp_pitches.json"
   },
   {
-    "id": 22,
-    "title": "Best Part",
-    "artist": "HER ft. Daniel Caesar",
-    "genre": "R&B",
+    "id": 20,
+    "title": "Nagging",
+    "artist": "IU",
+    "genre": "Pop",
     "difficulty": "Hard",
-    "language": "English",
-    "audioPath": "/audio/BestPart.mp3",
-    "lyricsPath": "/lyrics/BestPart.lrc",
-    "artCoverPath": "/artCover/bestPartArtCover.jpg",
-    "songTeaserPath": "/teaser/bestPartTeaser.mp3"
+    "language": "Korean",
+    "audioPath": "/audio/Nagging.mp3",
+    "lyricsPath": "/lyrics/Nagging.lrc",
+    "artCoverPath": "/artCover/naggingArtCover.jpg",
+    "songTeaserPath": "/teaser/naggingTeaser.mp3",
+    "pitchesPath": "/audio/Nagging_pitches.json"
   },
   {
-    "id": 23,
-    "title": "Umbrella",
-    "artist": "Rihanna ft. JAY-Z",
+    "id": 12,
+    "title": "Firework",
+    "artist": "Katy Perry",
     "genre": "Pop",
     "difficulty": "Easy",
     "language": "English",
-    "audioPath": "/audio/Umbrella.mp3",
-    "lyricsPath": "/lyrics/Umbrella.lrc",
-    "artCoverPath": "/artCover/umbrellaArtCover.jpg",
-    "songTeaserPath": "/teaser/umbrellaTeaser.mp3"
-  },
-  {
-    "id": 24,
-    "title": "Stressed Out",
-    "artist": "twenty one pilots",
-    "genre": "Alternative",
-    "difficulty": "Easy",
-    "language": "English",
-    "audioPath": "/audio/StressedOut.mp3",
-    "lyricsPath": "/lyrics/StressedOut.lrc",
-    "artCoverPath": "/artCover/stressedOutArtCover.jpg",
-    "songTeaserPath": "/teaser/stressedOutTeaser.mp3"
-  },
-  {
-    "id": 25,
-    "title": "Love Story",
-    "artist": "Taylor Swift",
-    "genre": "Pop",
-    "difficulty": "Easy",
-    "language": "English",
-    "audioPath": "/audio/LoveStory.mp3",
-    "lyricsPath": "/lyrics/LoveStory.lrc",
-    "artCoverPath": "/artCover/loveStoryArtCover.jpg",
-    "songTeaserPath": "/teaser/loveStoryTeaser.mp3"
-  },
-  {
-    "id": 26,
-    "title": "We can't be friends 9999999999999999999999999",
-    "artist": "Ariana Grande 888888888888888888888888888888888888",
-    "genre": "Pop",
-    "difficulty": "Easy",
-    "language": "English",
-    "audioPath": "/audio/WeCantBeFriends.mp3",
-    "lyricsPath": "/lyrics/WeCantBeFriends.lrc",
-    "artCoverPath": "/artCover/weCantBeFriendsArtCover.jpg",
-    "songTeaserPath": "/teaser/weCantBeFriendsTeaser.mp3"
+    "audioPath": "/audio/Firework.mp3",
+    "lyricsPath": "/lyrics/Firework.lrc",
+    "artCoverPath": "/artCover/fireworkArtCover.jpg",
+    "songTeaserPath": "/teaser/fireworkTeaser.mp3",
+    "pitchesPath": "/audio/Firework_pitches.json"
   }
-
 ]
