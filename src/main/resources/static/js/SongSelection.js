@@ -96,28 +96,47 @@ songList.addEventListener("wheel", (e) => {
     if (e.deltaY > 0) moveDown();
     else moveUp();
 });
-// Hover-based auto scrolling
 
 function restartScrollInterval(direction) {
     clearInterval(moveInterval);
     moveInterval = setInterval(direction === "up" ? moveUp : moveDown, scrollSpeed);
 }
 
-scrollTopZone.onmouseenter = () => restartScrollInterval("up");
-scrollBottomZone.onmouseenter = () => restartScrollInterval("down");
-scrollTopZone.onmouseleave = () => clearInterval(moveInterval);
-scrollBottomZone.onmouseleave = () => clearInterval(moveInterval);
+
 
 
 // Restart Category when searching
 
 searchField.oninput = () => {
+
+    const query = searchField.value.toLowerCase();
+
+    // 1. resets all category buttons
     categoryButtons.forEach(button => {
-        sortState[button.innerText.trim()] = "none";
+        const name = button.innerText.trim();
+
+        sortState[name] = "none";
         button.classList.remove("active");
+
         setButtonIcon(button, "default");
 
+        // reset favorite icon too
+        const heart = button.querySelector(".sortIconHeart");
+        if (heart) {
+            heart.src = "/images/heart_gray_icon.svg";
+        }
     });
+
+    // 2. reset favorite button
+    const favBtn = [...categoryButtons].find(b => b.innerText.trim() === "Favorites");
+    if (favBtn) {
+        favBtn.classList.remove("active");
+        const heart = favBtn.querySelector(".sortIconHeart");
+        if (heart) heart.src = "/images/heart_gray_icon.svg";
+        sortState["Favorites"] = "none";
+    }
+
+    document.getElementById("categoryTabs").style.height = "0px";
 
     refreshSongList();
 };
@@ -218,9 +237,6 @@ categoryButtons.forEach(buttons => {
             "Language": "language",
         };
         const key = keyMap[name];
-
-        //ADDED BY TYLER: Allows for Filtration of songs by favorite
-
 
         if (!key) return;
 
@@ -449,7 +465,12 @@ function addSongCard(listToRender){
         }
         card.className = songCardClass + (song.isPlaceholder ? " placeholder" : "");
         card.innerHTML = `
-            <div class="songTop">${song.title}</div>
+            <div class="songTop">
+                ${song.title}
+                <button class="favoriteButton" data-id="${song.id}">
+                   <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
+               </button>
+            </div>
             <div class="${songBottomClass}">
                 <span class="artistText">${song.artist}</span>
                 <div class="songInfoRight">
@@ -457,9 +478,7 @@ function addSongCard(listToRender){
                     <span class="genre">${song.genre}</span>
                     <span class="languageText">${song.language}</span>
                 </div>
-               <button class="favoriteButton" data-id="${song.id}">
-                   <img src="/images/heart_gray_icon.svg" alt="favorite" width="16" height="16">
-               </button>
+                
             </div>
         `;
         if (!song.isPlaceholder) {
