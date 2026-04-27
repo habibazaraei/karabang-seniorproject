@@ -26,7 +26,29 @@ function changeSong() {
 
 setInterval(changeSong, 15000);
 
+const userStats = {
+    highestScore: 9850,
+    favoriteSongs: [
+        "Blinding Lights - The Weeknd",
+        "Bohemian Rhapsody - Queen",
+        "We Are The Champions - Queen",
+        "Nagging - IU",
+        "We Can't Be Friends - Ariana Grande"
+    ]
+};
+
+document.getElementById("highestScore").textContent = userStats.highestScore;
+
+const favoriteSongsList = document.getElementById("favoriteSongsList");
+
+userStats.favoriteSongs.slice(0, 5).forEach(function(song) {
+    const li = document.createElement("li");
+    li.textContent = song;
+    favoriteSongsList.appendChild(li);
+});
+
 const profileForm = document.getElementById("profile-form");
+
 profileForm.addEventListener("submit", function(event) {
     event.preventDefault();
     alert("Profile changes saved!");
