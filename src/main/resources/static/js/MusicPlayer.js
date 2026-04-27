@@ -27,7 +27,6 @@ let dropdownMenu = document.getElementById("dropdownMenu");
 let heartButton = document.getElementById("heart");
 
 let lyrics = []
-
 let settingsButton = document.getElementById("settings");
 let settingsMenu = document.getElementById("settingsMenu");
 let fontSizeSlider = document.getElementById("fontSize");
