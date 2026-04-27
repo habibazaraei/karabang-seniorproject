@@ -92,6 +92,7 @@ const categoryButtonSound = new Audio("/soundEffects/categoryButton.mp3");
 const heartButtonSound = new Audio("/soundEffects/heartSound.ogg");
 const heartButtonOffSound = new Audio("/soundEffects/heartOffSound.ogg");
 const generalClickSound = new Audio("/soundEffects/click.mp3");
+const hoverSound = new Audio("/soundEffects/hover.mp3");
 
 let sfxVolume = 0.4;
 let lastSfxVolume = 0.4;
@@ -102,6 +103,7 @@ categoryButtonSound.volume = isSfxMuted ? 0 : sfxVolume;
 heartButtonSound.volume = isSfxMuted ? 0 : sfxVolume;
 heartButtonOffSound.volume = isSfxMuted ? 0 : sfxVolume;
 generalClickSound.volume = isSfxMuted ? 0 : sfxVolume;
+hoverSound.volume = isSfxMuted ? 0 : sfxVolume;
 let lastScrollSoundTime = 0;
 const scrollSoundCooldown = 5; // ms
 
@@ -109,6 +111,9 @@ const scrollSoundCooldown = 5; // ms
 document.addEventListener("click", (e) => {
     createClickEffect(e.clientX, e.clientY);
 });
+// hover sfx
+let lastHoverTime = 0;
+const hoverCooldown = 50;
 
 // DRAG SCROLLING
 let isDragging = false;
@@ -230,6 +235,8 @@ window.addEventListener("click", function (e) {
         document.getElementById("myDropdown").classList.remove("show");
     }
 });
+
+
 // Category sort
 categoryButtons.forEach(buttons => {
 
@@ -712,7 +719,29 @@ function addSongCard(listToRender){
     });
 }
 
+// anywhere that is not a button click sound
+document.addEventListener("click", (e) => {
+    if (e.target.closest("button, a, input, .topButton, .categoryButton")) return;
 
+    const sound = new Audio("/soundEffects/waterdrop.m4a");
+    sound.volume = isSfxMuted ? 0 : sfxVolume;
+    sound.play();
+
+    createClickEffect(e.clientX, e.clientY);
+});
+// hovering scored or play buttons
+document.querySelectorAll("#singButtonPrimary, #singButtonSecondary").forEach(btn => {
+    btn.addEventListener("mouseenter", () => {
+        const now = Date.now();
+        if (now - lastHoverTime < hoverCooldown) return;
+
+        lastHoverTime = now;
+
+        hoverSound.currentTime = 0;
+        hoverSound.volume = sfxVolume;
+        hoverSound.play().catch(() => {});
+    });
+});
 // ─── SETTINGS MODAL ───────────────────────────────────────────────────────────
 const settingsBtn = document.getElementById('settings');
 // Open modal
@@ -728,6 +757,7 @@ document.getElementById("settings").addEventListener("click", () => {
 
 // Close on X button
 document.getElementById("closeSettingsBtn").addEventListener("click", () => {
+    playGeneralClickSound();
     document.getElementById("settingsModal").style.visibility = "hidden";
 
 });
@@ -775,6 +805,7 @@ document.getElementById("sfxSlider").addEventListener("input", function () {
 });
 // mute button for teasers
 teaserMuteButton.onclick = () => {
+    playGeneralClickSound();
     if (teaserPlayer.volume > 0) {
         // Record the current volume before muting
         lastNonZeroVolume = teaserPlayer.volume;
@@ -797,6 +828,7 @@ teaserMuteButton.onclick = () => {
 
 // mute button for sound effects
 sfxMuteButton.onclick = () => {
+    playGeneralClickSound();
     if (!isSfxMuted) {
         lastSfxVolume = sfxVolume;
         sfxVolume = 0;
@@ -841,6 +873,7 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
 
 // UPDATED: reset button now also updates volumeLabel and closes the modal
 document.getElementById("resetPrefsBtn").addEventListener("click", async function (e) {
+    playGeneralClickSound();
     e.preventDefault();
 
     userVolume = 1;

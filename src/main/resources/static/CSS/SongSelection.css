@@ -19,43 +19,49 @@
 }
 /*cursor click effect*/
 /* WATER RIPPLE */
+/* WATER RIPPLE */
 .click-effect {
   position: fixed;
-  width: 4px;
-  height: 4px;
+  width: 40px; /* Start a bit larger for better scaling */
+  height: 40px;
   border-radius: 50%;
   pointer-events: none;
-
   transform: translate(-50%, -50%) scale(0);
-
-  border: 1px solid rgba(128, 204, 252, 0.9);
-  background: radial-gradient(circle,
-    rgba(255,255,255,0.8) 0%,
-    transparent 60%
-  );
-  box-shadow:
-          0 0 3px rgba(91, 185, 255, 0.3),
-          0 0 4px rgba(50, 83, 192, 0.2);
-
-  background: transparent;
-
-  animation: rippleWater 0.6s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
   z-index: 9999;
+
+  /* The "Refraction" Edge */
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+
+  /* Inner highlights for a 3D water look */
+  box-shadow:
+          inset 0 0 10px rgba(255, 255, 255, 0.2),
+          0 0 15px rgba(128, 204, 252, 0.2),
+          0 0 5px rgba(255, 255, 255, 0.5);
+
+  /* The outer distortion ring */
+  background: radial-gradient(circle,
+  rgba(255, 255, 255, 0.05) 0%,
+  rgba(128, 204, 252, 0.02) 50%,
+  transparent 70%
+  );
+
+  /* Use a more "liquid" timing function */
+  animation: rippleWater 0.8s cubic-bezier(0.1, 0.2, 0.3, 1) forwards;
 }
 
 @keyframes rippleWater {
   0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0.9;
-  }
-
-  70% {
-    opacity: 0.5;
-  }
-
-  100% {
-    transform: translate(-50%, -50%) scale(4);
+    transform: translate(-50%, -50%) scale(0.2);
     opacity: 0;
+    border-width: 3px; /* Thick at the start */
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5); /* Don't scale too huge or it blurs */
+    opacity: 0;
+    border-width: 0.5px; /* Thins out as it expands */
   }
 }
 /* Body */
@@ -344,16 +350,19 @@ body {
 }
 /* Top button bar */
 #topButtonBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  display: flex;
+
   padding: 10px 20px;
   z-index: 1000;
   height: 80px;
   box-sizing: border-box;
-  align-items: center;
+
   background-size: contain;
 
 }
@@ -363,8 +372,8 @@ body {
   background-size: contain;
 
   height: 100%;
-  width: 10%;
-  padding-left: 2%;
+  width: 120px;
+  flex-shrink: 0;
 }
 #rightButtons {
   margin-left: auto;
@@ -605,20 +614,32 @@ body {
   #rightPanel { width: 30%; }
 }
 /* song Art cover on the right side of screen */
-#songImage {
+#songImageFrame {
   width: 100%;
   max-width: 600px;
-  max-height: 50vh;
-  height: auto;
   aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 10px;
-  display: block;
-  flex-shrink: 0;
-  box-shadow: 0 0 20px rgba(37, 37, 36, 0.5);
+  position: relative;
+  background-image: url("../images/imageBackground.png");
+  background-size: cover;
+  background-position: center;
 
+  border-radius: 12px;
+  overflow: hidden;
 }
 
+#songImage {
+  position: absolute;
+
+  inset: 6px;
+
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+
+  object-fit: cover;
+
+  border-radius: clamp(16px, 1vw, 24px);
+  box-shadow: 0 0 20px rgba(37, 37, 36, 0.5);
+}
 /* information of the song under image */
 #songInfo {
   width: 100%;
@@ -629,16 +650,12 @@ body {
   padding: clamp(6px, 1vw, 10px);
   gap: clamp(2px, 0.4vw, 6px);
   justify-content: space-between;
-  background-size: cover;
-  background: linear-gradient(
-          to top right,
-          #b3f0ff,
-          #C2FFD8,
-          #00c2ff,
-          #3a86ff
-  ) no-repeat;
+
+  background-image: url("../images/song_info_plate.png");
+  background-size: 100% 100%;
+  position: relative;
   box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
-  border-radius: 10px;
+  border-radius: 8px;
   flex-shrink: 1;
   overflow: hidden;
 
@@ -652,7 +669,6 @@ body {
   grid-template-rows: 1fr 1fr;
   align-items: center;
   gap: 3px;
-  padding: 2px;
 
   border-radius: 10px;
 
@@ -670,7 +686,6 @@ body {
   align-self: stretch;
   display: block;
   flex-shrink: 0;
-
 }
 
 #songInfoLeftTop {
@@ -734,17 +749,16 @@ body {
   flex-direction: column;
   justify-content: center;
   align-self: start;
-  gap: 6px;
 
   font-family: "RubikMonoOne", Serif;
 
 }
 .double-outline-song,
 .double-outline-artist {
-  background: url("../images/textureCircles.png");
+  background: url("../images/metal.png");
 
   /* KEY FIX */
-  background-size: 60px 60px;
+  background-size: 10px 10px;
   letter-spacing: -1px;
   word-spacing: -4px;
 
@@ -779,7 +793,7 @@ body {
 }
 
 .double-outline-song::after {
-  -webkit-text-stroke: 1px black;
+  -webkit-text-stroke: 0.5px black;
 }
 .double-outline-artist::after {
   -webkit-text-stroke: 0.5px black;
@@ -790,11 +804,14 @@ body {
 
 }
 #songName {
+  letter-spacing: -2px;
   font-size: clamp(14px, 2.5vw, 1.8em);
 }
 
 #artistName {
-  font-size: clamp(10px, 1.8vw, 1em);
+  letter-spacing: -2px;
+  font-size: clamp(14px, 2.5vw, 1.8em);
+
 
 }
 .favoriteButtonRight {
