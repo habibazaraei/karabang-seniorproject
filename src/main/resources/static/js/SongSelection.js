@@ -6,7 +6,8 @@ let searchField = document.getElementById("searchField")
 let songName = document.getElementById("songName")
 let artistName = document.getElementById("artistName")
 let songImage = document.getElementById("songImage")
-let singButton = document.getElementById("singButton")
+let singButtonPrimary = document.getElementById("singButtonPrimary")
+let singButtonSecondary = document.getElementById("singButtonSecondary")
 
 let songListInner = document.getElementById("songListInner")
 let scrollTopZone = document.getElementById("scrollTop")
@@ -34,6 +35,8 @@ const favoriteButtonRight = document.querySelector(".favoriteButtonRight");
 const TEASER_FADE_DURATION = 2000;
 const TEASER_REPLAY_DELAY = 3000;
 
+let teaserMuteButton = document.getElementById("teaserMuteButton");
+let teaserVolumeIcon = document.getElementById("teaserVolumeIcon");
 
 let userInteracted = false;
 teaserPlayer.volume = 0;
@@ -43,11 +46,69 @@ let userVolume = 1;
 teaserPlayer.play().catch(() => {});
 teaserPlayer.pause();
 
+
+let lastNonZeroVolume = 1;
+let isMuted = false;
+
 let teaserFadeInterval = null;
 let teaserReplayTimeout = null;
 let currentTeaserId = null;
+// preloading images
+const images = [
+    "../images/scoredButton.png",
+    "../images/playButton.png",
+    "../images/scoredplayButton.png",
+    "../images/textureCirclesDropDown.png"
+];
 
+images.forEach(src => {
+    const img = new Image();
+    img.src = src;
+    img.decode?.();
+});
+// for primary and secondary hovering
+const group = document.getElementById("singButtonGroup");
+const primary = document.querySelector(".primary");
+const secondary = document.querySelector(".secondary");
 
+primary.addEventListener("mouseenter", () => {
+    group.style.backgroundImage = 'url("../images/scoredButton.png")';
+});
+
+secondary.addEventListener("mouseenter", () => {
+    group.style.backgroundImage = 'url("../images/playButton.png")';
+});
+
+group.addEventListener("mouseleave", () => {
+    group.style.backgroundImage = 'url("../images/scoredplayButton.png")';
+});
+
+searchField.addEventListener("click", () => {
+    playGeneralClickSound();
+});
+// sound effect
+const scrollSound = new Audio("/soundEffects/Synth_Tick_B_hi.wav");
+const categoryButtonSound = new Audio("/soundEffects/categoryButton.mp3");
+const heartButtonSound = new Audio("/soundEffects/heartSound.ogg");
+const heartButtonOffSound = new Audio("/soundEffects/heartOffSound.ogg");
+const generalClickSound = new Audio("/soundEffects/click.mp3");
+
+let sfxVolume = 0.4;
+let lastSfxVolume = 0.4;
+let isSfxMuted = false;
+
+scrollSound.volume = isSfxMuted ? 0 : sfxVolume;
+categoryButtonSound.volume = isSfxMuted ? 0 : sfxVolume;
+heartButtonSound.volume = isSfxMuted ? 0 : sfxVolume;
+heartButtonOffSound.volume = isSfxMuted ? 0 : sfxVolume;
+generalClickSound.volume = isSfxMuted ? 0 : sfxVolume;
+let lastScrollSoundTime = 0;
+const scrollSoundCooldown = 5; // ms
+
+// clicking cursor effect
+document.addEventListener("click", (e) => {
+    createClickEffect(e.clientX, e.clientY);
+});
 
 // DRAG SCROLLING
 let isDragging = false;
@@ -72,13 +133,22 @@ document.addEventListener("touchmove", onDrag);
 function onDrag(e) {
     if (!isDragging) return;
 
-    let currentY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+    let currentY = e.type === "touchmove"
+        ? e.touches[0].clientY
+        : e.clientY;
+
     let delta = currentY - startY;
 
     const threshold = 80;
     let step = Math.round(-delta / threshold);
-    currentIndex = (startIndex + step + currentList.length) % currentList.length;
-    updateTrackSelect();
+
+    let newIndex = (startIndex + step + currentList.length) % currentList.length;
+
+    if (newIndex !== currentIndex) {
+        currentIndex = newIndex;
+        updateTrackSelect();
+        playScrollSound();
+    }
 }
 
 // End drag
@@ -93,25 +163,27 @@ function endDrag(e) {
 // MOUSE WHEEL SCROLLING
 songList.addEventListener("wheel", (e) => {
     e.preventDefault();
-    if (e.deltaY > 0) moveDown();
-    else moveUp();
-});
 
+    if (e.deltaY > 0) {
+        moveDown();
+    } else {
+        moveUp();
+    }
+
+    playScrollSound();
+});
 function restartScrollInterval(direction) {
     clearInterval(moveInterval);
     moveInterval = setInterval(direction === "up" ? moveUp : moveDown, scrollSpeed);
 }
 
 
-
-
 // Restart Category when searching
 
 searchField.oninput = () => {
-
     const query = searchField.value.toLowerCase();
 
-    // 1. resets all category buttons
+    // resets all category buttons
     categoryButtons.forEach(button => {
         const name = button.innerText.trim();
 
@@ -147,7 +219,8 @@ function toggleDropdown() {
 
 // toggle when clicking profile button
 document.getElementById("profile").addEventListener("click", (e) => {
-    e.stopPropagation(); // prevents immediate close
+    playGeneralClickSound();
+    e.stopPropagation();
     toggleDropdown();
 });
 
@@ -164,6 +237,7 @@ categoryButtons.forEach(buttons => {
     sortState[name] = "none";
 
     buttons.addEventListener("click", async () => {
+        playCategorySound();
         resetAllExcept(buttons);
         document.querySelectorAll(".categoryButton").forEach(b => {
             if (b.innerText.trim() !== "Favorites") {
@@ -301,32 +375,120 @@ favoriteButtonRight.addEventListener("click", async () => {
         return;
     }
 
-    const favRef = doc(db, "users", user.uid, "favorites", String(selectedSong.id));
-    const favSnap = await getDoc(favRef);
-
     const img = favoriteButtonRight.querySelector("img");
+    const isCurrentlyFavorite = favoriteButtonRight.classList.contains("active");
 
-    if (favSnap.exists()) {
-        await deleteDoc(favRef);
+    if (isCurrentlyFavorite) {
+        playHeartOffSound();
         img.src = "/images/heart_gray_icon.svg";
         favoriteButtonRight.classList.remove("active");
     } else {
-        await setDoc(favRef, {
-            title: selectedSong.title,
-            artist: selectedSong.artist,
-            mp3URL: selectedSong.songPath || "",
-            coverURL: selectedSong.artCoverPath || "",
-            genre: selectedSong.genre || "",
-            language: selectedSong.language || "",
-            difficulty: selectedSong.difficulty || ""
-        });
-
+        playHeartSound();
         img.src = "/images/heart_icon.svg";
         favoriteButtonRight.classList.add("active");
     }
 
+    const cardHeart = document.querySelector(`.favoriteButton[data-id="${selectedSong.id}"] img`);
+    if (cardHeart) {
+        cardHeart.src = isCurrentlyFavorite ? "/images/heart_gray_icon.svg" : "/images/heart_icon.svg";
+        cardHeart.parentElement.classList.toggle("active", !isCurrentlyFavorite);
+    }
+
+    // 3. FIREBASE UPDATE IN BACKGROUND
+    const favRef = doc(db, "users", user.uid, "favorites", String(selectedSong.id));
+
+    try {
+        if (isCurrentlyFavorite) {
+            await deleteDoc(favRef);
+        } else {
+            await setDoc(favRef, {
+                title: selectedSong.title,
+                artist: selectedSong.artist,
+                mp3URL: selectedSong.songPath || "",
+                coverURL: selectedSong.artCoverPath || "",
+                genre: selectedSong.genre || "",
+                language: selectedSong.language || "",
+                difficulty: selectedSong.difficulty || ""
+            });
+        }
+    } catch (error) {
+        console.error("Sync failed:", error);
+    }
+
     loadFavoriteStates();
 });
+// cursor effect
+function createClickEffect(x, y) {
+    for (let i = 0; i < 2; i++) {
+        const effect = document.createElement("div");
+        effect.className = "click-effect";
+
+        effect.style.left = x + "px";
+        effect.style.top = y + "px";
+
+        // delay second ring slightly
+        effect.style.animationDelay = (i * 0.08) + "s";
+
+        document.body.appendChild(effect);
+
+        setTimeout(() => effect.remove(), 700);
+    }
+}
+// plays sound effect
+function playScrollSound() {
+    const now = Date.now();
+    if (now - lastScrollSoundTime < scrollSoundCooldown) return;
+
+    lastScrollSoundTime = now;
+
+    scrollSound.currentTime = 0;
+    scrollSound.volume = sfxVolume;
+    scrollSound.play();
+}
+function playCategorySound() {
+    categoryButtonSound.volume = sfxVolume;
+    categoryButtonSound.play();
+}
+function playHeartSound(){
+    heartButtonSound.volume = sfxVolume;
+    heartButtonSound.play();
+}
+function playHeartOffSound(){
+    heartButtonOffSound.currentTime = 0;
+    heartButtonOffSound.volume = sfxVolume;
+    heartButtonOffSound.play();
+}
+function playGeneralClickSound() {
+    generalClickSound.currentTime = 0;
+    generalClickSound.volume = sfxVolume;
+    generalClickSound.play();
+}
+// update SFX
+function updateSFXLabel() {
+    document.getElementById("sfxLabel").innerText =
+        Math.round(sfxVolume * 100) + "%";
+}
+// updates volume icon
+function updateTeaserVolumeIcon() {
+    if (teaserPlayer.volume === 0) {
+        teaserVolumeIcon.src = "/images/mute_icon.svg";
+    } else if (teaserPlayer.volume <= 0.5) {
+        teaserVolumeIcon.src = "/images/volume_low_icon.svg";
+    } else {
+        teaserVolumeIcon.src = "/images/volume_high_icon.svg";
+    }
+}
+let sfxVolumeIcon = document.getElementById("sfxVolumeIcon");
+// updates volume icon
+function updateSFXVolumeIcon() {
+    if (sfxVolume === 0) {
+        sfxVolumeIcon.src = "/images/mute_icon.svg";
+    } else if (sfxVolume <= 0.5) {
+        sfxVolumeIcon.src = "/images/volume_low_icon.svg";
+    } else {
+        sfxVolumeIcon.src = "/images/volume_high_icon.svg";
+    }
+}
 // Helper: set SVG icon
 function setButtonIcon(button, state) {
     const img = button.querySelector(".sortIcon");
@@ -486,6 +648,7 @@ function addSongCard(listToRender){
                 const clickedIndex = currentList.indexOf(song);
                 if (clickedIndex !== -1) {
                     currentIndex = clickedIndex;
+                    playScrollSound();
                     updateTrackSelect();
                 }
             };
@@ -493,34 +656,55 @@ function addSongCard(listToRender){
             const favBtn = card.querySelector(".favoriteButton");
             favBtn.onclick = async (e) => {
                 e.stopPropagation();
-
                 const user = auth.currentUser;
                 if (!user) {
                     alert("Please log in to favorite songs!");
                     return;
                 }
 
-                const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
-                const favSnap = await getDoc(favRef);
                 const img = favBtn.querySelector("img");
+                const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
+                const isCurrentlyActive = favBtn.classList.contains("active");
 
-                if (favSnap.exists()) {
-                    await deleteDoc(favRef);
+                if (isCurrentlyActive) {
+                    playHeartOffSound();
                     img.src = "/images/heart_gray_icon.svg";
                     favBtn.classList.remove("active");
                 } else {
-                    await setDoc(favRef, {
-                        title:      song.title,
-                        artist:     song.artist,
-                        mp3URL:     song.songPath     || "",
-                        coverURL:   song.artCoverPath || "",
-                        genre:      song.genre        || "",
-                        language:   song.language     || "",
-                        difficulty: song.difficulty   || ""
-                    });
+                    playHeartSound();
                     img.src = "/images/heart_icon.svg";
                     favBtn.classList.add("active");
                 }
+
+                if (selectedSong && String(selectedSong.id) === String(song.id)) {
+                    const rightImg = favoriteButtonRight.querySelector("img");
+                    if (isCurrentlyActive) {
+                        favoriteButtonRight.classList.remove("active");
+                        rightImg.src = "/images/heart_gray_icon.svg";
+                    } else {
+                        favoriteButtonRight.classList.add("active");
+                        rightImg.src = "/images/heart_icon.svg";
+                    }
+                }
+                try {
+                    if (isCurrentlyActive) {
+                        await deleteDoc(favRef);
+                    } else {
+                        await setDoc(favRef, {
+                            title: song.title,
+                            artist: song.artist,
+                            mp3URL: song.songPath || "",
+                            coverURL: song.artCoverPath || "",
+                            genre: song.genre || "",
+                            language: song.language || "",
+                            difficulty: song.difficulty || ""
+                        });
+                    }
+                } catch (err) {
+                    console.error("Firebase Error:", err);
+                }
+
+                // 4. SYNC EVERYTHING ELSE
                 loadFavoriteStates();
             };
         }
@@ -530,15 +714,22 @@ function addSongCard(listToRender){
 
 
 // ─── SETTINGS MODAL ───────────────────────────────────────────────────────────
-
+const settingsBtn = document.getElementById('settings');
 // Open modal
 document.getElementById("settings").addEventListener("click", () => {
+    playGeneralClickSound();
     document.getElementById("settingsModal").style.visibility = "visible";
+    settingsBtn.classList.add('spinning');
+    setTimeout(() => {
+        settingsBtn.classList.remove('spinning');
+    }, 500);
 });
+
 
 // Close on X button
 document.getElementById("closeSettingsBtn").addEventListener("click", () => {
     document.getElementById("settingsModal").style.visibility = "hidden";
+
 });
 
 // Close when clicking the dark overlay outside the panel
@@ -553,10 +744,77 @@ document.getElementById("volumeSlider").addEventListener("input", function () {
     userVolume = parseFloat(this.value);
     teaserPlayer.volume = userVolume;
     userInteracted = true;
-    document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
+
+    // If the user manually slides to a volume > 0, update our "memory"
+    if (userVolume > 0) {
+        lastNonZeroVolume = userVolume;
+        isMuted = false;
+    } else {
+        isMuted = true;
+    }
+
+    document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%";
+    updateTeaserVolumeIcon();
     saveUserPreferences();
 });
+
+document.getElementById("sfxSlider").addEventListener("input", function () {
+    sfxVolume = parseFloat(this.value);
+    scrollSound.volume = sfxVolume;
+    updateSFXLabel();
+
+    if (sfxVolume > 0) {
+        lastSfxVolume = sfxVolume;
+        isSfxMuted = false;
+    }else {
+        isSfxMuted = true;
+    }
+    document.getElementById("sfxLabel").innerText = Math.round(sfxVolume * 100) + "%";
+    updateSFXVolumeIcon();
+    saveUserPreferences();
+});
+// mute button for teasers
+teaserMuteButton.onclick = () => {
+    if (teaserPlayer.volume > 0) {
+        // Record the current volume before muting
+        lastNonZeroVolume = teaserPlayer.volume;
+        teaserPlayer.volume = 0;
+        isMuted = true;
+    } else {
+        // Restore to the last known volume (even if it was 0.01)
+        teaserPlayer.volume = lastNonZeroVolume;
+        isMuted = false;
+    }
+
+    // Update UI
+    userVolume = teaserPlayer.volume;
+    document.getElementById("volumeSlider").value = userVolume;
+    document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%";
+
+    updateTeaserVolumeIcon();
+    saveUserPreferences();
+};
+
+// mute button for sound effects
+sfxMuteButton.onclick = () => {
+    if (!isSfxMuted) {
+        lastSfxVolume = sfxVolume;
+        sfxVolume = 0;
+        isSfxMuted = true;
+    } else {
+        sfxVolume = lastSfxVolume;
+        isSfxMuted = false;
+    }
+
+    scrollSound.volume = sfxVolume;
+
+    document.getElementById("sfxSlider").value = sfxVolume;
+    updateSFXLabel();
+    updateSFXVolumeIcon();
+    saveUserPreferences();
+};
 let scrollFadeTimeout = null;
+
 // UPDATED: scroll slider (unchanged logic, kept here for clarity)
 document.getElementById("scrollSlider").addEventListener("input", function () {
     scrollSpeed = 550 - parseInt(this.value);
@@ -568,10 +826,10 @@ document.getElementById("scrollSlider").addEventListener("input", function () {
 
     const val = parseInt(this.value);
     let label;
-    if (val <= 150) label = "🐢 Slow";
+    if (val <= 150) label = "Slow";
     else if (val <= 300) label = "Normal";
-    else if (val <= 450) label = "⚡ Fast";
-    else label = "🚀 Turbo";
+    else if (val <= 450) label = "Fast";
+    else label = "Turbo";
     document.getElementById("scrollSpeedLabel").innerText = label;
 
     saveUserPreferences();
@@ -590,6 +848,10 @@ document.getElementById("resetPrefsBtn").addEventListener("click", async functio
 
     document.getElementById("volumeSlider").value = 1;
     document.getElementById("volumeLabel").innerText = "100%";
+
+    document.getElementById("sfxSlider").value = 1;
+    document.getElementById("sfxLabel").innerText = "100%";
+
     document.getElementById("scrollSlider").value = 300;
     document.getElementById("scrollSpeedLabel").innerText = "Normal";
 
@@ -620,10 +882,10 @@ function selectSong(song, card) {
         updateTrackSelect();
     }
 
-    singButton.disabled = false;
+    singButtonPrimary.disabled = false;
 }
 
-singButton.onclick = () => {
+singButtonPrimary.onclick = () => {
     if (!selectedSong) return;
     window.location.href = "/musicplayer?song=" + selectedSong.id;
 };
@@ -687,7 +949,10 @@ function updateTrackSelect() {
         resetScroll(artistTextEl);
 
         songName.innerText = centerSong.title || "???";
+        songName.dataset.text = centerSong.title || "???";
+
         artistName.innerText = centerSong.artist || "???";
+        artistName.dataset.text = centerSong.artist || "???";
 
         // after songCard it updates scroll if name is long
         requestAnimationFrame(() => {
@@ -695,7 +960,7 @@ function updateTrackSelect() {
         });
         songImage.src = centerSong.artCoverPath || "/images/questionmark_icon.svg";
 
-        singButton.disabled = false;
+        singButtonPrimary.disabled = false;
         favoriteButtonRight.dataset.id = String(centerSong.id);
         loadFavoriteStates();
 
@@ -716,11 +981,15 @@ function updateTrackSelect() {
         }
    } else {
        selectedSong = null;
-       singButton.disabled = true;
+       singButtonPrimary.disabled = true;
        songName.innerText = "???";
-       artistName.innerText = "???";
-       songImage.src = "/images/questionmark_icon.svg";
+       songName.dataset.text = "???";
 
+       artistName.innerText = "???";
+       artistName.dataset.text = "???";
+       songImage.src = "/images/questionmark_icon.svg";
+       songName.parentElement.classList.remove('can-scroll');
+       artistName.parentElement.classList.remove('can-scroll');
        // Stop teaser
        teaserPlayer.pause();
        teaserPlayer.currentTime = 0;
@@ -837,13 +1106,15 @@ function playTeaserWithFade(song) {
             }, fadeStepTime);
         }
     };
-
+/*
     // Replay after delay
     teaserPlayer.onended = () => {
         teaserReplayTimeout = setTimeout(() => {
             playTeaserWithFade(song);
         }, TEASER_REPLAY_DELAY);
     };
+
+ */
 }
 
 
@@ -911,7 +1182,14 @@ async function saveUserPreferences() {
 
     await setDoc(doc(db, "users", user.uid, "preferences", "settings"), {
         volume: userVolume,
-        scrollSpeed: scrollSpeed
+        lastNonZeroVolume: lastNonZeroVolume,
+        isMuted: isMuted,
+
+        scrollSpeed: scrollSpeed,
+
+        sfxVolume: sfxVolume,
+        isSfxMuted: isSfxMuted,
+        lastSfxVolume: lastSfxVolume
     });
 }
 
@@ -922,11 +1200,18 @@ async function loadUserPreferences(user) {
 
     const prefs = prefSnap.data();
 
+    if (prefs.lastNonZeroVolume !== undefined) {
+        lastNonZeroVolume = prefs.lastNonZeroVolume;
+    }
+
     if (prefs.volume !== undefined) {
         userVolume = prefs.volume;
         teaserPlayer.volume = userVolume;
+        isMuted = (userVolume === 0);
+
         document.getElementById("volumeSlider").value = userVolume;
-        document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%"; // ← ADDED
+        document.getElementById("volumeLabel").innerText = Math.round(userVolume * 100) + "%";
+        updateTeaserVolumeIcon();
     }
 
     if (prefs.scrollSpeed !== undefined) {
@@ -935,12 +1220,25 @@ async function loadUserPreferences(user) {
         document.getElementById("scrollSlider").value = sliderVal;
 
         let label;
-        if (sliderVal <= 150) label = "🐢 Slow";
+        if (sliderVal <= 150) label = "Slow";
         else if (sliderVal <= 300) label = "Normal";
-        else if (sliderVal <= 450) label = "⚡ Fast";
-        else label = "🚀 Turbo";
+        else if (sliderVal <= 450) label = "Fast";
+        else label = "Turbo";
         document.getElementById("scrollSpeedLabel").innerText = label;
     }
+    if (prefs.sfxVolume !== undefined) {
+        sfxVolume = prefs.sfxVolume;
+        scrollSound.volume = sfxVolume;
+        document.getElementById("sfxSlider").value = sfxVolume;
+        updateSFXLabel();
+    }
+
+    if (prefs.isSfxMuted !== undefined) {
+        isSfxMuted = prefs.isSfxMuted;
+        updateSFXLabel();
+    }
+
+    updateSFXVolumeIcon();
 }
 // Scroll for right Info pane
 // Listener if the screen change width

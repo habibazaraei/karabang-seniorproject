@@ -17,6 +17,48 @@
   font-family: "RubikMonoOne";
   src: url("../fonts/RubikMonoOne-Regular.ttf") format("truetype");
 }
+/*cursor click effect*/
+/* WATER RIPPLE */
+.click-effect {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+
+  transform: translate(-50%, -50%) scale(0);
+
+  border: 1px solid rgba(128, 204, 252, 0.9);
+  background: radial-gradient(circle,
+    rgba(255,255,255,0.8) 0%,
+    transparent 60%
+  );
+  box-shadow:
+          0 0 3px rgba(91, 185, 255, 0.3),
+          0 0 4px rgba(50, 83, 192, 0.2);
+
+  background: transparent;
+
+  animation: rippleWater 0.6s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+  z-index: 9999;
+}
+
+@keyframes rippleWater {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.9;
+  }
+
+  70% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+/* Body */
 html, body {
   margin: 0;
   padding: 0;
@@ -362,6 +404,16 @@ body {
   height: 100%;
   object-fit: contain;
 }
+/*spinning settings button*/
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinning img {
+  animation: spin 0.5s ease-in-out;
+}
 
 /* Category bar */
 #categoryBar {
@@ -439,21 +491,44 @@ body {
   height: clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
 }
 /* Search Field */
-
-#searchField {
+.searchWrapper {
+  position: relative;
+  border-radius: 20px 20px 20px 20px;
   width: 100%;
-  height: 60%;
-  max-width: none;
-  padding: 8px 12px;
-  border-radius: 20px;
+  height: 45px;
+  overflow: hidden;
   border: 1px solid #2b176f;
-  color: white;
-  font-size: 1rem;
-  box-sizing: border-box;
-  outline: none;
   background: #17094E;
+  box-sizing: border-box;
 }
 
+/* ICON INSIDE INPUT */
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 18px;
+  height: 18px;
+
+  pointer-events: none;
+}
+
+/* INPUT */
+#searchField {
+  width: 100%;
+  height: 100%;
+
+  padding-left: 40px;
+
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: white;
+  font-size: 1rem;
+}
 /* Focus effect */
 #searchField:focus {
   background: #523da2;
@@ -540,7 +615,7 @@ body {
   border-radius: 10px;
   display: block;
   flex-shrink: 0;
-  box-shadow: 10px 10px 5px 0px rgba(0,0,0,1);
+  box-shadow: 0 0 20px rgba(37, 37, 36, 0.5);
 
 }
 
@@ -566,12 +641,14 @@ body {
   border-radius: 10px;
   flex-shrink: 1;
   overflow: hidden;
+
 }
 .grid-container {
   display: grid;
   height: 100%;
   row-gap: 0;
   grid-template-columns: clamp(50px, 8vw, 110px) 1fr;
+  column-gap: clamp(30px, 1.5vw, 50px);
   grid-template-rows: 1fr 1fr;
   align-items: center;
   gap: 3px;
@@ -658,10 +735,59 @@ body {
   justify-content: center;
   align-self: start;
   gap: 6px;
+
+  font-family: "RubikMonoOne", Serif;
+
+}
+.double-outline-song,
+.double-outline-artist {
+  background: url("../images/textureCircles.png");
+
+  /* KEY FIX */
+  background-size: 60px 60px;
+  letter-spacing: -1px;
+  word-spacing: -4px;
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+
+/* TRUE OUTER WHITE OUTLINE (8-direction fake stroke) */
+.double-outline-song::before,
+.double-outline-artist::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  z-index: -1;
+  pointer-events: none;
+
+}
+.double-outline-song::after,
+.double-outline-artist::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  color: transparent;
+
+  z-index: -2;
+  pointer-events: none;
+}
+
+.double-outline-song::after {
+  -webkit-text-stroke: 1px black;
+}
+.double-outline-artist::after {
+  -webkit-text-stroke: 0.5px black;
 }
 #songName,
 #artistName {
   margin: 0;
+
 }
 #songName {
   font-size: clamp(14px, 2.5vw, 1.8em);
@@ -688,16 +814,88 @@ body {
   height: clamp(20px, 4vw, 60px);
   display: block;
 }
-/* button that goes to song */
-#singButton {
-  width: 100%;
-  max-width: 600px;
-  padding: 10px 20px;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  background-color: yellow;
-  border-radius: 10px;
+/* preload images */
+body::after {
+  content:
+          url("../images/scoredButton.png")
+          url("../images/playButton.png")
+          url("../images/scoredplayButton.png")
+          url("../images/textureCirclesDropDown.png");
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
+/* button that goes to song */
+#singButtonGroup {
+  width: 100%;
+  align-self: stretch;
+
+  aspect-ratio: 248 / 52;
+  max-width: none;
+
+  background: url("../images/scoredplayButton.png") no-repeat center;
+  background-size: 100% 100%;
+  position: relative;
+
+}
+/* base */
+.singButton {
+  will-change: transform;
+  transform: translateZ(0);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  cursor: pointer;
+  background: transparent;
+  z-index: 2;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+.singButton::before {
+  pointer-events: none;
+}
+
+.primary {
+  left: 0;
+  width: 62%;
+}
+
+.secondary {
+  right: 0;
+  width: 42%;
+}
+
+.singButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.primary::before,
+.secondary::before {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+
+
+.singButton:hover::before {
+  opacity: 1;
+}
+
 
 
 /*Dropdown Menu*/
@@ -707,18 +905,19 @@ body {
 }
 
   .dropdown-menu {
-      display: none;
-      position: absolute;
-      background-color: #000043;
-      min-width: 80px;
-      width: auto;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-      border-radius: 4px;
-      z-index: 1;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 100%;
-    }
+    will-change: transform, opacity;
+    display: none;
+    position: absolute;
+    background-color: #000043;
+    min-width: 80px;
+    width: auto;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    z-index: 1;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+  }
 
 .dropdown-menu a {
   display: block;
@@ -733,54 +932,82 @@ body {
   background-color: #f1f1f1;
 }
 
-    .dropdown-menu.show {
-      display: block;
-    }
+.dropdown-menu.show {
+  display: block;
+}
 
-    /*This is for the audio slider*/
+/*This is for the audio slider*/
 
-    #audioSetting {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-    }
+#audioSetting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+}
 
-    #audioSetting label {
-        white-space: nowrap;
-        color: white;
-        font-size: 14px;
-    }
+#audioSetting label {
+    white-space: nowrap;
+    color: white;
+    font-size: 14px;
+}
 
-    #volumeControl, #scrollControl {
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         max-height: 60px;
-         box-sizing: border-box;
-     }
+#volumeControl, #scrollControl {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     max-height: 60px;
+     box-sizing: border-box;
+ }
+/* Container to put them side-by-side */
+.volumeControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
 
-     #volumeInner, #scrollInner {
-         display: flex;
-         flex-direction: row;
-         align-items: center;
-         gap: 8px;
-         padding: 0 8px;
-         max-height: 60px;
-         box-sizing: border-box;
-     }
+/* Let the slider grow to fill the space */
+#volumeSlider, #sfxSlider {
+  flex: 1;
+  cursor: pointer;
+}
 
-     #volumeSlider, #scrollSlider {
-         width: 100px;
-         cursor: pointer;
-         accent-color: white;
-     }
+/* Style the mute button/icon area */
+#teaserMuteButton, #sfxMuteButton{
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
 
-     #volumeLabel, #scrollSpeedLabel {
-         white-space: nowrap;
-         font-size: 12px;
-         color: white;
-     }
+#teaserVolumeIcon,
+#sfxVolumeIcon {
+  width: 24px;
+  height: 24px;
+}
+ #volumeInner, #scrollInner {
+     display: flex;
+     flex-direction: row;
+     align-items: center;
+     gap: 8px;
+     padding: 0 8px;
+     max-height: 60px;
+     box-sizing: border-box;
+ }
+
+ #volumeSlider, #scrollSlider, #sfxSlider {
+     width: 100%;
+     cursor: pointer;
+     accent-color: white;
+ }
+
+ #volumeLabel, #scrollSpeedLabel {
+     white-space: nowrap;
+     font-size: 12px;
+     color: white;
+ }
 
 /* Settings modal */
 #settingsModal {
@@ -788,9 +1015,14 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 11vw;
-  height: 13.5vw;
-  background: rgba(123, 39, 245, 0.75);
+
+  width: clamp(320px, 45vw, 800px);
+  height: clamp(220px, 55vh, 600px);
+  background-image: url("../images/textureCirclesDropDown.png");
+  background-size: contain;
+  background-repeat: repeat;
+  background-color: rgba(53, 52, 52, 0.8);
+
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -800,23 +1032,45 @@ body {
 }
 
 #settingsPanel {
- /* background: var(--color-background-primary); */
-  border: 50px solid black;
+  width: 100%;
+  height: 100%;
+  border: 2px solid black;
   border-radius: 12px;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
   max-width: 90vw;
+  box-sizing: border-box;
+  justify-content: flex-start;
 }
 
 .settingsHeader {
+  position: sticky;
+  top: 0;
+
+  width: 100%;
+  box-sizing: border-box;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
-}
 
+  padding: 10px 16px;
+
+  background: #000000;
+  border-bottom: 2px solid black;
+
+  z-index: 10;
+}
+.settingsContent {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
 .settingsTitle {
-  background: white;
-  font-size: 16px;
+  color: white;
+  font-size: 30px;
   font-weight: 500;
   margin: 0;
   padding: 2px 6px;
@@ -824,11 +1078,11 @@ body {
 }
 
 #closeSettingsBtn {
-  background: white;
+  background-color: transparent;
   border: none;
   cursor: pointer;
   font-size: 18px;
-  color: black;
+  color: white;
   padding: 2px 6px;
   border-radius: 8px;
   line-height: 1;
@@ -842,7 +1096,7 @@ body {
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: PINK;
+  color: #ffffff;
   margin-bottom: 8px;
 }
 
@@ -853,17 +1107,23 @@ body {
 
 .divider {
   border: none;
-  border-top: 0.5px solid #ccc; /* replaced --color-border-tertiary */
+  border-top: 0.5px solid #000000;
   margin: 1rem 0;
 }
 
 #resetPrefsBtn {
   width: 100%;
-  padding: 8px;
-  font-size: 14px;
+  padding: 10px;
+
+  font-size: 20px;
+  font-weight: bold;
+
   cursor: pointer;
   border-radius: 8px;
-  border: 0.5px solid black;
-  background: rgba(194, 154, 252, 1);
-  color: pink;
+  border: 2px solid black;
+
+  background: rgb(33, 32, 32);
+  color: #ffffff;
+
+  margin-top: auto;
 }
