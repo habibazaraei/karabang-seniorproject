@@ -12,6 +12,8 @@
  * @author Tyler R
  */
 
+import { db, auth, doc, setDoc, getDoc, getDocs, collection, onAuthStateChanged } from '/js/firebase.js';
+
 // ─── Tier Constants ───────────────────────────────────────────────────────────
 
 const TIERS = [
@@ -33,13 +35,20 @@ let micSourceNode   = null;
 let scoringActive   = false;
 let scoringInterval = null;
 
-let totalScore      = 0;   // accumulated points
-let maxPossible     = 0;   // total possible points if every frame was Perfect
+let totalScore      = 0;
+let maxPossible     = 0;
 let scoredFrames    = 0;
 
-// For tier flash display
-let lastTierLabel   = "";
+let lastTierLabel    = "";
 let tierFlashTimeout = null;
+
+// Current song ID (set from URL)
+const params = new URLSearchParams(window.location.search);
+const currentSongId = parseInt(params.get("song"));
+
+// Current logged in user (updated by onAuthStateChanged)
+let currentUser = null;
+onAuthStateChanged(auth, user => { currentUser = user; });
 
 
 // ─── UI Elements ──────────────────────────────────────────────────────────────
@@ -91,19 +100,13 @@ function hzToMidi(hz) {
     return 12 * Math.log2(hz / 440) + 69;
 }
 
-/**
- * Returns the matched tier object based on how close userHz is to targetHz.
- * Returns the MISS tier if either is 0 or too far apart.
- */
 function getTier(userHz, targetHz) {
-    if (userHz <= 0 || targetHz <= 0) return TIERS[3]; // MISS
-
+    if (userHz <= 0 || targetHz <= 0) return TIERS[3];
     const semitones = Math.abs(hzToMidi(userHz) - hzToMidi(targetHz));
-
     for (const tier of TIERS) {
         if (semitones <= tier.maxSemitones) return tier;
     }
-    return TIERS[3]; // MISS
+    return TIERS[3];
 }
 
 function getExpectedPitch(currentTimeSec) {
@@ -118,17 +121,17 @@ function getExpectedPitch(currentTimeSec) {
 function scoringTick() {
     if (!scoringActive || !analyserNode) return;
 
+    const audio      = document.getElementById("audio");
     const userHz     = detectPitch(analyserNode);
     const expectedHz = getExpectedPitch(audio.currentTime);
 
     if (expectedHz > 0) {
         scoredFrames++;
-        maxPossible += TIERS[0].points; // 300 pts per frame if perfect
+        maxPossible += TIERS[0].points;
 
         const tier = getTier(userHz, expectedHz);
         totalScore += tier.points;
 
-        // Flash tier label if it changed
         if (tier.label !== lastTierLabel) {
             lastTierLabel = tier.label;
             flashTier(tier);
@@ -138,14 +141,10 @@ function scoringTick() {
     updateScorerUI(userHz, expectedHz);
 }
 
-function getScoreDisplay() {
-    return totalScore.toLocaleString();
-}
-
 function resetScore() {
-    totalScore   = 0;
-    maxPossible  = 0;
-    scoredFrames = 0;
+    totalScore    = 0;
+    maxPossible   = 0;
+    scoredFrames  = 0;
     lastTierLabel = "";
 }
 
@@ -185,7 +184,9 @@ function stopMic() {
 
     if (micToggleBtn) micToggleBtn.textContent = "🎤 Start Mic";
     console.log("[KaraokeScorer] Mic stopped. Final score:", totalScore);
+
     showFinalScore();
+    saveScoreToFirebase();
 }
 
 function toggleMic() {
@@ -195,6 +196,253 @@ function toggleMic() {
         resetScore();
         startMic();
     }
+}
+
+
+// ─── Firebase Score Saving ────────────────────────────────────────────────────
+
+/**
+ * Saves the score to Firestore under:
+ * scores/{songId}/entries/{userId}
+ * Only saves if it's a new personal high score.
+ */
+async function saveScoreToFirebase() {
+    if (!currentUser) {
+        console.warn("[KaraokeScorer] Not logged in — score not saved.");
+        return;
+    }
+    if (totalScore === 0) return;
+
+    const scoreRef = doc(db, "scores", String(currentSongId), "entries", currentUser.uid);
+
+    try {
+        const existing = await getDoc(scoreRef);
+
+        // Only save if it's a new high score
+        if (!existing.exists() || totalScore > existing.data().score) {
+            await setDoc(scoreRef, {
+                score:       totalScore,
+                username:    currentUser.displayName || currentUser.email || "Anonymous",
+                userId:      currentUser.uid,
+                songId:      currentSongId,
+                timestamp:   new Date().toISOString(),
+            });
+            console.log("[KaraokeScorer] New high score saved:", totalScore);
+        } else {
+            console.log("[KaraokeScorer] Score not a new high score, not saved.");
+        }
+    } catch (err) {
+        console.error("[KaraokeScorer] Failed to save score:", err);
+    }
+}
+
+/**
+ * Loads the top 5 scores for the current song from Firestore.
+ * Returns an array sorted by score descending.
+ */
+async function loadTopScores() {
+    try {
+        const entriesRef = collection(db, "scores", String(currentSongId), "entries");
+        const snapshot   = await getDocs(entriesRef);
+
+        const scores = snapshot.docs.map(d => d.data());
+        scores.sort((a, b) => b.score - a.score);
+        return scores.slice(0, 5);
+    } catch (err) {
+        console.error("[KaraokeScorer] Failed to load scores:", err);
+        return [];
+    }
+}
+
+
+// ─── Scoreboard Popup ─────────────────────────────────────────────────────────
+
+function initScoreboard() {
+    // Add "Scoreboard" option to the existing dropdown menu
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    if (dropdownMenu) {
+        const scoreboardBtn = document.createElement("button");
+        scoreboardBtn.id        = "scoreboardBtn";
+        scoreboardBtn.textContent = "Scoreboard";
+        scoreboardBtn.onclick   = (e) => {
+            e.stopPropagation();
+            openScoreboard();
+        };
+        dropdownMenu.appendChild(scoreboardBtn);
+    }
+
+    // Create the scoreboard popup modal
+    const modal = document.createElement("div");
+    modal.id = "scoreboardModal";
+    modal.innerHTML = `
+        <div id="scoreboardPanel">
+            <div id="scoreboardHeader">
+                <span>🏆 Top Scores</span>
+                <button id="closeScoreboardBtn">✕</button>
+            </div>
+            <div id="scoreboardSongTitle"></div>
+            <div id="scoreboardList">
+                <div class="scoreboardLoading">Loading...</div>
+            </div>
+            <div id="scoreboardYourBest"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Close button
+    document.getElementById("closeScoreboardBtn").onclick = closeScoreboard;
+
+    // Close when clicking outside the panel
+    modal.onclick = (e) => {
+        if (e.target === modal) closeScoreboard();
+    };
+
+    injectScoreboardStyles();
+}
+
+async function openScoreboard() {
+    const modal = document.getElementById("scoreboardModal");
+    if (!modal) return;
+
+    // Show loading state
+    document.getElementById("scoreboardList").innerHTML = `<div class="scoreboardLoading">Loading...</div>`;
+    document.getElementById("scoreboardYourBest").textContent = "";
+    modal.style.display = "flex";
+
+    // Set song title
+    try {
+        const res  = await fetch("/api/songs");
+        const data = await res.json();
+        const song = data.find(s => s.id === currentSongId);
+        document.getElementById("scoreboardSongTitle").textContent = song ? `${song.title} — ${song.artist}` : "";
+    } catch (_) {}
+
+    // Load top 5 scores
+    const scores = await loadTopScores();
+    const list   = document.getElementById("scoreboardList");
+
+    if (scores.length === 0) {
+        list.innerHTML = `<div class="scoreboardEmpty">No scores yet — be the first!</div>`;
+    } else {
+        const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
+        list.innerHTML = scores.map((s, i) => `
+            <div class="scoreboardEntry ${currentUser && s.userId === currentUser.uid ? "scoreboardYou" : ""}">
+                <span class="scoreboardRank">${medals[i]}</span>
+                <span class="scoreboardName">${s.username}</span>
+                <span class="scoreboardScore">${s.score.toLocaleString()}</span>
+            </div>
+        `).join("");
+    }
+
+    // Show the user's personal best if they're logged in
+    if (currentUser) {
+        try {
+            const myRef  = doc(db, "scores", String(currentSongId), "entries", currentUser.uid);
+            const mySnap = await getDoc(myRef);
+            if (mySnap.exists()) {
+                document.getElementById("scoreboardYourBest").textContent =
+                    `Your best: ${mySnap.data().score.toLocaleString()}`;
+            }
+        } catch (_) {}
+    } else {
+        document.getElementById("scoreboardYourBest").textContent = "Log in to save your scores!";
+    }
+}
+
+function closeScoreboard() {
+    const modal = document.getElementById("scoreboardModal");
+    if (modal) modal.style.display = "none";
+}
+
+//Style for the scoreboard itself
+function injectScoreboardStyles() {
+    const style = document.createElement("style");
+    style.textContent = `
+        #scoreboardBtn {
+            width: 100%;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        #scoreboardBtn:hover {
+            background: rgba(75, 167, 255, 0.2);
+        }
+        #scoreboardModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #scoreboardPanel {
+            background: rgba(123, 39, 245, 0.75);
+            border:1px solid #3e007d;
+            border-radius: 16px;
+            padding: 24px;
+            min-width: 320px;
+            max-width: 420px;
+            width: 90%;
+        }
+        #scoreboardHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        #closeScoreboardBtn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        #closeScoreboardBtn:hover { color: #fff; }
+        #scoreboardSongTitle {
+            font-size: 0.85rem;
+            color: #4BA7FF;
+            margin-bottom: 16px;
+        }
+        .scoreboardEntry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            background: rgba(255,255,255,0.05);
+        }
+        .scoreboardYou {
+            background: rgba(75, 167, 255, 0.15);
+            border: 1px solid #4BA7FF;
+        }
+        .scoreboardRank  { font-size: 1.2rem; min-width: 28px; }
+        .scoreboardName  { flex: 1; color: #fff; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .scoreboardScore { font-weight: bold; color: #FFD700; font-size: 1rem; }
+        .scoreboardLoading, .scoreboardEmpty {
+            text-align: center;
+            color: #aaa;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+        #scoreboardYourBest {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 
@@ -260,13 +508,12 @@ function updateScorerUI(userHz, expectedHz) {
     scoreDisplay.textContent = totalScore.toLocaleString();
 }
 
-/** Flashes the tier label (PERFECT, GOOD, CLOSE, MISS) briefly on screen */
 function flashTier(tier) {
     if (!tierDisplay) return;
 
     clearTimeout(tierFlashTimeout);
-    tierDisplay.textContent  = tier.label;
-    tierDisplay.style.color  = tier.color;
+    tierDisplay.textContent   = tier.label;
+    tierDisplay.style.color   = tier.color;
     tierDisplay.style.opacity = "1";
 
     tierFlashTimeout = setTimeout(() => {
@@ -288,7 +535,7 @@ function showFinalScore() {
         sub.innerHTML = `
             <div style="font-size:3vw;color:#fff;">Final Score</div>
             <div style="font-size:8vw;color:${color};font-weight:bold;">${totalScore.toLocaleString()}</div>
-            <div style="font-size:4vw;color:${color};">Grade: ${grade} </div>
+            <div style="font-size:4vw;color:${color};">Grade: ${grade}</div>
         `;
         setTimeout(() => { sub.innerHTML = ""; }, 4000);
     }
@@ -303,10 +550,14 @@ function hzToNote(hz) {
     return `${note}${octave}`;
 }
 
+
+//Handles Style and Functionality of the button for accessing Scoreboard
 function injectScorerStyles() {
     const style = document.createElement("style");
     style.textContent = `
         #scorerPanel {
+            background: rgba(123, 39, 245, 0.75);
+            border:1px solid #3e007d;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -356,14 +607,12 @@ function injectScorerStyles() {
 
 window.addEventListener("DOMContentLoaded", () => {
     initScorerUI();
-
-    const params = new URLSearchParams(window.location.search);
-    const songId = parseInt(params.get("song"));
+    initScoreboard();
 
     fetch("/api/songs")
         .then(r => r.json())
         .then(data => {
-            const song = data.find(s => s.id === songId);
+            const song = data.find(s => s.id === currentSongId);
             if (song) loadSongPitches(song.pitchesPath);
         });
 

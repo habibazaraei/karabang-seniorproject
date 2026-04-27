@@ -24,6 +24,7 @@
                 </div>
                 <div id="loggedIn" style="display:none;">
                     <a href="profilepage">Profile</a>
+                    <a href="#" id="scoreboardBtn" onclick="document.getElementById('scoreboardModal').style.cssText='display:flex !important; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center;'; openGlobalScoreboard(); return false;">Scoreboard</a>
                     <a href="#" id="logoutBtn">Logout</a>
                 </div>
             </div>
@@ -110,6 +111,26 @@
         </div>
     </div>
     <br>
+</div>
+
+
+<!-- ScoreBoard Modal Screen -->
+<div id="scoreboardModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(123, 39, 245, 0.75); z-index:9999; align-items:center; justify-content:center;">
+    <div id="scoreboardPanel" style="background:rgba(123, 39, 245, 0.75); border:1px solid #3e007d; border-radius:16px; padding:24px; min-width:320px; max-width:480px; width:90%;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <span style="color:#fff; font-size:1.2rem; font-weight:bold;">Global Scoreboard</span>
+            <button id="closeScoreboardBtn" style="background:none; border:none; color:#aaa; font-size:1.1rem; cursor:pointer;">✕</button>
+        </div>
+        <div id="scoreboardSongSelect" style="margin-bottom:16px;">
+            <select id="scoreboardSongFilter" style="width:100%; padding:8px; border-radius:8px; background:#2a2a3e; color:#fff; border:1px solid #3e007d;">
+                <option value="all">All Songs</option>
+            </select>
+        </div>
+        <div id="scoreboardList">
+            <div style="text-align:center; color:#aaa; padding:20px;">Loading...</div>
+        </div>
+        <div id="scoreboardYourBest" style="margin-top:14px; text-align:center; font-size:0.85rem; color:#aaa;"></div>
+    </div>
 </div>
 
 <script type="module" src="/js/SongSelection.js"></script>

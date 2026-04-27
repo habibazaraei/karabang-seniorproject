@@ -727,6 +727,8 @@ onAuthStateChanged(auth, user => {
     }
 });
 
+
+
 document.getElementById("logoutBtn").onclick = async () => {
     await signOut(auth);
     location.reload();
@@ -769,3 +771,136 @@ async function loadUserPreferences(user) {
         document.getElementById("scrollSpeedLabel").innerText = label;
     }
 }
+
+//Scoreboard feature JS
+
+
+document.getElementById("closeScoreboardBtn").addEventListener("click", () => {
+    document.getElementById("scoreboardModal").style.cssText = "display:none;";
+});
+
+document.getElementById("scoreboardModal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("scoreboardModal")) {
+        document.getElementById("scoreboardModal").style.cssText = "display:none;";
+    }
+});
+
+// Populate song filter dropdown and reload scores when changed
+document.getElementById("scoreboardSongFilter").addEventListener("change", async () => {
+    await loadScoreboardEntries();
+});
+
+async function openGlobalScoreboard() {
+    const modal = document.getElementById("scoreboardModal");
+    modal.style.cssText = "display:flex !important; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;";
+
+    // Populate song filter with actual song names
+    const filter = document.getElementById("scoreboardSongFilter");
+    filter.innerHTML = `<option value="all">All Songs</option>`;
+    songs.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value  = s.id;
+        opt.textContent = `${s.title} — ${s.artist}`;
+        filter.appendChild(opt);
+    });
+
+    const user = auth.currentUser;
+        const yourBest = document.getElementById("scoreboardYourBest");
+        if (user) {
+            try {
+                const songFilter = document.getElementById("scoreboardSongFilter").value;
+                if (songFilter !== "all") {
+                    const myRef  = doc(db, "scores", String(songFilter), "entries", user.uid);
+                    const mySnap = await getDoc(myRef);
+                    if (mySnap.exists()) {
+                        yourBest.textContent = `Your best: ${mySnap.data().score.toLocaleString()}`;
+                    } else {
+                        yourBest.textContent = "You have no score for this song yet!";
+                    }
+                } else {
+                    yourBest.textContent = "Select a song to see your personal best!";
+                }
+            } catch (_) {}
+     } else {
+                yourBest.textContent = "Log in to save your scores!";
+            }
+
+        await loadScoreboardEntries();
+    }
+
+async function loadScoreboardEntries() {
+    const list     = document.getElementById("scoreboardList");
+    const songFilter = document.getElementById("scoreboardSongFilter").value;
+    list.innerHTML = `<div style="text-align:center; color:#aaa; padding:20px;">Loading...</div>`;
+    const user = auth.currentUser;
+    const yourBest = document.getElementById("scoreboardYourBest");
+    if (user && songFilter !== "all") {
+        try {
+            const myRef  = doc(db, "scores", String(songFilter), "entries", user.uid);
+            const mySnap = await getDoc(myRef);
+            yourBest.textContent = mySnap.exists()
+                ? `Your best: ${mySnap.data().score.toLocaleString()}`
+                : "You have no score for this song yet!";
+        } catch (_) {}
+    } else if (songFilter === "all") {
+        yourBest.textContent = "Select a song to see your personal best!";
+    }
+
+    const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
+
+    try {
+        let allScores = [];
+
+        if (songFilter === "all") {
+            // Load top scores across all songs
+            for (const song of songs) {
+                const snapshot = await getDocs(collection(db, "scores", String(song.id), "entries"));
+                snapshot.docs.forEach(d => {
+                    allScores.push({ ...d.data(), songTitle: song.title });
+                });
+            }
+        } else {
+            // Load top scores for a specific song
+            const song = songs.find(s => String(s.id) === songFilter);
+            const snapshot = await getDocs(collection(db, "scores", songFilter, "entries"));
+            snapshot.docs.forEach(d => {
+                allScores.push({ ...d.data(), songTitle: song?.title || "Unknown" });
+            });
+        }
+
+        // Sort by score descending, take top 5
+        allScores.sort((a, b) => b.score - a.score);
+        const top5 = allScores.slice(0, 5);
+
+        if (top5.length === 0) {
+            list.innerHTML = `<div style="text-align:center; color:#aaa; padding:20px;">No scores yet!</div>`;
+            return;
+        }
+
+        const user = auth.currentUser;
+        list.innerHTML = top5.map((s, i) => `
+            <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; margin-bottom:6px; background:${user && s.userId === user.uid ? 'rgba(75,167,255,0.15)' : 'rgba(255,255,255,0.05)'}; ${user && s.userId === user.uid ? 'border:1px solid #4BA7FF;' : ''}">
+                <span style="font-size:1.2rem; min-width:28px;">${medals[i]}</span>
+                <span style="flex:1; color:#fff; font-size:0.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.username}</span>
+                ${songFilter === "all" ? `<span style="font-size:0.75rem; color:#aaa; margin-right:4px;">${s.songTitle}</span>` : ""}
+                <span style="font-weight:bold; color:#FFD700; font-size:1rem;">${s.score.toLocaleString()}</span>
+            </div>
+        `).join("");
+
+    } catch (err) {
+        console.error("Failed to load scoreboard:", err);
+        list.innerHTML = `<div style="text-align:center; color:#ff6b6b; padding:20px;">Failed to load scores.</div>`;
+    }
+}
+
+document.getElementById("myDropdown").addEventListener("click", async (e) => {
+    const btn = e.target.closest("#scoreboardBtn");
+    if (!btn) return;
+    e.preventDefault();
+    console.log("Scoreboard clicked via delegation!");
+    document.getElementById("myDropdown").classList.remove("show");
+    openGlobalScoreboard();
+});
+
+//Allows this Scoreboard feature to become accessible from the html.
+window.openGlobalScoreboard = openGlobalScoreboard;
