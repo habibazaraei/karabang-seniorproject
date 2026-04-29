@@ -115,7 +115,6 @@
     "artCoverPath": "/artCover/fireworkArtCover.jpg",
     "songTeaserPath": "/teaser/fireworkTeaser.mp3",
     "pitchesPath": "/audio/Firework_pitches.json"
-    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
   },
   {
     "id": 21,
@@ -127,7 +126,8 @@
     "audioPath": "/audio/Grenade.mp3",
     "lyricsPath": "/lyrics/Grenade.lrc",
     "artCoverPath": "/artCover/grenadeArtCover.jpg",
-    "songTeaserPath": "/teaser/grenadeTeaser.mp3"
+    "songTeaserPath": "/teaser/grenadeTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 22,
@@ -139,7 +139,8 @@
     "audioPath": "/audio/BestPart.mp3",
     "lyricsPath": "/lyrics/BestPart.lrc",
     "artCoverPath": "/artCover/bestPartArtCover.jpg",
-    "songTeaserPath": "/teaser/bestPartTeaser.mp3"
+    "songTeaserPath": "/teaser/bestPartTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 23,
@@ -151,7 +152,8 @@
     "audioPath": "/audio/Umbrella.mp3",
     "lyricsPath": "/lyrics/Umbrella.lrc",
     "artCoverPath": "/artCover/umbrellaArtCover.jpg",
-    "songTeaserPath": "/teaser/umbrellaTeaser.mp3"
+    "songTeaserPath": "/teaser/umbrellaTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 24,
@@ -163,7 +165,8 @@
     "audioPath": "/audio/StressedOut.mp3",
     "lyricsPath": "/lyrics/StressedOut.lrc",
     "artCoverPath": "/artCover/stressedOutArtCover.jpg",
-    "songTeaserPath": "/teaser/stressedOutTeaser.mp3"
+    "songTeaserPath": "/teaser/stressedOutTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 25,
@@ -175,7 +178,8 @@
     "audioPath": "/audio/LoveStory.mp3",
     "lyricsPath": "/lyrics/LoveStory.lrc",
     "artCoverPath": "/artCover/loveStoryArtCover.jpg",
-    "songTeaserPath": "/teaser/loveStoryTeaser.mp3"
+    "songTeaserPath": "/teaser/loveStoryTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 26,
@@ -187,7 +191,8 @@
     "audioPath": "/audio/WeCantBeFriends.mp3",
     "lyricsPath": "/lyrics/WeCantBeFriends.lrc",
     "artCoverPath": "/artCover/weCantBeFriendsArtCover.jpg",
-    "songTeaserPath": "/teaser/weCantBeFriendsTeaser.mp3"
+    "songTeaserPath": "/teaser/weCantBeFriendsTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 27,
@@ -199,7 +204,8 @@
     "audioPath": "/audio/PartyInTheUSA.mp3",
     "lyricsPath": "/lyrics/PartyInTheUSA.lrc",
     "artCoverPath": "/artCover/partyInTheUSAArtCover.jpg",
-    "songTeaserPath": "/teaser/partyInTheUSATeaser.mp3"
+    "songTeaserPath": "/teaser/partyInTheUSATeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 28,
@@ -211,7 +217,8 @@
     "audioPath": "/audio/LaMentira.mp3",
     "lyricsPath": "/lyrics/LaMentira.lrc",
     "artCoverPath": "/artCover/laMentiraArtCover.jpg",
-    "songTeaserPath": "/teaser/laMentiraTeaser.mp3"
+    "songTeaserPath": "/teaser/laMentiraTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 29,
@@ -223,7 +230,8 @@
     "audioPath": "/audio/Mia.mp3",
     "lyricsPath": "/lyrics/Mia.lrc",
     "artCoverPath": "/artCover/miaArtCover.jpg",
-    "songTeaserPath": "/teaser/miaTeaser.mp3"
+    "songTeaserPath": "/teaser/miaTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 30,
@@ -235,7 +243,8 @@
     "audioPath": "/audio/ImNotOkay.mp3",
     "lyricsPath": "/lyrics/ImNotOkay.lrc",
     "artCoverPath": "/artCover/imNotOkayArtCover.jpg",
-    "songTeaserPath": "/teaser/imNotOkayTeaser.mp3"
+    "songTeaserPath": "/teaser/imNotOkayTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 31,
@@ -247,7 +256,8 @@
     "audioPath": "/audio/Woo.mp3",
     "lyricsPath": "/lyrics/Woo.lrc",
     "artCoverPath": "/artCover/wooArtCover.jpg",
-    "songTeaserPath": "/teaser/wooTeaser.mp3"
+    "songTeaserPath": "/teaser/wooTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 32,
@@ -259,7 +269,8 @@
     "audioPath": "/audio/Legends.mp3",
     "lyricsPath": "/lyrics/Legends.lrc",
     "artCoverPath": "/artCover/legendsArtCover.jpg",
-    "songTeaserPath": "/teaser/legendsTeaser.mp3"
+    "songTeaserPath": "/teaser/legendsTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 33,
@@ -271,7 +282,8 @@
     "audioPath": "/audio/BubblegumBitch.mp3",
     "lyricsPath": "/lyrics/BubblegumBitch.lrc",
     "artCoverPath": "/artCover/bubblegumBitchArtCover.jpg",
-    "songTeaserPath": "/teaser/bubblegumBitchTeaser.mp3"
+    "songTeaserPath": "/teaser/bubblegumBitchTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 34,
@@ -283,7 +295,8 @@
     "audioPath": "/audio/PrincessGoingDigital.mp3",
     "lyricsPath": "/lyrics/PrincessGoingDigital.lrc",
     "artCoverPath": "/artCover/princessGoingDigitalArtCover.jpg",
-    "songTeaserPath": "/teaser/princessGoingDigitalTeaser.mp3"
+    "songTeaserPath": "/teaser/princessGoingDigitalTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 35,
@@ -295,7 +308,8 @@
     "audioPath": "/audio/Timeless.mp3",
     "lyricsPath": "/lyrics/Timeless.lrc",
     "artCoverPath": "/artCover/timelessArtCover.jpg",
-    "songTeaserPath": "/teaser/timelessTeaser.mp3"
+    "songTeaserPath": "/teaser/timelessTeaser.mp3",
+    "pitchesPath": null
   },
   {
     "id": 36,
@@ -307,7 +321,8 @@
     "audioPath": "/audio/Dynamite.mp3",
     "lyricsPath": "/lyrics/Dynamite.lrc",
     "artCoverPath": "/artCover/dynamiteArtCover.jpg",
-    "songTeaserPath": "/teaser/dynamiteTeaser.mp3"
+    "songTeaserPath": "/teaser/dynamiteTeaser.mp3",
+    "pitchesPath": null
   }
 
 ]
