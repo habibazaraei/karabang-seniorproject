@@ -524,11 +524,13 @@ function flashTier(tier) {
 function showFinalScore() {
     const pct = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0;
     let grade, color;
-    if      (pct >= 90) { grade = "S"; color = "#FFD700"; }
-    else if (pct >= 75) { grade = "A"; color = "#4BA7FF"; }
-    else if (pct >= 60) { grade = "B"; color = "#6bff8e"; }
-    else if (pct >= 45) { grade = "C"; color = "#f0c040"; }
-    else                { grade = "D"; color = "#ff6b6b"; }
+    if      (pct = 95) { grade = "EX+"; color = "#FFD700"; }
+    else if (pct >= 88) { grade = "S"; color = "#4BA7FF"; }
+    else if (pct >= 80) { grade = "A"; color = "#6bff8e"; }
+    else if (pct >= 70) { grade = "B"; color = "#f0c040"; }
+    else if (pct >= 60) { grade = "C"; color = "#f0c040"; }
+    else if (pct >= 50) { grade = "D"; color = "#f0c040"; }
+    else                { grade = "F"; color = "#ff6b6b"; }
 
     const sub = document.getElementById("subtitle");
     if (sub) {
