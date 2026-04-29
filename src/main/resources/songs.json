@@ -36,7 +36,7 @@
     "lyricsPath": "/lyrics/Starboy.lrc",
     "artCoverPath": "/artCover/starboyArtCover.jpg",
     "songTeaserPath": "/teaser/starboyTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/Starboy_pitches.json"
   },
   {
     "id": 4,
