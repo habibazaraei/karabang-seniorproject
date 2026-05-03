@@ -452,45 +452,44 @@ button:active {
 }
 #scoreBar {
     position: relative;
-    width: 200px;
+    width: 250px; /* Increased slightly for better visibility */
     height: 14px;
-    border-radius: 10px;
+    background: #1a1a1a; /* Darker background so the bar pops */
+    border-radius: 7px;
     overflow: hidden;
-    border: 1px solid #3e007d;
-
-    /* gray base */
-    background: #222;
+    border: 1px solid #333;
 }
 
-/* Ensure there is only ONE #scoreBarFill block */
 #scoreBarFill {
     position: absolute;
-    top: 0;
     left: 0;
+    top: 0;
     height: 100%;
-    width: 0%;
-    background: #ff6b6b;
-
-    transition: width 0.3s ease-out, background-color 0.2s linear;
+    /* Change 0.2s to 0.05s to match your 50ms scoringTick */
+    transition: width 0.05s linear;
+    background-repeat: no-repeat;
+    z-index: 1;
 }
-
-/* The Rainbow Animation */
+/* Ensure the rainbow colors actually animate */
 @keyframes rainbowGlow {
-    0% { background-color: #ff0000; filter: hue-rotate(0deg); }
-    100% { background-color: #ff0000; filter: hue-rotate(360deg); }
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
 }
 
-/* Class to be added via JS when reaching EX+ */
 .tier-ex-plus {
-    animation: rainbowGlow 2s linear infinite;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    /* Use !important to ensure the rainbow overrides the JS background-color */
+    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet) !important;
+    background-size: 200% 200% !important;
+    animation: rainbowGlow 2s linear infinite !important;
 }
-/* vertical rank lines */
+
+
 .rankMarker {
     position: absolute;
     top: 0;
     width: 2px;
     height: 100%;
-    background: black;
-    opacity: 0.7;
+    background: #000; /* Black markers are easier to see over colors */
+    opacity: 0.8;
+    z-index: 2; /* Ensure markers stay on top of the color */
 }

@@ -28,7 +28,15 @@ const TIERS = [
 ];
 
 const MIN_VOICED_AMP = 0.005; // RMS threshold — below this we treat user as silent
-
+// ─── Ranks Constants ───────────────────────────────────────────────────────────
+const Ranks = [
+    { label: "EX+", min: 95, color: null },      // Handled by rainbow logic
+    { label: "A",   min: 88, color: "#4BA7FF" }, // Blue
+    { label: "B",   min: 80, color: "#00ff3d" }, // Green
+    { label: "C",   min: 70, color: "#a47503" }, // Yellow/Gold
+    { label: "D",   min: 60, color: "#8c0dff" }, // Orange
+    { label: "F",   min: 0,  color: "#ff6b6b" }, // Red
+];
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let songPitchData = null;
@@ -200,6 +208,8 @@ async function startCountdownAndPlay() {
 
     if (bottomBar) bottomBar.style.pointerEvents = "auto";
 
+    resetScore();
+    resetScoreBar();
     await startMic();
     playImg.src = "/images/pause_icon.svg";
     audio.play().catch(() => {});
@@ -210,27 +220,24 @@ function scoringTick() {
     if (!scoringActive || !analyserNode) return;
 
     const audio = document.getElementById("audio");
-    if (!audio || audio.paused) {
-        updateScorerUI(0, 0);
-        return;
-    }
+    if (!audio || audio.paused) return;
 
     const userHz = detectPitch(analyserNode);
     const expectedHz = getExpectedPitch(audio.currentTime);
 
+    // If the song doesn't expect a note, just exit.
     if (expectedHz <= 0) return;
-    if (userHz <= 0) {
-        updateScorerUI(userHz, expectedHz);
-        return;
-    }
 
-    if (expectedHz > 0) {
-        scoredFrames++;
+    // --- REMOVED MAXPOSSIBLE ---
+    // We no longer track a denominator. The score is now absolute.
+    scoredFrames++;
+
+    if (userHz > 0) {
         const tier = getTier(userHz, expectedHz);
 
         if (tier.label === "MISS") {
             consecutiveMisses++;
-            if (consecutiveMisses >= 8) {
+            if (consecutiveMisses >= 12) {
                 currentCombo = 0;
             }
         } else {
@@ -239,22 +246,22 @@ function scoringTick() {
             if(currentCombo > maxCombo) maxCombo = currentCombo;
         }
 
+        // AGGRESSIVE COMBO REWARDS
+        // Since there is no 'max', these multipliers make the score explode!
         let multiplier = 1;
-        if (currentCombo >= 50) multiplier = 2.0;
-        else if (currentCombo >= 20) multiplier = 1.5;
+        if (currentCombo >= 50) multiplier = 10;     // Huge reward for 50+
+        else if (currentCombo >= 25) multiplier = 5;
+        else if (currentCombo >= 10) multiplier = 3;
+        else if (currentCombo >= 2)  multiplier = 200;
 
+        let pointsEarned = tier.points;
+        // Make 'PERFECT' significantly better than others to reward accuracy
+        if (tier.label === "PERFECT") pointsEarned = 50;
 
-        totalScore += Math.round(tier.points * multiplier);
-        maxPossible += Math.round(TIERS[0].points * multiplier);
+        totalScore += Math.round(pointsEarned * multiplier);
 
-        // 4. Popups and UI
-        if (
-            currentCombo === 2 ||
-            currentCombo === 5 ||
-            currentCombo === 10 ||
-            currentCombo === 20 ||
-            currentCombo === 50
-        ) {
+        // Feedback
+        if ([2, 5, 10, 25, 50, 100, 200].includes(currentCombo)) {
             spawnComboPopup(currentCombo);
         }
 
@@ -263,11 +270,13 @@ function scoringTick() {
             flashTier(tier);
             spawnTierPopup(tier);
         }
+    } else {
+        consecutiveMisses++;
     }
 
+    // Pass 0 to updateScorerUI for the percentage so the bar doesn't break
     updateScorerUI(userHz, expectedHz);
 }
-
 function resetScore() {
     totalScore = 0;
     maxPossible = 0;
@@ -277,7 +286,7 @@ function resetScore() {
     maxCombo = 0;
     consecutiveMisses = 0;
     scoreDisplay.textContent = "0";
-
+    resetScoreBar();
 }
 
 
@@ -677,12 +686,12 @@ function initScorerUI() {
         panel.innerHTML = `
         <div id="scoreBar">
             <div id="scoreBarFill"></div>
-            <div class="rankMarker" style="left:50%"></div>
-            <div class="rankMarker" style="left:60%"></div>
-            <div class="rankMarker" style="left:70%"></div>
-            <div class="rankMarker" style="left:80%"></div>
-            <div class="rankMarker" style="left:88%"></div>
-            <div class="rankMarker" style="left:95%"></div>
+            <!-- Markers placed exactly at rank thresholds -->
+            <div class="rankMarker" style="left:60%"></div>  <!-- D Rank -->
+            <div class="rankMarker" style="left:70%"></div>  <!-- C Rank -->
+            <div class="rankMarker" style="left:80%"></div>  <!-- B Rank -->
+            <div class="rankMarker" style="left:88%"></div>  <!-- A Rank -->
+            <div class="rankMarker" style="left:95%"></div>  <!-- EX+ Rank -->
         </div>
         <span id="scoreDisplay">0</span>
         `;
@@ -718,32 +727,35 @@ function initScorerUI() {
 function updateScorerUI(userHz, expectedHz) {
     if (!scoreDisplay) return;
 
+    // 1. Calculate percentage based on your fixed Target Score (e.g., 100k)
+    const targetScore = 100000;
+    const pct = Math.min((totalScore / targetScore) * 100, 100);
+
+    // 2. Update the visual bar and text
+    updateScoreBar(pct);
+    scoreDisplay.textContent = totalScore.toLocaleString();
+
+    // 3. Update Pitch Display (Note names)
     if (pitchDisplay) {
         const userNote = userHz > 0 ? hzToNote(userHz) : "—";
         const expectedNote = expectedHz > 0 ? hzToNote(expectedHz) : "—";
-
         pitchDisplay.textContent = `You: ${userNote} | Song: ${expectedNote}`;
-
         const tier = getTier(userHz, expectedHz);
         pitchDisplay.style.color = expectedHz > 0 ? tier.color : "#aaa";
     }
-    if (USE_SCORE_BAR) {
-        const pct = maxPossible > 0 ? (totalScore / maxPossible) * 100 : 0;
-        updateScoreBar(pct);
-    }
-    scoreDisplay.textContent = totalScore.toLocaleString();
 
+    // 4. Update Combo UI
     const comboEl = document.getElementById("comboDisplay");
-  if (comboEl) {
-      if (currentCombo > 1) {
-          comboEl.textContent = `Combo ${currentCombo}x`;
-          comboEl.style.color = currentCombo >= 50 ? "#FFD700" : currentCombo >= 20 ? "#4BA7FF" : "#6bff8e";
-          comboEl.style.opacity = "1";
-      } else {
-          comboEl.style.opacity = "0";
-      }
+    if (comboEl) {
+        if (currentCombo > 1) {
+            comboEl.textContent = `Combo ${currentCombo}x`;
+            comboEl.style.color = currentCombo >= 50 ? "#FFD700" : currentCombo >= 20 ? "#4BA7FF" : "#6bff8e";
+            comboEl.style.opacity = "1";
+        } else {
+            comboEl.style.opacity = "0";
+        }
     }
-  }
+}
 
 function flashTier(tier) {
     if (!tierDisplay) return;
@@ -759,15 +771,19 @@ function flashTier(tier) {
 }
 
 function showFinalScore() {
-    const pct = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0;
+    // 1. USE THE TARGET SCORE (100,000) INSTEAD OF maxPossible
+    const targetScore = 100000;
+    const pct = Math.round((totalScore / targetScore) * 100);
+
     let grade, color, isRainbow = false;
 
+    // 2. Logic to determine Rank based on the new percentage
     if (pct >= 95) { grade = "EX+"; color = "#FFD700"; isRainbow = true; }
-    else if (pct >= 88) { grade = "S"; color = "#4BA7FF"; }
-    else if (pct >= 80) { grade = "A"; color = "#6bff8e"; }
-    else if (pct >= 70) { grade = "B"; color = "#f0c040"; }
-    else if (pct >= 60) { grade = "C"; color = "#f0c040"; }
-    else if (pct >= 50) { grade = "D"; color = "#f0c040"; }
+    else if (pct >= 88) { grade = "A"; color = "#4BA7FF"; }
+    else if (pct >= 80) { grade = "B"; color = "#6bff8e"; }
+    else if (pct >= 70) { grade = "C"; color = "#f0c040"; }
+    else if (pct >= 60) { grade = "D"; color = "#f0c040"; }
+    else if (pct >= 50) { grade = "F"; color = "#f0c040"; }
     else { grade = "F"; color = "#ff6b6b"; }
 
     // Hide UI Bars
@@ -782,7 +798,6 @@ function showFinalScore() {
             ? `font-size:8vw; font-weight:bold; animation: rainbowGlow 2s linear infinite; -webkit-background-clip: text; color: transparent; background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);`
             : `font-size:8vw; color:${color}; font-weight:bold;`;
 
-        // We build the full results screen here
         sub.innerHTML = `
             <div class="results-container" style="text-align:center; background: rgba(0,0,0,0.85); padding: 40px; border-radius: 20px; backdrop-filter: blur(10px);">
                 <div style="font-size:3vw; color:#fff; margin-bottom: 10px;">Final Score</div>
@@ -796,6 +811,7 @@ function showFinalScore() {
                 </div>
             </div>
         `;
+
 
         document.getElementById("retryBtn").onclick = async () => {
             isRestarting = true;
@@ -957,30 +973,77 @@ function injectScorerStyles() {
     document.head.appendChild(style);
 }
 // ─── Score Bar ───────────────────────────────────
+function getRank(pct) {
+    return Ranks.find(r => pct >= r.min);
+}
 function updateScoreBar(pct) {
     const fill = document.getElementById("scoreBarFill");
     if (!fill) return;
 
-    fill.style.width = pct + "%";
+    // Use min/max to keep within bounds
+    const safePct = Math.max(0, Math.min(pct, 100));
+    fill.style.width = safePct + "%";
 
-    // Handle Colors and Rainbow Class
-    if (pct >= 95) {
-        fill.style.backgroundColor = ""; // Clear static color for animation
-        fill.classList.add("tier-ex-plus");
-    } else {
-        fill.classList.remove("tier-ex-plus");
-        if (pct >= 88) fill.style.backgroundColor = "#4BA7FF"; // S
-        else if (pct >= 80) fill.style.backgroundColor = "#6bff8e"; // A
-        else if (pct >= 70) fill.style.backgroundColor = "#f0c040"; // B
-        else fill.style.backgroundColor = "#ff6b6b"; // F/C/D
+    // Handle EX+ Rainbow
+    if (safePct >= 95) {
+        fill.style.backgroundImage = "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
+        fill.style.animation = "rainbowGlow 2s linear infinite";
+        return;
     }
+
+    fill.style.animation = "none";
+
+    // Sort ranks: F (0), D (60), C (70), B (80), A (88)
+    const sortedRanks = [...Ranks]
+        .filter(r => r.min < 95)
+        .sort((a, b) => a.min - b.min);
+
+    let gradientParts = [];
+
+    for (let i = 0; i < sortedRanks.length; i++) {
+        const current = sortedRanks[i];
+        const next = sortedRanks[i + 1];
+
+        // Start this color block exactly where the rank begins
+        gradientParts.push(`${current.color} ${current.min}%`);
+
+        if (next && safePct >= next.min) {
+            // Force the color to stay solid until the next marker
+            gradientParts.push(`${current.color} ${next.min}%`);
+        } else {
+            // End the color at the current progress point
+            gradientParts.push(`${current.color} ${safePct}%`);
+            break;
+        }
+    }
+
+    // CRITICAL: We must set the background-size to 100% of the PARENT,
+    // but gradients by default scale to the element size.
+    // This forces the gradient to align with the markers regardless of bar width.
+    fill.style.backgroundSize = `${(100 / safePct) * 100}% 100%`;
+    fill.style.backgroundImage = `linear-gradient(to right, ${gradientParts.join(', ')})`;
+}
+
+function resetScoreBar() {
+    const fill = document.getElementById("scoreBarFill");
+    if (!fill) return;
+
+    fill.style.transition = "none";
+    fill.style.width = "0%";
+    fill.style.backgroundColor = "#ff6b6b";
+    fill.classList.remove("tier-ex-plus");
+
+    void fill.offsetWidth;
+
+    fill.style.transition = "width 0.2s linear, background-color 0.2s linear";
 }
 // ─── Hook into existing MusicPlayer.js flow ───────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", () => {
     initScorerUI();
     initScoreboard();
-
+    resetScore();
+    resetScoreBar();
     fetch("/api/songs")
         .then(r => r.json())
         .then(data => {
