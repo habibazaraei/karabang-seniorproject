@@ -2,190 +2,157 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 body {
-    background: linear-gradient(135deg, #0f0f1a, #1a1a2e);
+    min-height: 100vh;
+    background: linear-gradient(135deg, #12001f, #090014, #1a0033);
     color: white;
-    height: 100vh;
     overflow: hidden;
 }
 
-/* glow background */
+/* background glow */
 .glow {
-    position: absolute;
+    position: fixed;
     width: 300px;
     height: 300px;
     border-radius: 50%;
     filter: blur(120px);
-    opacity: 0.5;
+    opacity: 0.6;
+    z-index: -1;
 }
 
 .glow1 {
-    background: #a18aff;
-    top: -50px;
-    left: -50px;
+    background: #8b5cf6;
+    top: -80px;
+    left: -70px;
 }
 
 .glow2 {
-    background: #7ee8fa;
-    bottom: -50px;
-    right: -50px;
+    background: #ec4899;
+    bottom: -80px;
+    right: -70px;
 }
 
-/* floating icons */
-.icon {
-    position: absolute;
-    font-size: 20px;
-    opacity: 0.1;
-    animation: float 10s infinite linear;
-}
-
-@keyframes float {
-    from { transform: translateY(100vh); }
-    to { transform: translateY(-100vh); }
-}
-
-/* layout */
+/* main 3 column layout */
 .profile-wrapper {
-    display: flex;
     height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 30px;
+    padding: 50px;
+    align-items: center;
 }
 
-/* LEFT PANEL */
-.left-panel {
-    width: 50%;
-    padding: 60px;
+/* side panels */
+.side-panel {
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    align-items: center;
+}
+
+.scoreboard-card,
+.favorites-card,
+.profile-card {
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 22px;
+    padding: 30px;
+    width: 100%;
+    max-width: 340px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.25);
+}
+
+/* center */
+.center-panel {
+    text-align: center;
 }
 
 .brand {
-    font-size: 40px;
-    font-weight: bold;
+    font-size: 42px;
+    margin-bottom: 10px;
 }
 
 .brand span {
-    color: #a18aff;
+    color: #c084fc;
 }
 
 .subtitle {
-    margin: 15px 0 30px;
-    color: #aaa;
+    color: #d8c7ff;
+    margin-bottom: 25px;
 }
 
 /* profile card */
 .profile-card {
-    background: rgba(255,255,255,0.05);
-    padding: 25px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
+    margin: 0 auto;
 }
 
-/* profile image */
-.profile-image-section {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.profile-image-section img {
-    width: 100px;
-    height: 100px;
+#profileImage {
+    width: 125px;
+    height: 125px;
     border-radius: 50%;
-    border: 2px solid #a18aff;
+    border: 3px solid #c084fc;
+    background: white;
+    margin-bottom: 15px;
 }
 
-#changePhotoBtn {
-    margin-top: 10px;
-    padding: 6px 12px;
-    background: #a18aff;
+#changePhotoBtn,
+#changeUserBtn,
+#backBtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
     border: none;
-    border-radius: 8px;
-    color: white;
+    border-radius: 12px;
+    font-size: 15px;
     cursor: pointer;
 }
 
-/* inputs */
-#profile-form input {
+#changePhotoBtn,
+#changeUserBtn {
+    background: linear-gradient(135deg, #9333ea, #ec4899);
+    color: white;
+}
+
+#changePhotoBtn:hover,
+#changeUserBtn:hover {
+    opacity: 0.85;
+}
+
+#displayName {
     width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 8px;
+    padding: 13px;
+    margin-top: 18px;
+    border-radius: 12px;
     border: none;
     outline: none;
-    background: rgba(255,255,255,0.1);
-    color: white;
-}
-
-/* buttons */
-.profile-buttons {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-}
-
-#saveBtn {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background: #a18aff;
-    color: white;
-    cursor: pointer;
+    font-size: 15px;
+    text-align: center;
 }
 
 #backBtn {
-    flex: 1;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-    background: rgba(255,255,255,0.1);
-    color: white;
+    display: block;
     text-decoration: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
 }
 
-/* RIGHT PANEL */
-.right-panel {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+#backBtn:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
-/* album card */
-.album-card {
-    text-align: center;
-}
-
-.album-card img {
-    width: 250px;
-    border-radius: 15px;
-    margin-bottom: 10px;
-}
-
-.song-title {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.artist {
-    color: #aaa;
-}
-
-/* favorites */
-.favorites-card {
-    margin-top: 30px;
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 15px;
-    width: 300px;
-}
-
+/* text cards */
+.scoreboard-card h2,
 .favorites-card h2 {
-    margin-bottom: 10px;
+    margin-bottom: 18px;
+    color: #f0d9ff;
+}
+
+.scoreboard-card p {
+    margin: 12px 0;
+    font-size: 16px;
 }
 
 .favorites-card ul {
@@ -193,32 +160,18 @@ body {
 }
 
 .favorites-card li {
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* scoreboard */
-.scoreboard-card {
-    margin-top: 30px;
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 15px;
-    width: 300px;
-    text-align: center;
-    backdrop-filter: blur(10px);
-}
+/* smaller screens */
+@media (max-width: 900px) {
+    body {
+        overflow: auto;
+    }
 
-.scoreboard-card h2 {
-    margin-bottom: 10px;
-}
-
-.high-score {
-    font-size: 36px;
-    font-weight: bold;
-    color: #a18aff;
-}
-
-.score-label {
-    color: #aaa;
-    font-size: 14px;
+    .profile-wrapper {
+        height: auto;
+        grid-template-columns: 1fr;
+    }
 }
