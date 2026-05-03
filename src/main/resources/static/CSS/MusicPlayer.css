@@ -412,20 +412,6 @@ button:active {
     -webkit-text-stroke: 0.5px black;
 }
 
-@keyframes tierPop {
-    0% {
-        opacity: 0;
-        transform: translateY(0) scale(0.8);
-    }
-    20% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-80px) scale(1.1);
-    }
-}
-/*Score bar*/
 #scoreBar {
     position: relative;
     width: 200px;
@@ -433,13 +419,21 @@ button:active {
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid #3e007d;
-    background: linear-gradient(
-            to right,
-            #ff6b6b 0% 25%,     /* MISS */
-            #6bff8e 25% 50%,    /* CLOSE */
-            #4BA7FF 50% 75%,    /* GOOD */
-            #FFD700 75% 100%    /* PERFECT */
-    );
+
+    /* gray base */
+    background: #222;
+}
+
+/* colored fill (actual score) */
+#scoreBarFill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+
+    background: #ff6b6b; /* default (F) */
+    transition: width 0.2s linear, background 0.2s linear;
 }
 
 /* fill (your actual score) */

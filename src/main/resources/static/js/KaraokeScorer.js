@@ -623,15 +623,13 @@ function initScorerUI() {
 
     if (USE_SCORE_BAR) {
         panel.innerHTML = `
-            <button id="micToggleBtn">🎤 Start Mic</button>
-            <span id="pitchDisplay">— Hz</span>
-            <div id="scoreBar">
-                <div id="scoreBarFill"></div>
-                <div class="rankMarker" style="left:25%"></div>
-                <div class="rankMarker" style="left:50%"></div>
-                <div class="rankMarker" style="left:75%"></div>
-            </div>
-            <span id="scoreDisplay">0</span>
+        <div id="scoreBar">
+            <div id="scoreBarFill"></div>
+            <div class="rankMarker" style="left:25%"></div>
+            <div class="rankMarker" style="left:50%"></div>
+            <div class="rankMarker" style="left:75%"></div>
+        </div>
+        <span id="scoreDisplay">0</span>
         `;
     } else {
         panel.innerHTML = `
@@ -655,21 +653,25 @@ function initScorerUI() {
     tierDisplay = document.getElementById("tierDisplay");
     scoreDisplay = document.getElementById("scoreDisplay");
 
-    micToggleBtn.onclick = toggleMic;
+    if (micToggleBtn) {
+        micToggleBtn.onclick = toggleMic;
+    }
 
     injectScorerStyles();
 }
 
 function updateScorerUI(userHz, expectedHz) {
-    if (!pitchDisplay || !scoreDisplay) return;
+    if (!scoreDisplay) return;
 
-    const userNote = userHz > 0 ? hzToNote(userHz)     : "—";
-    const expectedNote = expectedHz > 0 ? hzToNote(expectedHz) : "—";
+    if (pitchDisplay) {
+        const userNote = userHz > 0 ? hzToNote(userHz) : "—";
+        const expectedNote = expectedHz > 0 ? hzToNote(expectedHz) : "—";
 
-    pitchDisplay.textContent = `You: ${userNote} | Song: ${expectedNote}`;
+        pitchDisplay.textContent = `You: ${userNote} | Song: ${expectedNote}`;
 
-    const tier = getTier(userHz, expectedHz);
-    pitchDisplay.style.color = expectedHz > 0 ? tier.color : "#aaa";
+        const tier = getTier(userHz, expectedHz);
+        pitchDisplay.style.color = expectedHz > 0 ? tier.color : "#aaa";
+    }
     if (USE_SCORE_BAR) {
         updateScoreBar(totalScore, maxPossible);
     }
@@ -820,12 +822,24 @@ function injectScorerStyles() {
 }
 // ─── Score Bar ───────────────────────────────────
 function updateScoreBar(score, maxScore) {
-    const percent = Math.min(1, score / maxScore) * 100;
+    const percent = maxScore > 0 ? (score / maxScore) * 100 : 0;
 
     const fill = document.getElementById("scoreBarFill");
+    fill.style.width = percent + "%";
 
-    // invert because we're shrinking the dark overlay
-    fill.style.width = (100 - percent) + "%";
+    // calculate grade
+    const pct = percent;
+
+    let color;
+    if (pct >= 95) color = "#FFD700";      // EX+
+    else if (pct >= 88) color = "#4BA7FF"; // S
+    else if (pct >= 80) color = "#6bff8e"; // A
+    else if (pct >= 70) color = "#f0c040"; // B
+    else if (pct >= 60) color = "#f0c040"; // C
+    else if (pct >= 50) color = "#f0c040"; // D
+    else color = "#ff6b6b";                // F
+
+    fill.style.background = color;
 }
 // ─── Hook into existing MusicPlayer.js flow ───────────────────────────────────
 
