@@ -194,6 +194,27 @@ body {
     transform: scale(1.2);
 }
 
+#settings img {
+    width: clamp(21px, 3vh, 42px);
+    height: clamp(21px, 3vh, 42px);
+}
+
+#settingsMenu {
+    right: 10px;
+    top: 60px;
+    display: none;
+}
+
+#settingsMenu label {
+    font-size: 12px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#settingsMenu input {
+    width: 100px;
+}
+
 button {
     background: transparent;
     border: none;

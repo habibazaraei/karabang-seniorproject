@@ -9,7 +9,8 @@
     "audioPath": "/audio/BlindingLights.mp3",
     "lyricsPath": "/lyrics/BlindingLights.lrc",
     "artCoverPath": "/artCover/blindingLightsArtCover.jpg",
-    "songTeaserPath": "/teaser/blindingLightsTeaser.mp3"
+    "songTeaserPath": "/teaser/blindingLightsTeaser.mp3",
+    "pitchesPath": "/audio/BlindingLights_pitches.json"
   },
   {
     "id": 2,
@@ -21,7 +22,8 @@
     "audioPath": "/audio/BohemianRhapsody.mp3",
     "lyricsPath": "/lyrics/BohemianRhapsody.lrc",
     "artCoverPath": "/artCover/bohemianRhapsodyArtCover.jpg",
-    "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3"
+    "songTeaserPath": "/teaser/bohemianRhapsodyTeaser.mp3",
+    "pitchesPath": "/audio/BohemianRhapsody_pitches.json"
   },
   {
     "id": 3,
@@ -33,19 +35,21 @@
     "audioPath": "/audio/Starboy.mp3",
     "lyricsPath": "/lyrics/Starboy.lrc",
     "artCoverPath": "/artCover/starboyArtCover.jpg",
-    "songTeaserPath": "/teaser/starboyTeaser.mp3"
+    "songTeaserPath": "/teaser/starboyTeaser.mp3",
+    "pitchesPath": "/audio/Starboy_pitches.json"
   },
   {
     "id": 4,
     "title": "Can't Feel My Face",
-    "artist": "The Weeknd",
+    "artist": "The Weekend",
     "genre": "Pop",
     "difficulty": "Easy",
     "language": "English",
     "audioPath": "/audio/CantFeelMyFace.mp3",
     "lyricsPath": "/lyrics/CantFeelMyFace.lrc",
     "artCoverPath": "/artCover/cantFeelMyFaceArtCover.jpg",
-    "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3"
+    "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3",
+    "pitchesPath": "/audio/CantFeelMyFace_pitches.json"
   },
   {
     "id": 5,
@@ -57,7 +61,8 @@
     "audioPath": "/audio/WeWillRockYou.mp3",
     "lyricsPath": "/lyrics/WeWillRockYou.lrc",
     "artCoverPath": "/artCover/weWillRockYouArtCover.jpg",
-    "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3"
+    "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3",
+    "pitchesPath": "/audio/WeWillRockYou_pitches.json"
   },
   {
     "id": 6,
@@ -69,7 +74,8 @@
     "audioPath": "/audio/WeAreTheChampions.mp3",
     "lyricsPath": "/lyrics/WeAreTheChampions.lrc",
     "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
-    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3"
+    "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3",
+    "pitchesPath": "/audio/WeAreTheChampions_pitches.json"
   },
   {
     "id": 7,
@@ -81,7 +87,242 @@
     "audioPath": "/audio/SquareUp.mp3",
     "lyricsPath": "/lyrics/SquareUp.lrc",
     "artCoverPath": "/artCover/squareUpCover.jpg",
-    "songTeaserPath": "/teaser/squareUpTeaser.mp3"
+    "songTeaserPath": "/teaser/squareUpTeaser.mp3",
+    "pitchesPath": "/audio/SquareUp_pitches.json"
+  },
+  {
+    "id": 20,
+    "title": "Nagging",
+    "artist": "IU",
+    "genre": "Pop",
+    "difficulty": "Hard",
+    "language": "Korean",
+    "audioPath": "/audio/Nagging.mp3",
+    "lyricsPath": "/lyrics/Nagging.lrc",
+    "artCoverPath": "/artCover/naggingArtCover.jpg",
+    "songTeaserPath": "/teaser/naggingTeaser.mp3",
+    "pitchesPath": "/audio/Nagging_pitches.json"
+  },
+  {
+    "id": 12,
+    "title": "Firework",
+    "artist": "Katy Perry",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/Firework.mp3",
+    "lyricsPath": "/lyrics/Firework.lrc",
+    "artCoverPath": "/artCover/fireworkArtCover.jpg",
+    "songTeaserPath": "/teaser/fireworkTeaser.mp3",
+    "pitchesPath": "/audio/Firework_pitches.json"
+  },
+  {
+    "id": 21,
+    "title": "Grenade",
+    "artist": "Bruno Mars",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/Grenade.mp3",
+    "lyricsPath": "/lyrics/Grenade.lrc",
+    "artCoverPath": "/artCover/grenadeArtCover.jpg",
+    "songTeaserPath": "/teaser/grenadeTeaser.mp3",
+    "pitchesPath": "/audio/Grenade_pitches.json"
+  },
+  {
+    "id": 22,
+    "title": "Best Part",
+    "artist": "HER ft. Daniel Caesar",
+    "genre": "R&B",
+    "difficulty": "Hard",
+    "language": "English",
+    "audioPath": "/audio/BestPart.mp3",
+    "lyricsPath": "/lyrics/BestPart.lrc",
+    "artCoverPath": "/artCover/bestPartArtCover.jpg",
+    "songTeaserPath": "/teaser/bestPartTeaser.mp3",
+    "pitchesPath": "/audio/BestPart_pitches.json"
+  },
+  {
+    "id": 23,
+    "title": "Umbrella",
+    "artist": "Rihanna ft. JAY-Z",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/Umbrella.mp3",
+    "lyricsPath": "/lyrics/Umbrella.lrc",
+    "artCoverPath": "/artCover/umbrellaArtCover.jpg",
+    "songTeaserPath": "/teaser/umbrellaTeaser.mp3",
+    "pitchesPath": "/audio/Umbrella_pitches.json"
+  },
+  {
+    "id": 24,
+    "title": "Stressed Out",
+    "artist": "twenty one pilots",
+    "genre": "Alternative",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/StressedOut.mp3",
+    "lyricsPath": "/lyrics/StressedOut.lrc",
+    "artCoverPath": "/artCover/stressedOutArtCover.jpg",
+    "songTeaserPath": "/teaser/stressedOutTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 25,
+    "title": "Love Story",
+    "artist": "Taylor Swift",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/LoveStory.mp3",
+    "lyricsPath": "/lyrics/LoveStory.lrc",
+    "artCoverPath": "/artCover/loveStoryArtCover.jpg",
+    "songTeaserPath": "/teaser/loveStoryTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 26,
+    "title": "we can't be friends",
+    "artist": "Ariana Grande",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/WeCantBeFriends.mp3",
+    "lyricsPath": "/lyrics/WeCantBeFriends.lrc",
+    "artCoverPath": "/artCover/weCantBeFriendsArtCover.jpg",
+    "songTeaserPath": "/teaser/weCantBeFriendsTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 27,
+    "title": "Party in the USA",
+    "artist": "Miley Cyrus",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/PartyInTheUSA.mp3",
+    "lyricsPath": "/lyrics/PartyInTheUSA.lrc",
+    "artCoverPath": "/artCover/partyInTheUSAArtCover.jpg",
+    "songTeaserPath": "/teaser/partyInTheUSATeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 28,
+    "title": "La Mentira",
+    "artist": "Luis Miguel",
+    "genre": "Pop Latino",
+    "difficulty": "Medium",
+    "language": "Spanish",
+    "audioPath": "/audio/LaMentira.mp3",
+    "lyricsPath": "/lyrics/LaMentira.lrc",
+    "artCoverPath": "/artCover/laMentiraArtCover.jpg",
+    "songTeaserPath": "/teaser/laMentiraTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 29,
+    "title": "MIA",
+    "artist": "Bad Bunny ft. Drake",
+    "genre": "Latin",
+    "difficulty": "Hard",
+    "language": "Spanish",
+    "audioPath": "/audio/Mia.mp3",
+    "lyricsPath": "/lyrics/Mia.lrc",
+    "artCoverPath": "/artCover/miaArtCover.jpg",
+    "songTeaserPath": "/teaser/miaTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 30,
+    "title": "I'm Not Okay",
+    "artist": "My Chemical Romance",
+    "genre": "Rock",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/ImNotOkay.mp3",
+    "lyricsPath": "/lyrics/ImNotOkay.lrc",
+    "artCoverPath": "/artCover/imNotOkayArtCover.jpg",
+    "songTeaserPath": "/teaser/imNotOkayTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 31,
+    "title": "Woo",
+    "artist": "Rihanna",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/Woo.mp3",
+    "lyricsPath": "/lyrics/Woo.lrc",
+    "artCoverPath": "/artCover/wooArtCover.jpg",
+    "songTeaserPath": "/teaser/wooTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 32,
+    "title": "Legends",
+    "artist": "Juice Wrld",
+    "genre": "Hip-Hop/Rap",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/Legends.mp3",
+    "lyricsPath": "/lyrics/Legends.lrc",
+    "artCoverPath": "/artCover/legendsArtCover.jpg",
+    "songTeaserPath": "/teaser/legendsTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 33,
+    "title": "Bubblegum Bitch",
+    "artist": "Marina",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/BubblegumBitch.mp3",
+    "lyricsPath": "/lyrics/BubblegumBitch.lrc",
+    "artCoverPath": "/artCover/bubblegumBitchArtCover.jpg",
+    "songTeaserPath": "/teaser/bubblegumBitchTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 34,
+    "title": "Princess Going Digital",
+    "artist": "Amaarae",
+    "genre": "Pop",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/PrincessGoingDigital.mp3",
+    "lyricsPath": "/lyrics/PrincessGoingDigital.lrc",
+    "artCoverPath": "/artCover/princessGoingDigitalArtCover.jpg",
+    "songTeaserPath": "/teaser/princessGoingDigitalTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 35,
+    "title": "Timeless",
+    "artist": "The Weeknd & Playboy Carti",
+    "genre": "R&B/Soul",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/Timeless.mp3",
+    "lyricsPath": "/lyrics/Timeless.lrc",
+    "artCoverPath": "/artCover/timelessArtCover.jpg",
+    "songTeaserPath": "/teaser/timelessTeaser.mp3",
+    "pitchesPath": null
+  },
+  {
+    "id": 36,
+    "title": "Dynamite",
+    "artist": "Taio Cruz",
+    "genre": "Pop",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/Dynamite.mp3",
+    "lyricsPath": "/lyrics/Dynamite.lrc",
+    "artCoverPath": "/artCover/dynamiteArtCover.jpg",
+    "songTeaserPath": "/teaser/dynamiteTeaser.mp3",
+    "pitchesPath": null
   }
 
 ]

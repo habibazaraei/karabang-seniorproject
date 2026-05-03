@@ -38,6 +38,7 @@
         </p>
 
        <form id="signup-form">
+            <input id="username" type="text" placeholder="Username" required>
             <input id="email" type="email" placeholder="Email" required>
             <input id="password" type="password" placeholder="Password" required>
 
@@ -54,44 +55,13 @@
     <!-- RIGHT -->
     <div class="right-panel">
         <div class="album-card">
-            <img src="https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png">
-
-            <div class="song-title">Blinding Lights</div>
-            <div class="artist">The Weeknd</div>
+            <img>
+            <div class="song-title"></div>
+            <div class="artist"></div>
         </div>
     </div>
 
 </div>
-<script>
-    const songs = [
-        {
-            title: "Blinding Lights",
-            artist: "The Weeknd",
-            image: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png"
-        },
-        {
-            title: "Bohemian Rhapsody",
-            artist: "Queen",
-            image: "https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png"
-        }
-    ];
-
-    const songTitle = document.querySelector(".song-title");
-    const artist = document.querySelector(".artist");
-    const image = document.querySelector(".album-card img");
-
-    let index = 0;
-
-    function changeSong(){
-        index = (index + 1) % songs.length;
-
-        songTitle.textContent = songs[index].title;
-        artist.textContent = songs[index].artist;
-        image.src = songs[index].image;
-    }
-
-    setInterval(changeSong, 15000);
-</script>
 
 
 <script type="module" src="/js/signup.js"></script>

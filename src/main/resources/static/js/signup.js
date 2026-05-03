@@ -1,9 +1,10 @@
 import { auth, db } from "./firebase.js";
 import { createUserWithEmailAndPassword } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, setDoc } 
+import { doc, setDoc, getDoc }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
+const username = document.getElementById("username");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const signupBtn = document.getElementById("signupBtn");
@@ -14,28 +15,43 @@ const form = document.getElementById("signup-form");
 form.addEventListener("submit", (e) => e.preventDefault());
 
 //User sign up taking information needed for sign up and then awaits the user action. One it is complete it sends them back to the login page.
-signupBtn.addEventListener("click", async () => {
-    try {
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email.value,
-            password.value
-        );
+       signupBtn.addEventListener("click", async () => {
+           try {
+               // Check if username is already taken
+               const usernameDoc = await getDoc(doc(db, "usernames", username.value.toLowerCase()));
+               if (usernameDoc.exists()) {
+                   alert("Username already taken! Please choose another.");
+                   return;
+               }
 
-        const user = userCredential.user;
+               const userCredential = await createUserWithEmailAndPassword(
+                   auth,
+                   email.value,
+                   password.value
+               );
 
-        await setDoc(doc(db, "users", user.uid), {
-            email: user.email
-        });
+               const user = userCredential.user;
 
-        alert("User created!");
-        window.location.href = "login";
+               // Save user profile
+               await setDoc(doc(db, "users", user.uid), {
+                   email: user.email,
+                   username: username.value,
+                   displayName: username.value
+               });
 
-    } catch (error) {
-        alert(error.message);
-    }
+               // Save username → uid mapping for login lookup
+               await setDoc(doc(db, "usernames", username.value.toLowerCase()), {
+                   uid: user.uid,
+                   email: user.email
+               });
 
-});
+               alert("User created!");
+               window.location.href = "login";
+
+           } catch (error) {
+               alert(error.message);
+           }
+       });
  
 //Home Button
 homeBtn.addEventListener("click", () => {

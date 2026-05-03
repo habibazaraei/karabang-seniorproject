@@ -27,6 +27,30 @@ let dropdownMenu = document.getElementById("dropdownMenu");
 let heartButton = document.getElementById("heart");
 
 let lyrics = []
+let settingsButton = document.getElementById("settings");
+let settingsMenu = document.getElementById("settingsMenu");
+let fontSizeSlider = document.getElementById("fontSize");
+
+// toggle settings menu
+settingsButton.onclick = () => {
+    settingsMenu.style.display =
+        settingsMenu.style.display === "block" ? "none" : "block";
+};
+
+// close when clicking outside
+window.addEventListener("click", (e) => {
+    if (
+        !settingsButton.contains(e.target) &&
+        !settingsMenu.contains(e.target)
+    ) {
+        settingsMenu.style.display = "none";
+    }
+});
+
+// change font size LIVE
+fontSizeSlider.oninput = () => {
+    subtitle.style.fontSize = fontSizeSlider.value + "vw";
+};
 
 // Top Bar
 // Go back to Song Selection
@@ -167,11 +191,23 @@ function parseLyrics(text){
             if(word) words.push({time, text: word})
         }
 
-        // If no word timestamps, just use whole line
+        // If no word timestamps, split line into words and distribute evenly
         if(words.length === 0){
             const lineTextAfterBracket = l.replace(/\[[\d:\.]+\]/, "").trim()
             if(lineTextAfterBracket){
-                words.push({time: lineTime, text: lineTextAfterBracket})
+                const splitWords = lineTextAfterBracket.split(/\s+/)
+                const nextLineMatch = lines[lines.indexOf(l) + 1]?.match(/\[(\d+):(\d+\.\d+)\]/)
+                const nextTime = nextLineMatch
+                    ? parseInt(nextLineMatch[1])*60 + parseFloat(nextLineMatch[2])
+                    : lineTime + 5
+                const duration = Math.min(nextTime - lineTime, 10) * 0.9
+                const totalChars = splitWords.reduce((sum, w) => sum + w.length, 0)
+                        let elapsed = 0
+                        for(let j = 0; j < splitWords.length; j++){
+                            words.push({time: lineTime + elapsed, text: splitWords[j]})
+                            const weight = splitWords[j].length / totalChars
+                            elapsed += weight * duration
+                        }
             }
         }
 
@@ -227,3 +263,4 @@ document.addEventListener("DOMContentLoaded", () => {
 audio.volume = 0.5
 volume.value = 50
 updateVolumeUI()
+subtitle.style.fontSize = "5vw";
