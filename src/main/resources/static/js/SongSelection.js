@@ -509,8 +509,16 @@ function selectSong(song, card) {
 
 singButton.onclick = () => {
     if (!selectedSong) return;
-    window.location.href = "/musicplayer?song=" + selectedSong.id;
+    document.getElementById("modeModal").style.display = "flex";
 };
+
+    document.getElementById("soloBtn").onclick = () => {
+        window.location.href = "/musicplayer?song=" + selectedSong.id;
+    };
+
+    document.getElementById("duetBtn").onclick = () => {
+            window.location.href = "/musicplayer?song=" + selectedSong.id + "&mode=duet";
+        };
 
 function updateTrackSelect() {
     const cards = document.querySelectorAll(".songCard");

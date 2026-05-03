@@ -134,6 +134,24 @@
     </div>
 </div>
 
+    <!--
+    Modal for duet or solo choice screen
+     Creates the screen that appears when one of the play buttons is clicked.
+     Solo or duet buttons allow for respected mode to be chosen
+     Solo is the single singer mode and duet is the dual singer mode
+     Author: @Tyler Radisch
+     -->
+<div id ="modeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:rgba(123,39,245,0.9); border:1px solid #3e007d; border-radius:16px; padding:32px; text-align:center; color:#fff">
+        <div style="font-size:1.3rem; font-weight:bold; margin-bottom:24px;">Choose Mode</div>
+        <div style="display:flex; gap:16px; justify-content:center;">
+            <button id="soloBtn" style="padding:12px 28px; border-radius:12px; border:1px; solid #4BA7FF;background:rgba(75,167,255,0.2); color:#fff; font-size:1rem; cursor:pointer;">Solo</button>
+            <button id="duetBtn" style="padding:12px 28px; border-radius:12px; border:1px; solid #4BA7FF;background:rgba(75,167,255,0.2); color:#fff; font-size:1rem; cursor:pointer;">Duet</button>
+        </div>
+        <button onclick="document.getElementById('modeModal').style.display='none'" style="margin-top:20px; background:none; border:none; color:#aaa; cursor:pointer; font-size:0.9rem;">Cancel</button>
+    </div>
+</div>
+
 <script type="module" src="/js/SongSelection.js"></script>
 
 </body>
