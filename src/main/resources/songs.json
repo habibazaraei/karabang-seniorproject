@@ -153,7 +153,7 @@
     "lyricsPath": "/lyrics/Umbrella.lrc",
     "artCoverPath": "/artCover/umbrellaArtCover.jpg",
     "songTeaserPath": "/teaser/umbrellaTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/Umbrella_pitches.json"
   },
   {
     "id": 24,
