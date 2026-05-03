@@ -13,7 +13,8 @@
  */
 
 import { db, auth, doc, setDoc, getDoc, getDocs, collection, onAuthStateChanged } from '/js/firebase.js';
-
+// used for testing
+const USE_SCORE_BAR = true;
 // ─── Tier Constants ───────────────────────────────────────────────────────────
 
 const TIERS = [
@@ -57,7 +58,6 @@ let scoreDisplay    = null;
 let pitchDisplay    = null;
 let tierDisplay     = null;
 let micToggleBtn    = null;
-
 
 // ─── Pitch Detection (Autocorrelation) ────────────────────────────────────────
 
@@ -108,20 +108,96 @@ function getTier(userHz, targetHz) {
     }
     return TIERS[3];
 }
+// ─── Tiers on screen ─────────────────────────────────────────────────────────
+function showTier(label) {
+    const tier = TIERS.find(t => t.label === label);
 
+    const el = document.createElement("div");
+    el.classList.add("tierFloat");
+    el.textContent = label;
+
+    el.style.color = tier.color;
+    el.style.webkitTextStroke = "1px black";
+
+    document.getElementById("tierFloatLayer").appendChild(el);
+
+    setTimeout(() => el.remove(), 1200);
+}
+function spawnTierPopup(tier) {
+    const layer = document.getElementById("tierFloatLayer");
+    if (!layer) return;
+
+    const el = document.createElement("div");
+    el.className = "tierFloat";
+    el.textContent = tier.label;
+    el.style.color = tier.color;
+
+    // random horizontal position
+    const x = Math.random() * 80 + 10; // 10% → 90%
+    el.style.left = `${x}%`;
+
+    // randomly above or below lyrics center
+    const above = Math.random() > 0.5;
+    const yBase = window.innerHeight * 0.5;
+
+    const offset = above
+        ? -(Math.random() * 120 + 60)
+        : Math.random() * 120 + 60;
+
+    el.style.top = `calc(50% + ${offset}px)`;
+
+    layer.appendChild(el);
+
+    // cleanup after animation
+    setTimeout(() => {
+        el.remove();
+    }, 1200);
+}
+// ─── Countdown ─────────────────────────────────────────────────────────
 function getExpectedPitch(currentTimeSec) {
     if (!songPitchData) return 0;
     const idx = Math.round(currentTimeSec / songPitchData.hop_duration);
     return songPitchData.pitches[idx] ?? 0;
 }
 
+async function startCountdownAndPlay() {
+    const overlay = document.getElementById("karaokeStartOverlay");
+    const startText = document.getElementById("startText");
+    const audio = document.getElementById("audio");
+    const bottomBar = document.getElementById("bottomBar");
+    const playPause = document.getElementById("playPause");
 
+    overlay.style.display = "flex";
+
+    for (let i = 3; i > 0; i--) {
+        startText.textContent = i;
+        await new Promise(r => setTimeout(r, 1000));
+    }
+
+    startText.textContent = "GO";
+    await new Promise(r => setTimeout(r, 500));
+
+    overlay.style.display = "none";
+
+    if (bottomBar) bottomBar.style.pointerEvents = "auto";
+
+    await startMic();
+    playImg.src = "/images/pause_icon.svg";
+    audio.play().catch(() => {});
+}
 // ─── Scoring Loop ─────────────────────────────────────────────────────────────
 
 function scoringTick() {
     if (!scoringActive || !analyserNode) return;
 
-    const audio      = document.getElementById("audio");
+    const audio = document.getElementById("audio");
+
+    // STOP scoring if paused
+    if (!audio || audio.paused) {
+        updateScorerUI(0, 0); // optional: reset UI display
+        return;
+    }
+
     const userHz     = detectPitch(analyserNode);
     const expectedHz = getExpectedPitch(audio.currentTime);
 
@@ -135,6 +211,7 @@ function scoringTick() {
         if (tier.label !== lastTierLabel) {
             lastTierLabel = tier.label;
             flashTier(tier);
+            spawnTierPopup(tier);
         }
     }
 
@@ -142,14 +219,52 @@ function scoringTick() {
 }
 
 function resetScore() {
-    totalScore    = 0;
-    maxPossible   = 0;
-    scoredFrames  = 0;
+    totalScore = 0;
+    maxPossible = 0;
+    scoredFrames = 0;
     lastTierLabel = "";
+
+    scoreDisplay.textContent = "0";
+
 }
 
 
+export async function restartSong() {
+    console.log("restartSong CALLED");
+
+    const audio = document.getElementById("audio");
+    const subtitle = document.getElementById("subtitle");
+    const progress = document.getElementById("progress");
+    const overlay = document.getElementById("karaokeStartOverlay");
+    const startText = document.getElementById("startText");
+
+    stopMic();
+    clearInterval(scoringInterval);
+    scoringActive = false;
+
+    resetScore();
+
+    audio.pause();
+    audio.currentTime = 0;
+
+    if (subtitle) subtitle.innerHTML = "";
+    if (progress) progress.style.width = "0%";
+
+    overlay.style.display = "flex";
+    startText.textContent = "READY";
+
+    setMicButton(false);
+}
+window.addEventListener("DOMContentLoaded", () => {
+    window.KaraokeScorer = window.KaraokeScorer || {};
+    window.KaraokeScorer.restartSong = restartSong;
+});
 // ─── Microphone Setup / Teardown ──────────────────────────────────────────────
+
+function setMicButton(isOn) {
+    if (!micToggleBtn) return;
+    micToggleBtn.textContent = isOn ? "🎤 Stop Mic" : "🎤 Start Mic";
+}
 
 async function startMic() {
     try {
@@ -165,7 +280,7 @@ async function startMic() {
         scoringActive   = true;
         scoringInterval = setInterval(scoringTick, 50);
 
-        if (micToggleBtn) micToggleBtn.textContent = "🎤 Stop Mic";
+        setMicButton(true);
         console.log("[KaraokeScorer] Mic started.");
     } catch (err) {
         console.error("[KaraokeScorer] Mic access denied:", err);
@@ -182,19 +297,19 @@ function stopMic() {
     if (audioCtx)       { audioCtx.close();           audioCtx      = null; }
     if (micStream)      { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
 
-    if (micToggleBtn) micToggleBtn.textContent = "🎤 Start Mic";
+    setMicButton(false);
     console.log("[KaraokeScorer] Mic stopped. Final score:", totalScore);
 
     showFinalScore();
     saveScoreToFirebase();
 }
 
-function toggleMic() {
+async function toggleMic() {
     if (scoringActive) {
         stopMic();
     } else {
         resetScore();
-        startMic();
+        await startMic();
     }
 }
 
@@ -360,9 +475,9 @@ function injectScoreboardStyles() {
     style.textContent = `
         #scoreboardBtn {
             width: 100%;
-            background: none;
+            background: purple;
             border: none;
-            color: #fff;
+            color: #ffffff;
             font-size: 0.9rem;
             padding: 8px 12px;
             text-align: left;
@@ -383,22 +498,20 @@ function injectScoreboardStyles() {
             justify-content: center;
         }
         #scoreboardPanel {
-            background: rgba(123, 39, 245, 0.75);
+            position: fixed; 
+            background: rgba(123, 39, 245, 0.9);
             border:1px solid #3e007d;
+            bottom: 60px;  
             border-radius: 16px;
             padding: 24px;
             min-width: 320px;
             max-width: 420px;
             width: 90%;
+            z-index: 9999;
         }
         #scoreboardHeader {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
+            color: white;
             font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
         }
         #closeScoreboardBtn {
             background: none;
@@ -441,6 +554,28 @@ function injectScoreboardStyles() {
             font-size: 0.85rem;
             color: #aaa;
         }
+        #pitchDisplay {
+            width: 180px;
+            text-align: center;
+        }
+
+        #tierDisplay {
+            width: 80px;
+            text-align: center;
+        }
+
+        #scoreDisplay {
+            width: 90px;
+            text-align: right;
+        }
+        #scorerPanel {
+            background: rgba(0,0,0,0.75);
+            border: 1px solid rgba(0,0,0);
+            border-radius: 12px;
+            padding: 6px 12px;
+        
+            backdrop-filter: blur(8px);
+        }
     `;
     document.head.appendChild(style);
 }
@@ -470,12 +605,27 @@ async function loadSongPitches(pitchesPath) {
 function initScorerUI() {
     const panel = document.createElement("div");
     panel.id = "scorerPanel";
-    panel.innerHTML = `
-        <button id="micToggleBtn" title="Toggle microphone for scoring">🎤 Start Mic</button>
-        <span id="pitchDisplay">— Hz</span>
-        <span id="tierDisplay"></span>
-        <span id="scoreDisplay">0</span>
-    `;
+
+    if (USE_SCORE_BAR) {
+        panel.innerHTML = `
+            <button id="micToggleBtn">🎤 Start Mic</button>
+            <span id="pitchDisplay">— Hz</span>
+            <div id="scoreBar">
+                <div id="scoreBarFill"></div>
+                <div class="rankMarker" style="left:25%"></div>
+                <div class="rankMarker" style="left:50%"></div>
+                <div class="rankMarker" style="left:75%"></div>
+            </div>
+            <span id="scoreDisplay">0</span>
+        `;
+    } else {
+        panel.innerHTML = `
+            <button id="micToggleBtn">🎤 Start Mic</button>
+            <span id="pitchDisplay">— Hz</span>
+            <span id="tierDisplay"></span>
+            <span id="scoreDisplay">0</span>
+        `;
+    }
 
     const rightControls = document.getElementById("rightControls");
     if (rightControls) {
@@ -486,7 +636,7 @@ function initScorerUI() {
 
     micToggleBtn = document.getElementById("micToggleBtn");
     pitchDisplay = document.getElementById("pitchDisplay");
-    tierDisplay  = document.getElementById("tierDisplay");
+    tierDisplay  = document.getElementById("tierDisplay"); // may be null in bar mode
     scoreDisplay = document.getElementById("scoreDisplay");
 
     micToggleBtn.onclick = toggleMic;
@@ -504,13 +654,15 @@ function updateScorerUI(userHz, expectedHz) {
 
     const tier = getTier(userHz, expectedHz);
     pitchDisplay.style.color = expectedHz > 0 ? tier.color : "#aaa";
-
+    if (USE_SCORE_BAR) {
+        updateScoreBar(totalScore, maxPossible);
+    }
     scoreDisplay.textContent = totalScore.toLocaleString();
 }
 
 function flashTier(tier) {
     if (!tierDisplay) return;
-
+    if (!tierDisplay || USE_SCORE_BAR) return;
     clearTimeout(tierFlashTimeout);
     tierDisplay.textContent   = tier.label;
     tierDisplay.style.color   = tier.color;
@@ -554,55 +706,79 @@ function hzToNote(hz) {
 //Handles Style and Functionality of the button for accessing Scoreboard
 function injectScorerStyles() {
     const style = document.createElement("style");
-    style.textContent = `
-        #scorerPanel {
-            background: rgba(123, 39, 245, 0.75);
-            border:1px solid #3e007d;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 12px;
-            flex-shrink: 0;
-        }
-        #micToggleBtn {
-            background: rgba(75, 167, 255, 0.2);
-            border: 1px solid #4BA7FF;
-            color: #fff;
-            border-radius: 20px;
-            padding: 4px 12px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: background 0.2s;
-        }
-        #micToggleBtn:hover {
-            background: rgba(75, 167, 255, 0.45);
-        }
-        #pitchDisplay {
-            font-size: 0.8rem;
-            color: #aaa;
-            min-width: 160px;
-            text-align: center;
-        }
-        #tierDisplay {
-            font-size: 1rem;
-            font-weight: bold;
-            min-width: 80px;
-            text-align: center;
-            transition: opacity 0.3s;
-            opacity: 0;
-        }
-        #scoreDisplay {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #fff;
-            min-width: 80px;
-            text-align: right;
-        }
-    `;
+
+    if (USE_SCORE_BAR) {
+        style.textContent = `
+            #scorerPanel {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 0 12px;
+            }
+
+            #scoreBar {
+                position: relative;
+                width: 200px;
+                height: 10px;
+                background: #222;
+                border-radius: 5px;
+                overflow: hidden;
+            }
+
+            #scoreBarFill {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 100%;
+                background: linear-gradient(
+                    to right,
+                    #ff6b6b 0%,
+                    #f0c040 25%,
+                    #6bff8e 50%,
+                    #4BA7FF 75%,
+                    #FFD700 100%
+                );
+                transition: width 0.2s linear;
+            }
+
+            .rankMarker {
+                position: absolute;
+                top: 0;
+                width: 2px;
+                height: 100%;
+                background: white;
+                opacity: 0.6;
+            }
+        `;
+    } else {
+        style.textContent = `
+            #scorerPanel {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 0 12px;
+            }
+
+            #tierDisplay {
+                font-weight: bold;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+        `;
+    }
+
     document.head.appendChild(style);
 }
+// ─── Score Bar ───────────────────────────────────
+function updateScoreBar(score, maxScore) {
+    const percent = Math.min(1, score / maxScore) * 100;
 
+    const fill = document.getElementById("scoreBarFill");
 
+    // invert because we're shrinking the dark overlay
+    fill.style.width = (100 - percent) + "%";
+}
 // ─── Hook into existing MusicPlayer.js flow ───────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -616,10 +792,20 @@ window.addEventListener("DOMContentLoaded", () => {
             if (song) loadSongPitches(song.pitchesPath);
         });
 
-    const audioEl = document.getElementById("audio");
-    if (audioEl) {
-        audioEl.addEventListener("ended", () => {
-            if (scoringActive) stopMic();
-        });
+    const startBtn = document.getElementById("startKaraokeBtn");
+    const overlay  = document.getElementById("karaokeStartOverlay");
+    const audioEl  = document.getElementById("audio");
+    const bottomBar = document.getElementById("bottomBar");
+    const playPause = document.getElementById("playPause");
+
+    overlay.style.display = "flex";
+    if (bottomBar) bottomBar.style.pointerEvents = "none";
+
+    if (startBtn) {
+        startBtn.onclick = async () => {
+            resetScore();
+            await startCountdownAndPlay();
+        };
     }
 });
+

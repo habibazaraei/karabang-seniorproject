@@ -916,11 +916,16 @@ function selectSong(song, card) {
     }
 
     singButtonPrimary.disabled = false;
+    singButtonSecondary.disabled = false;
 }
 
 singButtonPrimary.onclick = () => {
     if (!selectedSong) return;
     window.location.href = "/musicplayer?song=" + selectedSong.id;
+};
+singButtonSecondary.onclick = () => {
+    if (!selectedSong) return;
+    window.location.href = "/musicplayerplay?song=" + selectedSong.id;
 };
 
 function updateTrackSelect() {

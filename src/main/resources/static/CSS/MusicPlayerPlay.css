@@ -37,40 +37,22 @@ body {
     text-align: center;
     font-size: 5vw;
     z-index: 2;
-    line-height: 1.2em;
-    will-change: transform;
 }
-
 
 #subtitle span {
     font-family: "LTKaraoke", sans-serif;
     -webkit-text-stroke: 1px black;
-    display: inline-block;
 }
 
 .sung {
-    color: #FFD700;
-    -webkit-text-stroke: 1px black;
-}
-
-.partial {
-    color: #FFD700;
-    -webkit-text-stroke: 1px black;
-}
-.partial::after {
-    content: attr(data-text);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 0%;
-    overflow: hidden;
-    color: gold;
-    white-space: nowrap;
+    background-image: url("../images/goldTexture.svg");
+    background-size: cover;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .unsung {
     color: white;
-    -webkit-text-stroke: 1px black;
 }
 
 /* Buttons */
@@ -382,83 +364,4 @@ button:active {
 
 #startKaraokeBtn:hover {
     background: rgba(75,167,255,0.6);
-}
-
-#karaokeStartOverlay[hidden] {
-    display: none !important;
-}
-/* tiers */
-
-#tierFloatLayer {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80%;
-    height: 40%;
-
-    transform: translate(-50%, -60%); /* pushes upward above lyrics */
-
-    pointer-events: none;
-    z-index: 3;
-}
-.tierFloat {
-    position: absolute;
-    font-family: "LTKaraoke", sans-serif;
-    font-weight: bold;
-    font-size: 3vw;
-    opacity: 0;
-    transform: translateY(0);
-    animation: tierPop 1.2s ease-out forwards;
-    -webkit-text-stroke: 0.5px black;
-}
-
-@keyframes tierPop {
-    0% {
-        opacity: 0;
-        transform: translateY(0) scale(0.8);
-    }
-    20% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-80px) scale(1.1);
-    }
-}
-/*Score bar*/
-#scoreBar {
-    position: relative;
-    width: 200px;
-    height: 14px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #3e007d;
-    background: linear-gradient(
-            to right,
-            #ff6b6b 0% 25%,     /* MISS */
-            #6bff8e 25% 50%,    /* CLOSE */
-            #4BA7FF 50% 75%,    /* GOOD */
-            #FFD700 75% 100%    /* PERFECT */
-    );
-}
-
-/* fill (your actual score) */
-#scoreBarFill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 0%;
-    background: rgba(0,0,0,0.6);
-    transition: width 0.2s linear;
-}
-
-/* vertical rank lines */
-.rankMarker {
-    position: absolute;
-    top: 0;
-    width: 2px;
-    height: 100%;
-    background: black;
-    opacity: 0.7;
 }
