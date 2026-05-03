@@ -36,7 +36,7 @@ settingsButton.onclick = () => {
     settingsMenu.style.display =
         settingsMenu.style.display === "block" ? "none" : "block";
 };
-import { restartSong } from "./KaraokeScorer.js";
+
 // close when clicking outside
 window.addEventListener("click", (e) => {
     if (
@@ -115,45 +115,33 @@ playPause.onclick = () => {
     }
 }
 // Restarts the song
-document.getElementById("restart").addEventListener("click", () => {
-    console.log("[UI] restart button clicked");
-
-    if (window.KaraokeScorer?.restartSong) {
-        window.KaraokeScorer.restartSong();
+restart.onclick = () => {
+    audio.currentTime = 0
+    subtitle.innerHTML = ""
+    progress.style.width = "0%"
+    if(audio.paused){
+        audio.pause()
+        playImg.src = "/images/play_icon.svg"
+    }else{
+        audio.play()
+        playImg.src = "/images/pause_icon.svg"
     }
-});
+}
 
 // Update progress bar as audio plays
-function updateLyrics() {
+audio.ontimeupdate = () => {
     if (!audio.duration) return;
-
-    const t = audio.currentTime;
-
-    const percent = (t / audio.duration) * 100;
+    const percent = (audio.currentTime / audio.duration) * 100;
     progress.style.width = percent + "%";
 
-    let activeLine = null;
-
-    for (let i = 0; i < lyrics.length; i++) {
-        const line = lyrics[i];
-
-        if (t >= line.startTime && t < line.endTime) {
-            activeLine = line;
+    const t = audio.currentTime;
+    for (let line of lyrics) {
+        const nextLine = lyrics[lyrics.indexOf(line) + 1];
+        if (t >= line.startTime && (!nextLine || t < nextLine.startTime)) {
+            renderKaraoke(line.words, t);
             break;
         }
     }
-
-    if (activeLine) {
-        renderKaraoke(activeLine.words, t);
-    } else {
-        subtitle.innerHTML = "";
-    }
-
-    requestAnimationFrame(updateLyrics);
-}
-
-audio.onplay = () => {
-    requestAnimationFrame(updateLyrics);
 };
 // Seek on click
 progressContainer.onclick = (e) => {
@@ -214,66 +202,34 @@ function parseLyrics(text){
                     : lineTime + 5
                 const duration = Math.min(nextTime - lineTime, 10) * 0.9
                 const totalChars = splitWords.reduce((sum, w) => sum + w.length, 0)
-                let elapsed = 0
-                for(let j = 0; j < splitWords.length; j++){
-                    words.push({time: lineTime + elapsed, text: splitWords[j]})
-                    const weight = splitWords[j].length / totalChars
-                    elapsed += weight * duration
-                }
+                        let elapsed = 0
+                        for(let j = 0; j < splitWords.length; j++){
+                            words.push({time: lineTime + elapsed, text: splitWords[j]})
+                            const weight = splitWords[j].length / totalChars
+                            elapsed += weight * duration
+                        }
             }
         }
 
-        if (words.length > 0) {
-            lyrics.push({ startTime: lineTime, words });
+        if(words.length > 0){
+            lyrics.push({startTime: lineTime, words})
         }
-
-    }
-    finalizeLyrics();
-}
-function finalizeLyrics() {
-    for (let i = 0; i < lyrics.length; i++) {
-        const line = lyrics[i];
-        const next = lyrics[i + 1];
-
-        const naturalEnd = next ? next.startTime : line.startTime + 5;
-
-        line.endTime = naturalEnd; // IMPORTANT: no lingering logic
     }
 }
+
 // Renders word highlighting
-function renderKaraoke(words, currentTime) {
+function renderKaraoke(words, currentTime){
     let html = ""
-
-    for (let i = 0; i < words.length; i++) {
+    for(let i=0;i<words.length;i++){
         const w = words[i]
-        const next = words[i + 1]
-
-        const start = w.time
-        const end = next ? next.time : start + 0.4
-
-        const progress = (currentTime - start) / (end - start)
-        if (currentTime >= end) {
+        // A word is sung if currentTime >= its timestamp
+        if(currentTime >= w.time){
             html += `<span class="sung">${w.text}</span> `
-        } else if (currentTime >= start) {
-            const pct = Math.min(1, Math.max(0, progress))
-
-            html += `
-                <span class="partial" style="
-                    background: linear-gradient(
-                        to right,
-                        gold ${pct * 100}%,
-                        white ${pct * 100}%
-                    );
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                ">
-                    ${w.text}
-                </span> `
         } else {
             html += `<span class="unsung">${w.text}</span> `
         }
     }
-    subtitle.innerHTML = html;
+    subtitle.innerHTML = html
 }
 // Updates the volume bar when starting a song
 function updateVolumeUI() {

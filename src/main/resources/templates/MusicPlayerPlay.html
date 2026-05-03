@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <title>KaraBang</title>
 
-    <link rel="stylesheet" href="/css/MusicPlayer.css">
+    <link rel="stylesheet" href="/css/MusicPlayerPlay.css">
 
 </head>
 
 <body>
 
 <div id="backgroundPane">
-    <img id="backgroundImage" src="/images/metal.png">
+    <img id="backgroundImage" src="/images/background5.svg">
     <audio id="audio"></audio>
-
     <div id="subtitle"></div>
-    <div id="tierFloatLayer"></div>
+
     <!-- Top and bottom bars -->
     <div id="topBar">
         <button id="goBack">
@@ -49,34 +48,33 @@
             <button id="startKaraokeBtn">START</button>
         </div>
     </div>
-
     <div id="bottomBar">
-        <button id="playPause">
-            <img id="playImg" src="/images/play_icon.svg">
-        </button>
+            <button id="playPause">
+                <img id="playImg" src="/images/play_icon.svg">
+            </button>
 
-        <button id="restart">
-            <img id="restartImg" src="/images/restart_icon.svg">
-        </button>
+            <button id="restart">
+                <img id="restartImg" src="/images/restart_icon.svg">
+            </button>
 
         <div id="progressContainer">
             <div id="progress"></div>
         </div>
         <div id="rightControls">
-            <div class="volume-container">
-                <button id="volumeButton">
-                    <img id="volumeIcon" src="/images/volume_high_icon.svg">
-                </button>
-                <input type="range" id="volume" min="0" max="100" value="50">
-            </div>
+        <div class="volume-container">
+            <button id="volumeButton">
+                <img id="volumeIcon" src="/images/volume_high_icon.svg">
+            </button>
+            <input type="range" id="volume" min="0" max="100" value="50">
+        </div>
         </div>
     </div>
 
-</div>
+    </div>
 </div>
 
 <script type="module" src="/js/KaraokeScorer.js"></script>
-<script type="module" src="/js/MusicPlayer.js"></script>
+<script type="module" src="/js/MusicPlayerPlay.js"></script>
 
 </body>
 </html>

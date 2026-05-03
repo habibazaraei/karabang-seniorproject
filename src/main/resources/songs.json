@@ -36,12 +36,12 @@
     "lyricsPath": "/lyrics/Starboy.lrc",
     "artCoverPath": "/artCover/starboyArtCover.jpg",
     "songTeaserPath": "/teaser/starboyTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/Starboy_pitches.json"
   },
   {
     "id": 4,
     "title": "Can't Feel My Face",
-    "artist": "The Weeknd",
+    "artist": "The Weekend",
     "genre": "Pop",
     "difficulty": "Easy",
     "language": "English",
@@ -49,7 +49,7 @@
     "lyricsPath": "/lyrics/CantFeelMyFace.lrc",
     "artCoverPath": "/artCover/cantFeelMyFaceArtCover.jpg",
     "songTeaserPath": "/teaser/cantFeelMyFaceTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/CantFeelMyFace_pitches.json"
   },
   {
     "id": 5,
@@ -62,7 +62,7 @@
     "lyricsPath": "/lyrics/WeWillRockYou.lrc",
     "artCoverPath": "/artCover/weWillRockYouArtCover.jpg",
     "songTeaserPath": "/teaser/weWillRockYouTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/WeWillRockYou_pitches.json"
   },
   {
     "id": 6,
@@ -75,7 +75,7 @@
     "lyricsPath": "/lyrics/WeAreTheChampions.lrc",
     "artCoverPath": "/artCover/weAreTheChampionsArtCover.jpg",
     "songTeaserPath": "/teaser/weAreTheChampionsTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/WeAreTheChampions_pitches.json"
   },
   {
     "id": 7,
@@ -127,7 +127,7 @@
     "lyricsPath": "/lyrics/Grenade.lrc",
     "artCoverPath": "/artCover/grenadeArtCover.jpg",
     "songTeaserPath": "/teaser/grenadeTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/Grenade_pitches.json"
   },
   {
     "id": 22,
@@ -140,7 +140,7 @@
     "lyricsPath": "/lyrics/BestPart.lrc",
     "artCoverPath": "/artCover/bestPartArtCover.jpg",
     "songTeaserPath": "/teaser/bestPartTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/BestPart_pitches.json"
   },
   {
     "id": 23,
@@ -153,7 +153,7 @@
     "lyricsPath": "/lyrics/Umbrella.lrc",
     "artCoverPath": "/artCover/umbrellaArtCover.jpg",
     "songTeaserPath": "/teaser/umbrellaTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/Umbrella_pitches.json"
   },
   {
     "id": 24,

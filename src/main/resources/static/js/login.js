@@ -2,12 +2,12 @@
 import { auth, db } from "./firebase.js";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, setDoc, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, setDoc, collection, addDoc, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const usersRef = collection(db, "users");
 
 
-const email = document.getElementById("email");
+const username = document.getElementById("username");
 const password = document.getElementById("password");
 
 const loginBtn = document.getElementById("loginBtn");
@@ -87,65 +87,27 @@ function updateSong(song) {
 loadSongsFromAPI();
 
 
-
-/*Sign up for account
-signupBtn.addEventListener("click", async () => {
-
-    try {
-
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email.value,
-            password.value
-        );
-
-        const user = userCredential.user;
-        console.log("Creating Firestore document for:", user.uid, user.email);
-
-
-        //Save user info to Firestore
-        await setDoc(doc(db, "users", user.uid), {
-            email: user.email
-
-
-        });
-
-        console.log("Firestore write successful");
-        alert("User created!");
-
-    } catch (error) {
-         console.error("Error during signup:", error);
-        alert(error.message);
-
-    }
-
-});
-*/
-
-
 // LOGIN
 loginBtn.addEventListener("click", async () => {
-
     try {
+        // Look up email from username
+        const usernameDoc = await getDoc(doc(db, "usernames", username.value.toLowerCase()));
 
-        await signInWithEmailAndPassword(
-            auth,
-            email.value,
-            password.value
-        );
+        if (!usernameDoc.exists()) {
+            alert("Username not found!");
+            return;
+        }
+
+        const email = usernameDoc.data().email;
+
+        await signInWithEmailAndPassword(auth, email, password.value);
 
         alert("Login successful!");
         window.location.href = "songselection";
 
-
-        
-
     } catch (error) {
-
         alert(error.message);
-
     }
-
 });
 
 async function addFavorite(itemName) {
