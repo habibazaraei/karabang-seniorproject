@@ -19,28 +19,31 @@ const USE_SCORE_BAR = true;
 
 const TIERS = [
     { label: "PERFECT", maxSemitones: 0.5, points: 30, color: "#FFD700" },
-    { label: "GOOD",    maxSemitones: 1.0, points: 20, color: "#4BA7FF" },
-    { label: "CLOSE",   maxSemitones: 2.0, points: 10, color: "#6bff8e" },
-    { label: "MISS",    maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
+    { label: "GOOD", maxSemitones: 1.0, points: 20, color: "#4BA7FF" },
+    { label: "CLOSE",maxSemitones: 2.0, points: 10, color: "#6bff8e" },
+    { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
 ];
 
 const MIN_VOICED_AMP = 0.005; // RMS threshold — below this we treat user as silent
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
-let songPitchData   = null;
-let micStream       = null;
-let audioCtx        = null;
-let analyserNode    = null;
-let micSourceNode   = null;
-let scoringActive   = false;
+let songPitchData = null;
+let micStream = null;
+let audioCtx = null;
+let analyserNode = null;
+let micSourceNode = null;
+let scoringActive = false;
 let scoringInterval = null;
 
-let totalScore      = 0;
-let maxPossible     = 0;
-let scoredFrames    = 0;
+let consecutiveMisses = 0;
+let currentCombo = 0;
+let maxCombo = 0;
+let totalScore = 0;
+let maxPossible = 0;
+let scoredFrames = 0;
 
-let lastTierLabel    = "";
+let lastTierLabel = "";
 let tierFlashTimeout = null;
 
 // Current song ID (set from URL)
@@ -208,6 +211,16 @@ function scoringTick() {
         const tier = getTier(userHz, expectedHz);
         totalScore += tier.points;
 
+        if (tier.label === "MISS") {
+            consecutiveMisses++;
+            if (consecutiveMisses >= 8) {
+                currentCombo = 0;
+            }
+        } else {
+            consecutiveMisses = 0;
+            currentCombo++;
+            if(currentCombo > maxCombo) maxCombo = currentCombo;
+        }
         if (tier.label !== lastTierLabel) {
             lastTierLabel = tier.label;
             flashTier(tier);
@@ -223,7 +236,9 @@ function resetScore() {
     maxPossible = 0;
     scoredFrames = 0;
     lastTierLabel = "";
-
+    currentCombo = 0;
+    maxCombo = 0;
+    consecutiveMisses = 0;
     scoreDisplay.textContent = "0";
 
 }
@@ -336,11 +351,11 @@ async function saveScoreToFirebase() {
         // Only save if it's a new high score
         if (!existing.exists() || totalScore > existing.data().score) {
             await setDoc(scoreRef, {
-                score:       totalScore,
-                username:    currentUser.displayName || currentUser.email || "Anonymous",
-                userId:      currentUser.uid,
-                songId:      currentSongId,
-                timestamp:   new Date().toISOString(),
+                score: totalScore,
+                username: currentUser.displayName || currentUser.email || "Anonymous",
+                userId: currentUser.uid,
+                songId: currentSongId,
+                timestamp: new Date().toISOString(),
             });
             console.log("[KaraokeScorer] New high score saved:", totalScore);
         } else {
@@ -358,7 +373,7 @@ async function saveScoreToFirebase() {
 async function loadTopScores() {
     try {
         const entriesRef = collection(db, "scores", String(currentSongId), "entries");
-        const snapshot   = await getDocs(entriesRef);
+        const snapshot = await getDocs(entriesRef);
 
         const scores = snapshot.docs.map(d => d.data());
         scores.sort((a, b) => b.score - a.score);
@@ -377,7 +392,7 @@ function initScoreboard() {
     const dropdownMenu = document.getElementById("dropdownMenu");
     if (dropdownMenu) {
         const scoreboardBtn = document.createElement("button");
-        scoreboardBtn.id        = "scoreboardBtn";
+        scoreboardBtn.id = "scoreboardBtn";
         scoreboardBtn.textContent = "Scoreboard";
         scoreboardBtn.onclick   = (e) => {
             e.stopPropagation();
@@ -452,7 +467,7 @@ async function openScoreboard() {
     // Show the user's personal best if they're logged in
     if (currentUser) {
         try {
-            const myRef  = doc(db, "scores", String(currentSongId), "entries", currentUser.uid);
+            const myRef = doc(db, "scores", String(currentSongId), "entries", currentUser.uid);
             const mySnap = await getDoc(myRef);
             if (mySnap.exists()) {
                 document.getElementById("scoreboardYourBest").textContent =
@@ -539,8 +554,8 @@ function injectScoreboardStyles() {
             background: rgba(75, 167, 255, 0.15);
             border: 1px solid #4BA7FF;
         }
-        .scoreboardRank  { font-size: 1.2rem; min-width: 28px; }
-        .scoreboardName  { flex: 1; color: #fff; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .scoreboardRank { font-size: 1.2rem; min-width: 28px; }
+        .scoreboardName { flex: 1; color: #fff; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .scoreboardScore { font-weight: bold; color: #FFD700; font-size: 1rem; }
         .scoreboardLoading, .scoreboardEmpty {
             text-align: center;
@@ -623,6 +638,7 @@ function initScorerUI() {
             <button id="micToggleBtn">🎤 Start Mic</button>
             <span id="pitchDisplay">— Hz</span>
             <span id="tierDisplay"></span>
+            <span id="comboDisplay"></span>
             <span id="scoreDisplay">0</span>
         `;
     }
@@ -636,7 +652,7 @@ function initScorerUI() {
 
     micToggleBtn = document.getElementById("micToggleBtn");
     pitchDisplay = document.getElementById("pitchDisplay");
-    tierDisplay  = document.getElementById("tierDisplay"); // may be null in bar mode
+    tierDisplay = document.getElementById("tierDisplay");
     scoreDisplay = document.getElementById("scoreDisplay");
 
     micToggleBtn.onclick = toggleMic;
@@ -647,10 +663,10 @@ function initScorerUI() {
 function updateScorerUI(userHz, expectedHz) {
     if (!pitchDisplay || !scoreDisplay) return;
 
-    const userNote     = userHz     > 0 ? hzToNote(userHz)     : "—";
+    const userNote = userHz > 0 ? hzToNote(userHz)     : "—";
     const expectedNote = expectedHz > 0 ? hzToNote(expectedHz) : "—";
 
-    pitchDisplay.textContent = `You: ${userNote}  |  Song: ${expectedNote}`;
+    pitchDisplay.textContent = `You: ${userNote} | Song: ${expectedNote}`;
 
     const tier = getTier(userHz, expectedHz);
     pitchDisplay.style.color = expectedHz > 0 ? tier.color : "#aaa";
@@ -658,14 +674,25 @@ function updateScorerUI(userHz, expectedHz) {
         updateScoreBar(totalScore, maxPossible);
     }
     scoreDisplay.textContent = totalScore.toLocaleString();
-}
+
+    const comboEl = document.getElementById("comboDisplay");
+  if (comboEl) {
+      if (currentCombo > 1) {
+          comboEl.textContent = `Combo ${currentCombo}x`;
+          comboEl.style.color = currentCombo >= 50 ? "#FFD700" : currentCombo >= 20 ? "#4BA7FF" : "#6bff8e";
+          comboEl.style.opacity = "1";
+      } else {
+          comboEl.style.opacity = "0";
+      }
+    }
+  }
 
 function flashTier(tier) {
     if (!tierDisplay) return;
     if (!tierDisplay || USE_SCORE_BAR) return;
     clearTimeout(tierFlashTimeout);
-    tierDisplay.textContent   = tier.label;
-    tierDisplay.style.color   = tier.color;
+    tierDisplay.textContent = tier.label;
+    tierDisplay.style.color = tier.color;
     tierDisplay.style.opacity = "1";
 
     tierFlashTimeout = setTimeout(() => {
@@ -676,18 +703,21 @@ function flashTier(tier) {
 function showFinalScore() {
     const pct = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0;
     let grade, color;
-    if      (pct >= 90) { grade = "S"; color = "#FFD700"; }
-    else if (pct >= 75) { grade = "A"; color = "#4BA7FF"; }
-    else if (pct >= 60) { grade = "B"; color = "#6bff8e"; }
-    else if (pct >= 45) { grade = "C"; color = "#f0c040"; }
-    else                { grade = "D"; color = "#ff6b6b"; }
+    if (pct >= 95) { grade = "EX+"; color = "#FFD700"; }
+    else if (pct >= 88) { grade = "S"; color = "#4BA7FF"; }
+    else if (pct >= 80) { grade = "A"; color = "#6bff8e"; }
+    else if (pct >= 70) { grade = "B"; color = "#f0c040"; }
+    else if (pct >= 60) { grade = "C"; color = "#f0c040"; }
+    else if (pct >= 50) { grade = "D"; color = "#f0c040"; }
+    else  { grade = "F"; color = "#ff6b6b"; }
 
     const sub = document.getElementById("subtitle");
     if (sub) {
         sub.innerHTML = `
             <div style="font-size:3vw;color:#fff;">Final Score</div>
-            <div style="font-size:8vw;color:${color};font-weight:bold;">${totalScore.toLocaleString()}</div>
-            <div style="font-size:4vw;color:${color};">Grade: ${grade}</div>
+                <div style="font-size:8vw;color:${color};font-weight:bold;">${totalScore.toLocaleString()}</div>
+                <div style="font-size:4vw;color:${color};">Grade: ${grade}</div>
+                <div style="font-size:2vw;color:#aaa;">Best Combo: ${maxCombo}x</div>
         `;
         setTimeout(() => { sub.innerHTML = ""; }, 4000);
     }
@@ -696,9 +726,9 @@ function showFinalScore() {
 function hzToNote(hz) {
     if (hz <= 0) return "—";
     const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-    const midi      = Math.round(hzToMidi(hz));
-    const octave    = Math.floor(midi / 12) - 1;
-    const note      = noteNames[midi % 12];
+    const midi = Math.round(hzToMidi(hz));
+    const octave = Math.floor(midi / 12) - 1;
+    const note = noteNames[midi % 12];
     return `${note}${octave}`;
 }
 
@@ -750,6 +780,15 @@ function injectScorerStyles() {
                 background: white;
                 opacity: 0.6;
             }
+            
+            #comboDisplay {
+                font-size: 1rem;
+                font-weight: bold;
+                min-width: 60px;
+                text-align: center;
+                opacity: 0;
+                transition: opacity 1.5s ease;
+            }
         `;
     } else {
         style.textContent = `
@@ -764,6 +803,15 @@ function injectScorerStyles() {
                 font-weight: bold;
                 opacity: 0;
                 transition: opacity 0.3s;
+            }
+            
+            #comboDisplay {
+                font-size: 1rem;
+                font-weight: bold;
+                min-width: 60px;
+                text-align: center;
+                opacity: 0;
+                transition: opacity 1.5s ease;
             }
         `;
     }
@@ -808,4 +856,3 @@ window.addEventListener("DOMContentLoaded", () => {
         };
     }
 });
-

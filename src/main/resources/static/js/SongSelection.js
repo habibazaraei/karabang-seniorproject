@@ -921,12 +921,20 @@ function selectSong(song, card) {
 
 singButtonPrimary.onclick = () => {
     if (!selectedSong) return;
-    window.location.href = "/musicplayer?song=" + selectedSong.id;
+    document.getElementById("modeModal").style.display = "flex";
 };
 singButtonSecondary.onclick = () => {
     if (!selectedSong) return;
     window.location.href = "/musicplayerplay?song=" + selectedSong.id;
 };
+
+    document.getElementById("soloBtn").onclick = () => {
+        window.location.href = "/musicplayer?song=" + selectedSong.id;
+    };
+
+    document.getElementById("duetBtn").onclick = () => {
+            window.location.href = "/musicplayer?song=" + selectedSong.id + "&mode=duet";
+        };
 
 function updateTrackSelect() {
     const cards = document.querySelectorAll(".songCard");
@@ -1537,3 +1545,20 @@ document.getElementById("myDropdown").addEventListener("click", async (e) => {
 
 //Allows this Scoreboard feature to become accessible from the html.
 window.openGlobalScoreboard = openGlobalScoreboard;
+
+//Allows for the suffle button feature to work.
+function shuffleSong() {
+    const realSongs = currentList.filter(s => !s.isPlaceholder);
+    console.log("Shuffling from", realSongs.length, "songs");
+    if (realSongs.length === 0) return;
+
+    const randomSong = realSongs[Math.floor(Math.random() * realSongs.length)];
+    const randomIndex = currentList.indexOf(randomSong);
+
+    if (randomIndex !== -1) {
+        currentIndex = randomIndex;
+        updateTrackSelect();
+    }
+}
+
+window.shuffleSong = shuffleSong;
