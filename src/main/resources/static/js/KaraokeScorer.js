@@ -13,6 +13,9 @@
  */
 
 import { db, auth, doc, setDoc, getDoc, getDocs, collection, onAuthStateChanged } from '/js/firebase.js';
+window.stopMic = () => {
+    console.warn("stopMic called before initialization");
+};
 // used for testing
 const USE_SCORE_BAR = true;
 // ─── Tier Constants ───────────────────────────────────────────────────────────
@@ -53,8 +56,8 @@ const currentSongId = parseInt(params.get("song"));
 // Current logged in user (updated by onAuthStateChanged)
 let currentUser = null;
 onAuthStateChanged(auth, user => { currentUser = user; });
-
-
+// for final score screen retry
+let isRestarting = false;
 // ─── UI Elements ──────────────────────────────────────────────────────────────
 
 let scoreDisplay    = null;
@@ -112,20 +115,7 @@ function getTier(userHz, targetHz) {
     return TIERS[3];
 }
 // ─── Tiers on screen ─────────────────────────────────────────────────────────
-function showTier(label) {
-    const tier = TIERS.find(t => t.label === label);
 
-    const el = document.createElement("div");
-    el.classList.add("tierFloat");
-    el.textContent = label;
-
-    el.style.color = tier.color;
-    el.style.webkitTextStroke = "1px black";
-
-    document.getElementById("tierFloatLayer").appendChild(el);
-
-    setTimeout(() => el.remove(), 1200);
-}
 function spawnTierPopup(tier) {
     const layer = document.getElementById("tierFloatLayer");
     if (!layer) return;
@@ -155,6 +145,32 @@ function spawnTierPopup(tier) {
     setTimeout(() => {
         el.remove();
     }, 1200);
+}
+// ─── Combo on screen ─────────────────────────────────────────────────────────
+function spawnComboPopup(combo) {
+    const layer = document.getElementById("tierFloatLayer");
+    if (!layer) return;
+
+    const el = document.createElement("div");
+    el.className = "tierFloat";
+    el.textContent = `${combo}x COMBO`;
+
+    // Color logic
+    if (combo >= 50) el.style.color = "#FFD700";
+    else if (combo >= 20) el.style.color = "#9d3bf8";
+    else if (combo >= 10) el.style.color = "#215fe5";
+    else if (combo >= 5) el.style.color = "#4BA7FF";
+    else el.style.color = "#6bff8e";
+
+    const jitterX = (Math.random() - 0.5) * 20;
+    const jitterY = (Math.random() - 0.5) * 10;
+
+    el.style.left = `calc(95% + ${jitterX}px)`;
+    el.style.top  = `calc(12% + ${jitterY}px)`;
+
+
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
 }
 // ─── Countdown ─────────────────────────────────────────────────────────
 function getExpectedPitch(currentTimeSec) {
@@ -194,22 +210,23 @@ function scoringTick() {
     if (!scoringActive || !analyserNode) return;
 
     const audio = document.getElementById("audio");
-
-    // STOP scoring if paused
     if (!audio || audio.paused) {
-        updateScorerUI(0, 0); // optional: reset UI display
+        updateScorerUI(0, 0);
         return;
     }
 
-    const userHz     = detectPitch(analyserNode);
+    const userHz = detectPitch(analyserNode);
     const expectedHz = getExpectedPitch(audio.currentTime);
+
+    if (expectedHz <= 0) return;
+    if (userHz <= 0) {
+        updateScorerUI(userHz, expectedHz);
+        return;
+    }
 
     if (expectedHz > 0) {
         scoredFrames++;
-        maxPossible += TIERS[0].points;
-
         const tier = getTier(userHz, expectedHz);
-        totalScore += tier.points;
 
         if (tier.label === "MISS") {
             consecutiveMisses++;
@@ -221,6 +238,26 @@ function scoringTick() {
             currentCombo++;
             if(currentCombo > maxCombo) maxCombo = currentCombo;
         }
+
+        let multiplier = 1;
+        if (currentCombo >= 50) multiplier = 2.0;
+        else if (currentCombo >= 20) multiplier = 1.5;
+
+
+        totalScore += Math.round(tier.points * multiplier);
+        maxPossible += Math.round(TIERS[0].points * multiplier);
+
+        // 4. Popups and UI
+        if (
+            currentCombo === 2 ||
+            currentCombo === 5 ||
+            currentCombo === 10 ||
+            currentCombo === 20 ||
+            currentCombo === 50
+        ) {
+            spawnComboPopup(currentCombo);
+        }
+
         if (tier.label !== lastTierLabel) {
             lastTierLabel = tier.label;
             flashTier(tier);
@@ -274,6 +311,7 @@ window.addEventListener("DOMContentLoaded", () => {
     window.KaraokeScorer = window.KaraokeScorer || {};
     window.KaraokeScorer.restartSong = restartSong;
 });
+
 // ─── Microphone Setup / Teardown ──────────────────────────────────────────────
 
 function setMicButton(isOn) {
@@ -304,20 +342,34 @@ async function startMic() {
 }
 
 function stopMic() {
+    console.log("[KaraokeScorer] stopMic execution started");
+
     scoringActive = false;
     clearInterval(scoringInterval);
 
-    if (micSourceNode)  { micSourceNode.disconnect(); micSourceNode = null; }
-    if (analyserNode)   { analyserNode.disconnect();  analyserNode  = null; }
-    if (audioCtx)       { audioCtx.close();           audioCtx      = null; }
-    if (micStream)      { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+    if (micStream) {
+        micStream.getTracks().forEach(track => track.stop());
+        micStream = null;
+    }
+
+    if (audioCtx) {
+        audioCtx.close().then(() => {
+            audioCtx = null;
+            analyserNode = null;
+            micSourceNode = null;
+        });
+    }
 
     setMicButton(false);
-    console.log("[KaraokeScorer] Mic stopped. Final score:", totalScore);
 
-    showFinalScore();
-    saveScoreToFirebase();
+    if (!isRestarting) {
+        showFinalScore();
+        saveScoreToFirebase();
+    }
 }
+
+// THIS IS THE CRITICAL MISSING LINE
+window.stopMic = stopMic;
 
 async function toggleMic() {
     if (scoringActive) {
@@ -625,9 +677,12 @@ function initScorerUI() {
         panel.innerHTML = `
         <div id="scoreBar">
             <div id="scoreBarFill"></div>
-            <div class="rankMarker" style="left:25%"></div>
             <div class="rankMarker" style="left:50%"></div>
-            <div class="rankMarker" style="left:75%"></div>
+            <div class="rankMarker" style="left:60%"></div>
+            <div class="rankMarker" style="left:70%"></div>
+            <div class="rankMarker" style="left:80%"></div>
+            <div class="rankMarker" style="left:88%"></div>
+            <div class="rankMarker" style="left:95%"></div>
         </div>
         <span id="scoreDisplay">0</span>
         `;
@@ -673,7 +728,8 @@ function updateScorerUI(userHz, expectedHz) {
         pitchDisplay.style.color = expectedHz > 0 ? tier.color : "#aaa";
     }
     if (USE_SCORE_BAR) {
-        updateScoreBar(totalScore, maxPossible);
+        const pct = maxPossible > 0 ? (totalScore / maxPossible) * 100 : 0;
+        updateScoreBar(pct);
     }
     scoreDisplay.textContent = totalScore.toLocaleString();
 
@@ -704,27 +760,66 @@ function flashTier(tier) {
 
 function showFinalScore() {
     const pct = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 100) : 0;
-    let grade, color;
-    if (pct >= 95) { grade = "EX+"; color = "#FFD700"; }
+    let grade, color, isRainbow = false;
+
+    if (pct >= 95) { grade = "EX+"; color = "#FFD700"; isRainbow = true; }
     else if (pct >= 88) { grade = "S"; color = "#4BA7FF"; }
     else if (pct >= 80) { grade = "A"; color = "#6bff8e"; }
     else if (pct >= 70) { grade = "B"; color = "#f0c040"; }
     else if (pct >= 60) { grade = "C"; color = "#f0c040"; }
     else if (pct >= 50) { grade = "D"; color = "#f0c040"; }
-    else  { grade = "F"; color = "#ff6b6b"; }
+    else { grade = "F"; color = "#ff6b6b"; }
+
+    // Hide UI Bars
+    const topBar = document.querySelector(".top-bar") || document.getElementById("topBar");
+    const bottomBar = document.getElementById("bottomBar");
+    if (topBar) topBar.style.display = "none";
+    if (bottomBar) bottomBar.style.display = "none";
 
     const sub = document.getElementById("subtitle");
     if (sub) {
+        const gradeStyle = isRainbow
+            ? `font-size:8vw; font-weight:bold; animation: rainbowGlow 2s linear infinite; -webkit-background-clip: text; color: transparent; background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);`
+            : `font-size:8vw; color:${color}; font-weight:bold;`;
+
+        // We build the full results screen here
         sub.innerHTML = `
-            <div style="font-size:3vw;color:#fff;">Final Score</div>
-                <div style="font-size:8vw;color:${color};font-weight:bold;">${totalScore.toLocaleString()}</div>
-                <div style="font-size:4vw;color:${color};">Grade: ${grade}</div>
-                <div style="font-size:2vw;color:#aaa;">Best Combo: ${maxCombo}x</div>
+            <div class="results-container" style="text-align:center; background: rgba(0,0,0,0.85); padding: 40px; border-radius: 20px; backdrop-filter: blur(10px);">
+                <div style="font-size:3vw; color:#fff; margin-bottom: 10px;">Final Score</div>
+                <div style="font-size:8vw; color:${isRainbow ? '#FFD700' : color}; font-weight:bold; line-height:1;">${totalScore.toLocaleString()}</div>
+                <div style="${gradeStyle}">Grade: ${grade}</div>
+                <div style="font-size:2vw; color:#aaa; margin-bottom: 30px;">Best Combo: ${maxCombo}x</div>
+                
+                <div class="results-actions" style="display: flex; gap: 20px; justify-content: center;">
+                    <button id="retryBtn" class="result-btn primary">Retry</button>
+                    <button id="backBtn" class="result-btn secondary">Back to Songs</button>
+                </div>
+            </div>
         `;
-        setTimeout(() => { sub.innerHTML = ""; }, 4000);
+
+        document.getElementById("retryBtn").onclick = async () => {
+            isRestarting = true;
+
+            if (topBar) topBar.style.display = "flex";
+            if (bottomBar) bottomBar.style.display = "flex";
+
+            sub.innerHTML = "";
+
+            await restartSong();
+
+            isRestarting = false;
+
+            const overlay = document.getElementById("karaokeStartOverlay");
+            if (overlay) overlay.style.display = "flex";
+        };
+        document.getElementById("backBtn").onclick = () => {
+            const params = new URLSearchParams(window.location.search);
+            const songId = params.get("song");
+
+            window.location.href = `/songselection?song=${songId}`;
+        };
     }
 }
-
 function hzToNote(hz) {
     if (hz <= 0) return "—";
     const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -741,56 +836,97 @@ function injectScorerStyles() {
 
     if (USE_SCORE_BAR) {
         style.textContent = `
-            #scorerPanel {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 0 12px;
-            }
+        @keyframes rainbowGlow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+    
+        .result-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background 0.2s;
+        }
+    
+        .result-btn.primary {
+            background: #4BA7FF;
+            color: white;
+        }
+    
+        .result-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+    
+        .result-btn:hover {
+            transform: scale(1.05);
+        }
+    
+        .result-btn.primary:hover { background: #3a8ee6; }
+        .result-btn.secondary:hover { background: rgba(255,255,255,0.2); }
+    
+        .results-container {
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+    
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        #scorerPanel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 12px;
+        }
 
-            #scoreBar {
-                position: relative;
-                width: 200px;
-                height: 10px;
-                background: #222;
-                border-radius: 5px;
-                overflow: hidden;
-            }
+        #scoreBar {
+            position: relative;
+            width: 200px;
+            height: 10px;
+            background: #222;
+            border-radius: 5px;
+            overflow: hidden;
+        }
 
-            #scoreBarFill {
-                position: absolute;
-                left: 0;
-                top: 0;
-                height: 100%;
-                width: 100%;
-                background: linear-gradient(
-                    to right,
-                    #ff6b6b 0%,
-                    #f0c040 25%,
-                    #6bff8e 50%,
-                    #4BA7FF 75%,
-                    #FFD700 100%
-                );
-                transition: width 0.2s linear;
-            }
+        #scoreBarFill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(
+                to right,
+                #ff6b6b 0%,
+                #f0c040 25%,
+                #6bff8e 50%,
+                #4BA7FF 75%,
+                #FFD700 100%
+            );
+            transition: width 0.2s linear;
+        }
 
-            .rankMarker {
-                position: absolute;
-                top: 0;
-                width: 2px;
-                height: 100%;
-                background: white;
-                opacity: 0.6;
-            }
-            
-            #comboDisplay {
-                font-size: 1rem;
-                font-weight: bold;
-                min-width: 60px;
-                text-align: center;
-                opacity: 0;
-                transition: opacity 1.5s ease;
-            }
+        .rankMarker {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: white;
+            opacity: 0.6;
+        }
+        
+        #comboDisplay {
+            font-size: 1rem;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
         `;
     } else {
         style.textContent = `
@@ -821,25 +957,23 @@ function injectScorerStyles() {
     document.head.appendChild(style);
 }
 // ─── Score Bar ───────────────────────────────────
-function updateScoreBar(score, maxScore) {
-    const percent = maxScore > 0 ? (score / maxScore) * 100 : 0;
-
+function updateScoreBar(pct) {
     const fill = document.getElementById("scoreBarFill");
-    fill.style.width = percent + "%";
+    if (!fill) return;
 
-    // calculate grade
-    const pct = percent;
+    fill.style.width = pct + "%";
 
-    let color;
-    if (pct >= 95) color = "#FFD700";      // EX+
-    else if (pct >= 88) color = "#4BA7FF"; // S
-    else if (pct >= 80) color = "#6bff8e"; // A
-    else if (pct >= 70) color = "#f0c040"; // B
-    else if (pct >= 60) color = "#f0c040"; // C
-    else if (pct >= 50) color = "#f0c040"; // D
-    else color = "#ff6b6b";                // F
-
-    fill.style.background = color;
+    // Handle Colors and Rainbow Class
+    if (pct >= 95) {
+        fill.style.backgroundColor = ""; // Clear static color for animation
+        fill.classList.add("tier-ex-plus");
+    } else {
+        fill.classList.remove("tier-ex-plus");
+        if (pct >= 88) fill.style.backgroundColor = "#4BA7FF"; // S
+        else if (pct >= 80) fill.style.backgroundColor = "#6bff8e"; // A
+        else if (pct >= 70) fill.style.backgroundColor = "#f0c040"; // B
+        else fill.style.backgroundColor = "#ff6b6b"; // F/C/D
+    }
 }
 // ─── Hook into existing MusicPlayer.js flow ───────────────────────────────────
 
@@ -860,6 +994,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const bottomBar = document.getElementById("bottomBar");
     const playPause = document.getElementById("playPause");
 
+
     overlay.style.display = "flex";
     if (bottomBar) bottomBar.style.pointerEvents = "none";
 
@@ -869,4 +1004,11 @@ window.addEventListener("DOMContentLoaded", () => {
             await startCountdownAndPlay();
         };
     }
+    if (audioEl) {
+        audioEl.onended = () => {
+            console.log("Audio ended - calling window.stopMic()");
+            window.stopMic();
+        };
+    }
+
 });

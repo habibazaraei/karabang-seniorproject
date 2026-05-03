@@ -985,6 +985,7 @@ function updateTrackSelect() {
 
     if (centerSong && !centerSong.isPlaceholder) {
         selectedSong = centerSong;
+        syncHeartState(centerSong);
         cards[currentIndex].classList.add("selected");
 
         const songTextEl = document.getElementById("songName").parentElement;
@@ -1045,7 +1046,23 @@ function updateTrackSelect() {
        currentTeaserId = null;
    }
 }
+async function syncHeartState(song) {
+    const user = auth.currentUser;
+    if (!user || !song) return;
 
+    const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
+    const snap = await getDoc(favRef);
+
+    const img = heartButton.querySelector("img");
+
+    if (snap.exists()) {
+        heartButton.classList.add("active");
+        img.src = "/images/heart_icon.svg";
+    } else {
+        heartButton.classList.remove("active");
+        img.src = "/images/heart_gray_icon.svg";
+    }
+}
 
 function moveDown(){
     currentIndex++
@@ -1064,7 +1081,33 @@ async function loadSongsFromAPI() {
     try {
         const res = await fetch('/api/songs');
         songs = await res.json();
+
+        // This builds your currentList and renders the cards
         refreshSongList();
+
+        // NEW: Check if we should center a specific song
+        const params = new URLSearchParams(window.location.search);
+        const songIdFromUrl = params.get("song");
+
+        if (songIdFromUrl && currentList.length > 0) {
+            // Find where this song sits in the currentList
+            const targetIndex = currentList.findIndex(s => String(s.id) === String(songIdFromUrl));
+
+            if (targetIndex !== -1) {
+                currentIndex = targetIndex;
+                // Refresh the visual positions
+                updateTrackSelect();
+
+                // Update the right-side info panel (song name, artist, heart)
+                const centerSong = currentList[currentIndex];
+                if (centerSong && !centerSong.isPlaceholder) {
+                    selectedSong = centerSong;
+                    songName.innerText = centerSong.title;
+                    artistName.innerText = centerSong.artist;
+                    syncHeartState(centerSong);
+                }
+            }
+        }
 
     } catch (err) {
         console.error("Failed to load songs from API:", err);

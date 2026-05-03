@@ -24,7 +24,7 @@ body {
     position:relative;
     width:100vw;
     height:100vh;
-    overflow:hidden;
+    overflow: visible;
 }
 
 /* Lyrics */
@@ -391,27 +391,65 @@ button:active {
 
 #tierFloatLayer {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80%;
-    height: 40%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 
-    transform: translate(-50%, -60%); /* pushes upward above lyrics */
+
+    transform: none;
 
     pointer-events: none;
-    z-index: 3;
-}
-.tierFloat {
-    position: absolute;
-    font-family: "LTKaraoke", sans-serif;
-    font-weight: bold;
-    font-size: 3vw;
-    opacity: 0;
-    transform: translateY(0);
-    animation: tierPop 1.2s ease-out forwards;
-    -webkit-text-stroke: 0.5px black;
+    z-index: 20000;
 }
 
+.tierFloat {
+    position: absolute;
+    font-family: 'LTKaraoke', sans-serif;
+    font-size: 2.5rem;
+    font-weight: bold;
+    pointer-events: none;
+
+    text-align: right;
+    white-space: nowrap;
+    text-shadow: 2px 2px 4px #4a4a4a;
+    z-index: 100;
+
+    transform: translate(-100%, -50%);
+    animation: comboPop 1s ease-out forwards;
+}
+
+.tierFloat.combo {
+    font-size: 4vw;
+}
+@keyframes comboPop {
+    0% {
+        opacity: 0;
+        transform: translate(-100%, -50%) scale(0.5);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-100%, -70%) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-100%, -100%) scale(1);
+    }
+}
+@keyframes tierPop {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(0) scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(1);
+    }
+}
 #scoreBar {
     position: relative;
     width: 200px;
@@ -424,29 +462,29 @@ button:active {
     background: #222;
 }
 
-/* colored fill (actual score) */
+/* Ensure there is only ONE #scoreBarFill block */
 #scoreBarFill {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 0%;
+    background: #ff6b6b;
 
-    background: #ff6b6b; /* default (F) */
-    transition: width 0.2s linear, background 0.2s linear;
+    transition: width 0.3s ease-out, background-color 0.2s linear;
 }
 
-/* fill (your actual score) */
-#scoreBarFill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 0%;
-    background: rgba(0,0,0,0.6);
-    transition: width 0.2s linear;
+/* The Rainbow Animation */
+@keyframes rainbowGlow {
+    0% { background-color: #ff0000; filter: hue-rotate(0deg); }
+    100% { background-color: #ff0000; filter: hue-rotate(360deg); }
 }
 
+/* Class to be added via JS when reaching EX+ */
+.tier-ex-plus {
+    animation: rainbowGlow 2s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
 /* vertical rank lines */
 .rankMarker {
     position: absolute;

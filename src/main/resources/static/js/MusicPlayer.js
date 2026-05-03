@@ -4,6 +4,7 @@
  * using lrc timestamps.
  * @author Jason Yi
  */
+import { db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut } from './firebase.js';
 
 const audio = document.getElementById("audio")
 const progress = document.getElementById("progress")
@@ -31,6 +32,8 @@ let settingsButton = document.getElementById("settings");
 let settingsMenu = document.getElementById("settingsMenu");
 let fontSizeSlider = document.getElementById("fontSize");
 
+
+
 // toggle settings menu
 settingsButton.onclick = () => {
     settingsMenu.style.display =
@@ -54,8 +57,12 @@ fontSizeSlider.oninput = () => {
 
 // Top Bar
 // Go back to Song Selection
-goBackButton.onclick = () =>{
-    window.location.href = "/songselection"
+// Go back to Song Selection and pass the current song ID
+goBackButton.onclick = () => {
+    const params = new URLSearchParams(window.location.search);
+    const songId = params.get("song");
+
+    window.location.href = `/songselection?song=${songId}`;
 }
 // Open Drop down
 dropDownButton.onclick = () => {
@@ -125,9 +132,10 @@ document.getElementById("restart").addEventListener("click", () => {
 
 // Update progress bar as audio plays
 function updateLyrics() {
-    if (!audio.duration) return;
+    if (!audio.duration || audio.paused || audio.ended) return;
 
     const t = audio.currentTime;
+
 
     const percent = (t / audio.duration) * 100;
     progress.style.width = percent + "%";
@@ -304,6 +312,91 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(err => console.error("Failed to load song:", err));
 });
 
+// Favorite Button Logic
+heartButton.onclick = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Please log in to favorite songs!");
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const songId = params.get("song");
+
+    const response = await fetch("/api/songs");
+    const songs = await response.json();
+    const songData = songs.find(s => String(s.id) === String(songId));
+
+    if (!songData) return;
+
+    const favRef = doc(db, "users", user.uid, "favorites", String(songId));
+    const isCurrentlyFavorite = heartButton.classList.contains("active");
+
+    // Use the ID from your HTML to find the image
+    const heartImg = document.getElementById("heartImg");
+
+    if (isCurrentlyFavorite) {
+        if (typeof playHeartOffSound === "function") playHeartOffSound();
+        heartButton.classList.remove("active");
+
+        // Update the image source specifically
+        if (heartImg) heartImg.src = "/images/heart_gray_icon.svg";
+
+        await deleteDoc(favRef);
+    } else {
+        if (typeof playHeartSound === "function") playHeartSound();
+        heartButton.classList.add("active");
+
+        // Update the image source specifically
+        if (heartImg) heartImg.src = "/images/heart_icon.svg";
+
+        await setDoc(favRef, {
+            title: songData.title,
+            artist: songData.artist,
+            mp3URL: songData.audioPath || "",
+            coverURL: songData.artCoverPath || "",
+            genre: songData.genre || "",
+            language: songData.language || "",
+            difficulty: songData.difficulty || ""
+        });
+    }
+};
+
+/**
+ * Check initial favorite status when page loads
+ */
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const params = new URLSearchParams(window.location.search);
+        const songId = params.get("song");
+        if (!songId) return;
+
+        const favRef = doc(db, "users", user.uid, "favorites", String(songId));
+        const docSnap = await getDoc(favRef);
+
+        if (docSnap.exists()) {
+            heartButton.classList.add("active");
+
+            // Fix the image on load
+            const heartImg = document.getElementById("heartImg");
+            if (heartImg) {
+                heartImg.src = "/images/heart_icon.svg";
+            }
+        }
+    }
+});
+const heartButtonSound = new Audio("/soundEffects/heartSound.ogg");
+const heartButtonOffSound = new Audio("/soundEffects/heartOffSound.ogg");
+
+function playHeartSound() {
+    heartButtonSound.volume = 0.4;
+    heartButtonSound.play();
+}
+
+function playHeartOffSound() {
+    heartButtonOffSound.volume = 0.4;
+    heartButtonOffSound.play();
+}
 audio.volume = 0.5
 volume.value = 50
 updateVolumeUI()
