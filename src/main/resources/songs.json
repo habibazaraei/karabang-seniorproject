@@ -166,7 +166,7 @@
     "lyricsPath": "/lyrics/StressedOut.lrc",
     "artCoverPath": "/artCover/stressedOutArtCover.jpg",
     "songTeaserPath": "/teaser/stressedOutTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/StressedOut_pitches.json"
   },
   {
     "id": 25,
