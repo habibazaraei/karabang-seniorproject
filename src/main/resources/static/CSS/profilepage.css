@@ -10,7 +10,7 @@
     font-weight: 700;
 }
 
-{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -122,7 +122,7 @@ body {
 }
 
 .profile-card {
-    min-height: 600px;
+    min-height: 620px;
     text-align: center;
 }
 
@@ -140,6 +140,22 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+#uploadPicBtn {
+    margin: 10px auto 20px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 14px;
+    background: #523da2;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    display: block;
+}
+
+#uploadPicBtn:hover {
+    background: #6f58c9;
 }
 
 #usernameDisplay {
@@ -235,7 +251,6 @@ body {
 
 @media (max-width: 1000px) {
     .profile-wrapper {
-        height: auto;
         grid-template-columns: 1fr;
     }
 }
