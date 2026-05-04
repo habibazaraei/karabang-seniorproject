@@ -1,59 +1,61 @@
 import { auth, db } from "./firebase.js";
-import { createUserWithEmailAndPassword } 
-from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+import { createUserWithEmailAndPassword }
+    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
 import { doc, setDoc, getDoc }
-from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const username = document.getElementById("username");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
-const signupBtn = document.getElementById("signupBtn");
-const homeBtn = document.getElementById("homeBtn");
+const signupForm = document.getElementById("signup-form");
 
-//Prevents errors from reload
-const form = document.getElementById("signup-form");
-form.addEventListener("submit", (e) => e.preventDefault());
+signupForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
 
-//User sign up taking information needed for sign up and then awaits the user action. One it is complete it sends them back to the login page.
-       signupBtn.addEventListener("click", async () => {
-           try {
-               // Check if username is already taken
-               const usernameDoc = await getDoc(doc(db, "usernames", username.value.toLowerCase()));
-               if (usernameDoc.exists()) {
-                   alert("Username already taken! Please choose another.");
-                   return;
-               }
+    const usernameValue = username.value.trim();
+    const emailValue = email.value.trim();
+    const passwordValue = password.value.trim();
 
-               const userCredential = await createUserWithEmailAndPassword(
-                   auth,
-                   email.value,
-                   password.value
-               );
+    if (usernameValue === "" || emailValue === "" || passwordValue === "") {
+        alert("Please fill in all fields.");
+        return;
+    }
 
-               const user = userCredential.user;
+    try {
+        const usernameDoc = await getDoc(
+            doc(db, "usernames", usernameValue.toLowerCase())
+        );
 
-               // Save user profile
-               await setDoc(doc(db, "users", user.uid), {
-                   email: user.email,
-                   username: username.value,
-                   displayName: username.value
-               });
+        if (usernameDoc.exists()) {
+            alert("Username already taken. Please choose another.");
+            return;
+        }
 
-               // Save username → uid mapping for login lookup
-               await setDoc(doc(db, "usernames", username.value.toLowerCase()), {
-                   uid: user.uid,
-                   email: user.email
-               });
+        const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            emailValue,
+            passwordValue
+        );
 
-               alert("User created!");
-               window.location.href = "login";
+        const user = userCredential.user;
 
-           } catch (error) {
-               alert(error.message);
-           }
-       });
- 
-//Home Button
-homeBtn.addEventListener("click", () => {
-      window.location.href = "login";
-    });
+        await setDoc(doc(db, "users", user.uid), {
+            email: user.email,
+            username: usernameValue,
+            displayName: usernameValue
+        });
+
+        await setDoc(doc(db, "usernames", usernameValue.toLowerCase()), {
+            uid: user.uid,
+            email: user.email
+        });
+
+        alert("Account created successfully!");
+        window.location.href = "login.html";
+
+    } catch (error) {
+        alert(error.message);
+    }
+});
