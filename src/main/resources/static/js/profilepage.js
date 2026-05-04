@@ -1,55 +1,25 @@
-const songs = [
-    {
-        title: "Blinding Lights",
-        artist: "The Weeknd",
-        image: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png"
-    },
-    {
-        title: "Bohemian Rhapsody",
-        artist: "Queen",
-        image: "https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png"
+const usernameDisplay = document.getElementById("usernameDisplay");
+const usernameInput = document.getElementById("usernameInput");
+const genreSelect = document.getElementById("genreSelect");
+const genreDisplay = document.getElementById("genreDisplay");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+saveProfileBtn.addEventListener("click", function () {
+    const newUsername = usernameInput.value.trim();
+    const favoriteGenre = genreSelect.value;
+
+    if (newUsername !== "") {
+        usernameDisplay.textContent = newUsername;
+        usernameInput.value = "";
     }
-];
 
-const songTitle = document.querySelector(".song-title");
-const artist = document.querySelector(".artist");
-const image = document.querySelector(".album-card img");
+    genreDisplay.textContent = favoriteGenre;
+});
 
-let index = 0;
-
-function changeSong() {
-    index = (index + 1) % songs.length;
-    songTitle.textContent = songs[index].title;
-    artist.textContent = songs[index].artist;
-    image.src = songs[index].image;
+function goToSongs() {
+    window.location.href = "SongSelection.html";
 }
 
-setInterval(changeSong, 15000);
-
-const userStats = {
-    highestScore: 9850,
-    favoriteSongs: [
-        "Blinding Lights - The Weeknd",
-        "Bohemian Rhapsody - Queen",
-        "We Are The Champions - Queen",
-        "Nagging - IU",
-        "We Can't Be Friends - Ariana Grande"
-    ]
-};
-
-document.getElementById("highestScore").textContent = userStats.highestScore;
-
-const favoriteSongsList = document.getElementById("favoriteSongsList");
-
-userStats.favoriteSongs.slice(0, 5).forEach(function(song) {
-    const li = document.createElement("li");
-    li.textContent = song;
-    favoriteSongsList.appendChild(li);
-});
-
-const profileForm = document.getElementById("profile-form");
-
-profileForm.addEventListener("submit", function(event) {
-    event.preventDefault();
-    alert("Profile changes saved!");
-});
+function logout() {
+    window.location.href = "login.html";
+}
