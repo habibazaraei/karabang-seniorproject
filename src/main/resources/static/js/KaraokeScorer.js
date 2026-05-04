@@ -902,28 +902,25 @@ function injectScorerStyles() {
 
         #scoreBar {
             position: relative;
-            width: 200px;
-            height: 10px;
-            background: #222;
-            border-radius: 5px;
+            width: 250px; /* Changed from 200px to 250px */
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 7px;
             overflow: hidden;
+            border: 1px solid #333;
         }
-
+        
         #scoreBarFill {
             position: absolute;
             left: 0;
             top: 0;
             height: 100%;
-            width: 100%;
-            background: linear-gradient(
-                to right,
-                #ff6b6b 0%,
-                #f0c040 25%,
-                #6bff8e 50%,
-                #4BA7FF 75%,
-                #FFD700 100%
-            );
-            transition: width 0.2s linear;
+            width: 0%; /* Initialize at 0 */
+            transition: width 0.05s linear;
+            background-repeat: no-repeat;
+            background-position: left center;
+            background-size: 250px 100%; /* Sync with container width */
+            z-index: 1;
         }
 
         .rankMarker {
@@ -980,47 +977,38 @@ function updateScoreBar(pct) {
     const fill = document.getElementById("scoreBarFill");
     if (!fill) return;
 
-    // Use min/max to keep within bounds
     const safePct = Math.max(0, Math.min(pct, 100));
     fill.style.width = safePct + "%";
 
-    // Handle EX+ Rainbow
     if (safePct >= 95) {
         fill.style.backgroundImage = "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
         fill.style.animation = "rainbowGlow 2s linear infinite";
+        fill.style.backgroundSize = "100% 100%";
         return;
     }
 
     fill.style.animation = "none";
 
-    // Sort ranks: F (0), D (60), C (70), B (80), A (88)
     const sortedRanks = [...Ranks]
         .filter(r => r.min < 95)
         .sort((a, b) => a.min - b.min);
 
     let gradientParts = [];
-
     for (let i = 0; i < sortedRanks.length; i++) {
         const current = sortedRanks[i];
         const next = sortedRanks[i + 1];
 
-        // Start this color block exactly where the rank begins
+        // Example: orange 60%, orange 70%, yellow 70%...
         gradientParts.push(`${current.color} ${current.min}%`);
 
-        if (next && safePct >= next.min) {
-            // Force the color to stay solid until the next marker
+        if (next) {
             gradientParts.push(`${current.color} ${next.min}%`);
         } else {
-            // End the color at the current progress point
-            gradientParts.push(`${current.color} ${safePct}%`);
-            break;
+            gradientParts.push(`${current.color} 100%`);
         }
     }
 
-    // CRITICAL: We must set the background-size to 100% of the PARENT,
-    // but gradients by default scale to the element size.
-    // This forces the gradient to align with the markers regardless of bar width.
-    fill.style.backgroundSize = `${(100 / safePct) * 100}% 100%`;
+    fill.style.backgroundSize = "250px 100%";
     fill.style.backgroundImage = `linear-gradient(to right, ${gradientParts.join(', ')})`;
 }
 

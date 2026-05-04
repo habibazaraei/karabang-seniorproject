@@ -465,9 +465,9 @@ button:active {
     left: 0;
     top: 0;
     height: 100%;
-    /* Change 0.2s to 0.05s to match your 50ms scoringTick */
     transition: width 0.05s linear;
     background-repeat: no-repeat;
+    background-position: left center; /* Keep the gradient anchored to the left */
     z-index: 1;
 }
 /* Ensure the rainbow colors actually animate */
