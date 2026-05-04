@@ -1,175 +1,239 @@
+@font-face {
+    font-family: "VarelaRound";
+    src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: "Nirmala UI";
+    src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
+    font-weight: 700;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+}
+
+html, body {
+    min-height: 100%;
+    font-family: "Nirmala UI", sans-serif;
+    font-weight: bold;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 body {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #12001f, #090014, #1a0033);
+    background: url("../images/purple_song_selection_background.svg") no-repeat center fixed;
+    background-size: cover;
     color: white;
-    overflow: hidden;
 }
 
-/* background glow */
-.glow {
-    position: fixed;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.6;
-    z-index: -1;
-}
-
-.glow1 {
-    background: #8b5cf6;
-    top: -80px;
-    left: -70px;
-}
-
-.glow2 {
-    background: #ec4899;
-    bottom: -80px;
-    right: -70px;
-}
-
-/* main 3 column layout */
-.profile-wrapper {
-    height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1.2fr 1fr;
-    gap: 30px;
-    padding: 50px;
-    align-items: center;
-}
-
-/* side panels */
-.side-panel {
+#topButtonBar {
+    height: 70px;
+    width: 100%;
+    padding: 15px 30px;
     display: flex;
-    justify-content: center;
     align-items: center;
 }
 
-.scoreboard-card,
-.favorites-card,
-.profile-card {
-    background: rgba(255, 255, 255, 0.09);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 22px;
-    padding: 30px;
-    width: 100%;
-    max-width: 340px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 0 25px rgba(168, 85, 247, 0.25);
+#webLogo {
+    font-family: "VarelaRound", sans-serif;
+    font-size: 2rem;
+    color: white;
 }
 
-/* center */
-.center-panel {
-    text-align: center;
+#webLogo span {
+    color: #ff5252;
 }
 
-.brand {
-    font-size: 42px;
-    margin-bottom: 10px;
+#rightButtons {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
 }
 
-.brand span {
-    color: #c084fc;
-}
-
-.subtitle {
-    color: #d8c7ff;
-    margin-bottom: 25px;
-}
-
-/* profile card */
-.profile-card {
-    margin: 0 auto;
-}
-
-#profileImage {
-    width: 125px;
-    height: 125px;
-    border-radius: 50%;
-    border: 3px solid #c084fc;
-    background: white;
-    margin-bottom: 15px;
-}
-
-#changePhotoBtn,
-#changeUserBtn,
-#backBtn {
-    width: 100%;
-    padding: 12px;
-    margin-top: 12px;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
+.navButton {
+    background: #17094E;
+    color: white;
+    border: 1px solid #523da2;
+    border-radius: 14px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: bold;
     cursor: pointer;
 }
 
-#changePhotoBtn,
-#changeUserBtn {
-    background: linear-gradient(135deg, #9333ea, #ec4899);
+.navButton:hover {
+    background: #523da2;
+}
+
+.profile-wrapper {
+    min-height: calc(100vh - 70px);
+    padding: 35px;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.card {
+    background: rgba(23, 9, 78, 0.92);
+    border: 2px solid #523da2;
+    border-radius: 28px;
+    padding: 30px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+
+.card:hover {
+    box-shadow: 0 12px 40px rgba(82, 61, 162, 0.55);
+    transform: translateY(-3px);
+    transition: 0.3s ease;
+}
+
+.card h2 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+    color: #ffffff;
+}
+
+.scoreboard-card {
+    min-height: 520px;
+}
+
+.score-box {
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+.score-box p {
+    color: #dcd7ff;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+}
+
+.score-box h3 {
+    font-size: 1.5rem;
     color: white;
 }
 
-#changePhotoBtn:hover,
-#changeUserBtn:hover {
-    opacity: 0.85;
-}
-
-#displayName {
-    width: 100%;
-    padding: 13px;
-    margin-top: 18px;
-    border-radius: 12px;
-    border: none;
-    outline: none;
-    font-size: 15px;
+.profile-card {
+    min-height: 600px;
     text-align: center;
 }
 
-#backBtn {
-    display: block;
-    text-decoration: none;
-    background: rgba(255, 255, 255, 0.15);
+.profile-pic {
+    width: 170px;
+    height: 170px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    border: 4px solid #523da2;
+    overflow: hidden;
+    background: #0f0638;
+}
+
+.profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#usernameDisplay {
+    font-size: 2.3rem;
+    margin-bottom: 5px;
+}
+
+.member-text {
+    color: #dcd7ff;
+    margin-bottom: 8px;
+}
+
+.genre-text {
+    color: #ffffff;
+    margin-bottom: 28px;
+}
+
+#genreDisplay {
+    color: #ff5252;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 10px;
+}
+
+.profile-form label {
+    margin-top: 8px;
+    color: #ffffff;
+}
+
+.profile-form input,
+.profile-form select {
+    padding: 13px;
+    border-radius: 14px;
+    border: 1px solid #523da2;
+    background: #0f0638;
     color: white;
+    font-size: 1rem;
+    outline: none;
 }
 
-#backBtn:hover {
-    background: rgba(255, 255, 255, 0.25);
+.profile-form input:focus,
+.profile-form select:focus {
+    border-color: white;
+    background: #17094E;
 }
 
-/* text cards */
-.scoreboard-card h2,
-.favorites-card h2 {
-    margin-bottom: 18px;
-    color: #f0d9ff;
+#saveProfileBtn {
+    margin-top: 18px;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    background: #523da2;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
-.scoreboard-card p {
-    margin: 12px 0;
-    font-size: 16px;
+#saveProfileBtn:hover {
+    background: #6f58c9;
 }
 
-.favorites-card ul {
-    list-style: none;
+.liked-card {
+    min-height: 520px;
 }
 
-.favorites-card li {
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+.liked-song-text {
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 15px;
 }
 
-/* smaller screens */
-@media (max-width: 900px) {
-    body {
-        overflow: auto;
-    }
+.liked-song-text:hover {
+    background: #17094E;
+    border-color: white;
+}
 
+.liked-song-text h3 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.liked-song-text p {
+    color: #dcd7ff;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 1000px) {
     .profile-wrapper {
         height: auto;
         grid-template-columns: 1fr;

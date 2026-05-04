@@ -1,117 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>KaraBang Profile</title>
     <link rel="stylesheet" href="CSS/profilepage.css">
-    <meta charset="UTF-8">
 </head>
 <body>
 
-<div class="glow glow1"></div>
-<div class="glow glow2"></div>
+<div id="topButtonBar">
+    <h1 id="webLogo">Kara<span>Bang</span></h1>
 
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-
-<div class="profile-wrapper">
-
-    <!-- LEFT -->
-    <div class="left-panel">
-        <h1 class="brand">🎤 Kara<span>Bang</span></h1>
-        <p class="subtitle">
-            Manage your profile, view your favorite songs, and personalize your karaoke experience.
-        </p>
-
-        <div class="profile-card">
-            <div class="profile-image-section">
-                <img id="profileImage" src="/images/blank_profile_icon.svg" alt="Profile Picture">
-                <button id="changePhotoBtn" type="button">Change Photo</button>
-            </div>
-
-            <form id="profile-form">
-                <input id="displayName" type="text" placeholder="Display Name" value="KaraBang User" required>
-                <input id="email" type="email" placeholder="Email" value="user@email.com" required>
-                <input id="favoriteGenre" type="text" placeholder="Favorite Genre" value="Pop">
-                <input id="favoriteArtist" type="text" placeholder="Favorite Artist" value="The Weeknd">
-
-                <div class="profile-buttons">
-                    <button id="saveBtn" type="submit">Save Changes</button>
-                    <a href="SongSelection.html">
-                        <button id="backBtn" type="button">Back to Songs</button>
-                    </a>
-                </div>
-            </form>
-        </div>
+    <div id="rightButtons">
+        <button class="navButton" onclick="goToSongs()">Songs</button>
+        <button class="navButton" onclick="logout()">Logout</button>
     </div>
+</div>
 
-    <!-- RIGHT -->
-    <div class="right-panel">
-        <div class="album-card">
-            <img src="https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" alt="Album Cover">
+<main class="profile-wrapper">
 
-            <div class="song-title">Blinding Lights</div>
-            <div class="artist">The Weeknd</div>
+    <section class="card scoreboard-card">
+        <h2>Scoreboard</h2>
+
+        <div class="score-box">
+            <p>Total Songs Sung</p>
+            <h3>24</h3>
         </div>
 
-        <div class="scoreboard-card">
-            <h2>🏆 Scoreboard</h2>
-            <div id="highestScore" class="high-score">0</div>
-            <p class="score-label">Highest Score</p>
+        <div class="score-box">
+            <p>Highest Score</p>
+            <h3>98%</h3>
         </div>
 
-        <div class="favorites-card">
-            <h2>⭐ Top 5 Favorited Songs</h2>
-            <ul id="favoriteSongsList"></ul>
+        <div class="score-box">
+            <p>Average Score</p>
+            <h3>91%</h3>
         </div>
-    </div>
 
+        <div class="score-box">
+            <p>Current Rank</p>
+            <h3>Karaoke Star</h3>
+        </div>
+    </section>
 
-<script>
-    const songs = [
-        {
-            title: "Blinding Lights",
-            artist: "The Weeknd",
-            image: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png"
-        },
-        {
-            title: "Bohemian Rhapsody",
-            artist: "Queen",
-            image: "https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png"
-        }
-    ];
+    <section class="card profile-card">
+        <div class="profile-pic">
+            <img id="profileImage" src="images/default-profile.png" alt="Profile picture">
+        </div>
 
-    const songTitle = document.querySelector(".song-title");
-    const artist = document.querySelector(".artist");
-    const image = document.querySelector(".album-card img");
+        <h2 id="usernameDisplay">KaraBang User</h2>
+        <p class="member-text">KaraBang Member</p>
+        <p class="genre-text">Favorite Genre: <span id="genreDisplay">Pop</span></p>
 
-    let index = 0;
+        <div class="profile-form">
+            <label for="usernameInput">Change Username</label>
+            <input type="text" id="usernameInput" placeholder="Enter new username">
 
-    function changeSong() {
-        index = (index + 1) % songs.length;
-        songTitle.textContent = songs[index].title;
-        artist.textContent = songs[index].artist;
-        image.src = songs[index].image;
-    }
+            <label for="genreSelect">Favorite Genre</label>
+            <select id="genreSelect">
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="R&B">R&B</option>
+                <option value="Hip-Hop">Hip-Hop</option>
+                <option value="Country">Country</option>
+            </select>
 
-    setInterval(changeSong, 15000);
+            <button id="saveProfileBtn">Save Profile</button>
+        </div>
+    </section>
 
-    const profileForm = document.getElementById("profile-form");
-    profileForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-        alert("Profile changes saved!");
-    });
-</script>
+    <section class="card liked-card">
+        <h2>Liked Songs</h2>
 
-<script type="module" src="/js/profilepage.js"></script>
+        <div class="liked-song-text">
+            <h3>Blinding Lights</h3>
+            <p>The Weeknd</p>
+        </div>
+
+        <div class="liked-song-text">
+            <h3>Anti-Hero</h3>
+            <p>Taylor Swift</p>
+        </div>
+
+        <div class="liked-song-text">
+            <h3>Levitating</h3>
+            <p>Dua Lipa</p>
+        </div>
+
+        <div class="liked-song-text">
+            <h3>Die With A Smile</h3>
+            <p>Lady Gaga & Bruno Mars</p>
+        </div>
+    </section>
+
+</main>
+
+<script src="JS/profilepage.js"></script>
 </body>
 </html>
