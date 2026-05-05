@@ -205,3 +205,38 @@ button:hover {
         padding: 25px;
     }
 }
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /* replaces the input margin */
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 50px;
+    margin-bottom: 0; /* remove input's own margin since wrapper handles it */
+}
+
+.password-wrapper button {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    margin: 0;
+    color: #9f95d8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+
+.password-wrapper button:hover {
+    background: none;
+    color: white;
+}}

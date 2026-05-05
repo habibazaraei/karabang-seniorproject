@@ -53,7 +53,7 @@ signupForm.addEventListener("submit", async function(event) {
         });
 
         alert("Account created successfully!");
-        window.location.href = "login.html";
+        window.location.href = "/login";
 
     } catch (error) {
         alert(error.message);
