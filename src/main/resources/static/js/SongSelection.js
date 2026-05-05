@@ -166,18 +166,20 @@ function endDrag(e) {
     if (!isDragging) return;
     isDragging = false;
 }
-
+let wheelCooldown = false;
 // MOUSE WHEEL SCROLLING
 songList.addEventListener("wheel", (e) => {
     e.preventDefault();
 
-    if (e.deltaY > 0) {
-        moveDown();
-    } else {
-        moveUp();
-    }
+    if (wheelCooldown) return;
+    wheelCooldown = true;
+
+    if (e.deltaY > 0) moveDown();
+    else moveUp();
 
     playScrollSound();
+
+    setTimeout(() => wheelCooldown = false, scrollSpeed);
 });
 function restartScrollInterval(direction) {
     clearInterval(moveInterval);
@@ -1015,24 +1017,14 @@ function selectSong(song, card) {
 
 singButtonPrimary.onclick = () => {
     if (!selectedSong) return;
-    document.getElementById("modeModal").style.display = "flex";
+    window.location.href = "/musicplayer?song=" + selectedSong.id;
 };
 singButtonSecondary.onclick = () => {
     if (!selectedSong) return;
     window.location.href = "/musicplayerplay?song=" + selectedSong.id;
 };
 
-    document.getElementById("soloBtn").onclick = async () => {
-        if (!selectedSong) return;
-        await trackSongPlay(selectedSong.id);
-        window.location.href = "/musicplayer?song=" + selectedSong.id;
-    };
 
-    document.getElementById("duetBtn").onclick = async () => {
-        if (!selectedSong) return;
-        await trackSongPlay(selectedSong.id);
-        window.location.href = "/musicplayer?song=" + selectedSong.id + "&mode=duet";
-    };
 
 function updateTrackSelect() {
     const cards = document.querySelectorAll(".songCard");
