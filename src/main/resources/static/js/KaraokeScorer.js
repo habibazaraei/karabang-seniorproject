@@ -31,11 +31,11 @@ const MIN_VOICED_AMP = 0.005; // RMS threshold — below this we treat user as s
 // ─── Ranks Constants ───────────────────────────────────────────────────────────
 const Ranks = [
     { label: "EX+", min: 95, color: null },      // Handled by rainbow logic
-    { label: "A",   min: 88, color: "#4BA7FF" }, // Blue
-    { label: "B",   min: 80, color: "#00ff3d" }, // Green
-    { label: "C",   min: 70, color: "#a47503" }, // Yellow/Gold
-    { label: "D",   min: 60, color: "#8c0dff" }, // Orange
-    { label: "F",   min: 0,  color: "#ff6b6b" }, // Red
+    { label: "A",   min: 88, color: "#e82020" }, // Red
+    { label: "B",   min: 80, color: "#3a24e5" }, // Blue
+    { label: "C",   min: 70, color: "#4ff4be" }, // Cyan
+    { label: "D",   min: 60, color: "#3fe538" }, // Green
+    { label: "F",   min: 0,  color: "#79471B" }, // Brown
 ];
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -174,7 +174,7 @@ function spawnComboPopup(combo) {
     const jitterY = (Math.random() - 0.5) * 10;
 
     el.style.left = `calc(95% + ${jitterX}px)`;
-    el.style.top  = `calc(12% + ${jitterY}px)`;
+    el.style.top  = `calc(15% + ${jitterY}px)`;
 
 
     layer.appendChild(el);
@@ -549,6 +549,11 @@ function closeScoreboard() {
 function injectScoreboardStyles() {
     const style = document.createElement("style");
     style.textContent = `
+         @font-face {
+            font-family: "LTKaraoke";
+            src: url("../fonts/LTKaraoke-Bold.ttf") format("truetype");
+            src: url("../fonts/LTKaraoke-Medium.ttf") format("truetype");
+        }
         #scoreboardBtn {
             width: 100%;
             background: purple;
@@ -615,6 +620,7 @@ function injectScoreboardStyles() {
             background: rgba(75, 167, 255, 0.15);
             border: 1px solid #4BA7FF;
         }
+
         .scoreboardRank { font-size: 1.2rem; min-width: 28px; }
         .scoreboardName { flex: 1; color: #fff; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .scoreboardScore { font-weight: bold; color: #FFD700; font-size: 1rem; }
@@ -640,17 +646,48 @@ function injectScoreboardStyles() {
             text-align: center;
         }
 
-        #scoreDisplay {
-            width: 90px;
-            text-align: right;
+        #scoreBar {
+            position: relative;
+            flex: 1; 
+            height: 14px;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid #333;
         }
-        #scorerPanel {
-            background: rgba(0,0,0,0.75);
-            border: 1px solid rgba(0,0,0);
-            border-radius: 12px;
-            padding: 6px 12px;
         
-            backdrop-filter: blur(8px);
+        #scorerPanel {
+            position: absolute;
+            top: 6%;
+            left: 0;
+    
+            width: 100%;
+    
+            box-sizing: border-box; 
+            height: 5%;
+        
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            gap: 15px;
+            padding: 0 20px; 
+       
+            backdrop-filter: blur(6px);
+            z-index: 9;
+            transition: transform 0.3s ease;
+        }
+        
+        #scoreDisplay {
+            font-family: "LTKaraoke", "monospace"; 
+            font-weight: bold;
+            font-size: 1.8rem; 
+            color: white;
+            
+    
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        
+            min-width: 120px; 
+            text-align: right;
+            flex-shrink: 0;
         }
     `;
     document.head.appendChild(style);
@@ -686,12 +723,31 @@ function initScorerUI() {
         panel.innerHTML = `
         <div id="scoreBar">
             <div id="scoreBarFill"></div>
-            <!-- Markers placed exactly at rank thresholds -->
-            <div class="rankMarker" style="left:60%"></div>  <!-- D Rank -->
-            <div class="rankMarker" style="left:70%"></div>  <!-- C Rank -->
-            <div class="rankMarker" style="left:80%"></div>  <!-- B Rank -->
-            <div class="rankMarker" style="left:88%"></div>  <!-- A Rank -->
-            <div class="rankMarker" style="left:95%"></div>  <!-- EX+ Rank -->
+            
+            <!-- F Rank (at the beginning) -->
+            <div class="rankMarker rank-f" style="left:0.5%">
+                <img src="/images/TierF.png" class="rankLabelImg">
+            </div>
+
+            <div class="rankMarker" style="left:60%">
+                <img src="/images/TierD.png" class="rankLabelImg">
+            </div>
+            
+            <div class="rankMarker" style="left:70%">
+                <img src="/images/TierC.png" class="rankLabelImg">
+            </div>
+            
+            <div class="rankMarker" style="left:80%">
+                <img src="/images/TierB.png" class="rankLabelImg">
+            </div>
+            
+            <div class="rankMarker" style="left:88%">
+                <img src="/images/TierA.png" class="rankLabelImg">
+            </div>
+            
+            <div class="rankMarker rank-ex" style="left:95%">
+                <img src="/images/TierEX.png" class="rankLabelImg">
+            </div>
         </div>
         <span id="scoreDisplay">0</span>
         `;
@@ -705,37 +761,28 @@ function initScorerUI() {
         `;
     }
 
-    const rightControls = document.getElementById("rightControls");
-    if (rightControls) {
-        rightControls.parentElement.insertBefore(panel, rightControls);
-    } else {
-        document.getElementById("bottomBar")?.appendChild(panel);
-    }
-
+    document.body.appendChild(panel);
+    // ... rest of your existing init logic
     micToggleBtn = document.getElementById("micToggleBtn");
     pitchDisplay = document.getElementById("pitchDisplay");
     tierDisplay = document.getElementById("tierDisplay");
     scoreDisplay = document.getElementById("scoreDisplay");
-
-    if (micToggleBtn) {
-        micToggleBtn.onclick = toggleMic;
-    }
-
+    if (micToggleBtn) micToggleBtn.onclick = toggleMic;
     injectScorerStyles();
 }
 
 function updateScorerUI(userHz, expectedHz) {
     if (!scoreDisplay) return;
 
-    // 1. Calculate percentage based on your fixed Target Score (e.g., 100k)
+    // Calculate percentage based on your fixed Target Score (e.g., 100k)
     const targetScore = 100000;
     const pct = Math.min((totalScore / targetScore) * 100, 100);
 
-    // 2. Update the visual bar and text
+    // Update the visual bar and text
     updateScoreBar(pct);
     scoreDisplay.textContent = totalScore.toLocaleString();
 
-    // 3. Update Pitch Display (Note names)
+    // Update Pitch Display
     if (pitchDisplay) {
         const userNote = userHz > 0 ? hzToNote(userHz) : "—";
         const expectedNote = expectedHz > 0 ? hzToNote(expectedHz) : "—";
@@ -896,42 +943,73 @@ function injectScorerStyles() {
         #scorerPanel {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 0 12px;
+            gap: 15px;
+            padding: 0 20px;
+            width: 100%;
+            box-sizing: border-box;
+            /* ADD THIS: Ensures the panel doesn't hide the tall markers */
+            overflow: visible !important; 
+            height: 60px; /* Give the panel enough height so markers have room to exist */
         }
 
         #scoreBar {
             position: relative;
-            width: 250px; /* Changed from 200px to 250px */
+            flex: 1; 
             height: 14px;
             background: #1a1a1a;
             border-radius: 7px;
-            overflow: hidden;
             border: 1px solid #333;
+            /* IMPORTANT: Ensure this is NOT hidden */
+            overflow: visible !important; 
         }
         
         #scoreBarFill {
             position: absolute;
+            border-radius: 7px;
             left: 0;
             top: 0;
             height: 100%;
-            width: 0%; /* Initialize at 0 */
-            transition: width 0.05s linear;
-            background-repeat: no-repeat;
-            background-position: left center;
-            background-size: 250px 100%; /* Sync with container width */
+            width: 0%; 
+            transition: width 0.1s linear;
             z-index: 1;
+        
+            /* Texture: A glossy top highlight + subtle diagonal stripes */
+            background-image: 
+                /* 1. Glossy Overlay (Horizontal white shine at the top) */
+                linear-gradient(
+                    to bottom, 
+                    rgba(255,255,255,0.3) 0%, 
+                    rgba(255,255,255,0) 50%, 
+                    rgba(0,0,0,0.2) 100%
+                ),
+                /* 2. Diagonal Stripe Pattern */
+                linear-gradient(
+                    45deg, 
+                    rgba(255,255,255,0.1) 25%, 
+                    transparent 25%, 
+                    transparent 50%, 
+                    rgba(255,255,255,0.1) 50%, 
+                    rgba(255,255,255,0.1) 75%, 
+                    transparent 75%, 
+                    transparent
+                );
+            
+            /* This makes the stripes small and repeating */
+            background-size: 100% 100%, 20px 20px; 
+            
+            /* Default color (will be overridden by the rank logic) */
+            background-color: #4BA7FF; 
         }
 
-        .rankMarker {
-            position: absolute;
-            top: 0;
-            width: 2px;
-            height: 100%;
-            background: white;
-            opacity: 0.6;
+        @keyframes stripeFlow {
+            from { background-position: 0 0, 0 0, 0 0; }
+            to { background-position: 0 0, 20px 0, 0 0; }
         }
         
+        @keyframes rainbowGlowWithFlow {
+            0% { filter: hue-rotate(0deg); background-position: 0 0, 0 0, 0 0; }
+            100% { filter: hue-rotate(360deg); background-position: 0 0, 20px 0, 0 0; }
+        }
         #comboDisplay {
             font-size: 1rem;
             font-weight: bold;
@@ -939,6 +1017,43 @@ function injectScorerStyles() {
             text-align: center;
             opacity: 0;
             transition: opacity 1.5s ease;
+        }
+        
+        .rankMarker {
+            position: absolute;
+            top: -8px; 
+            width: 3px; 
+            height: 30px; 
+            background: #808080; 
+            opacity: 1; 
+            z-index: 5; 
+            border-radius: 2px;
+            pointer-events: none; 
+            display: flex;
+            justify-content: center;
+        }
+        
+        .rankLabelImg {
+            position: absolute;
+            /* Positioned relative to the top of the .rankMarker */
+            /* Since the marker is 30px tall, 35px puts it just below the line */
+            top: 35px; 
+            width: 30px; 
+            height: auto;
+            transform: translateX(0%); 
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.8));
+        }
+    
+        .rank-f .rankLabelImg {
+            width: 30px; 
+            transform: translateX(3px); 
+        }
+        
+        /* Specific Fix for EX+ (Right edge / Wide image) */
+        .rank-ex .rankLabelImg {
+            width: 70px;
+            transform: translateX(8px); 
+            top: 32px;
         }
         `;
     } else {
@@ -974,44 +1089,47 @@ function getRank(pct) {
     return Ranks.find(r => pct >= r.min);
 }
 function updateScoreBar(pct) {
+    const bar = document.getElementById("scoreBar");
     const fill = document.getElementById("scoreBarFill");
-    if (!fill) return;
+    if (!fill || !bar) return;
 
     const safePct = Math.max(0, Math.min(pct, 100));
     fill.style.width = safePct + "%";
 
+    // Common Layers
+    const glassShine = `linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%)`;
+    const stripes = `linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent)`;
+
     if (safePct >= 95) {
-        fill.style.backgroundImage = "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
-        fill.style.animation = "rainbowGlow 2s linear infinite";
-        fill.style.backgroundSize = "100% 100%";
+        const rainbow = `linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)`;
+        fill.style.backgroundImage = `${glassShine}, ${stripes}, ${rainbow}`;
+        fill.style.backgroundSize = `100% 100%, 20px 20px, 100% 100%`;
+
+        // Use the combined animation for rainbow + flowing stripes
+        fill.style.animation = "rainbowGlowWithFlow 2s linear infinite";
         return;
     }
 
-    fill.style.animation = "none";
-
-    const sortedRanks = [...Ranks]
-        .filter(r => r.min < 95)
-        .sort((a, b) => a.min - b.min);
-
+    // Build standard rank gradient
+    const sortedRanks = [...Ranks].filter(r => r.min < 95).sort((a, b) => a.min - b.min);
     let gradientParts = [];
     for (let i = 0; i < sortedRanks.length; i++) {
         const current = sortedRanks[i];
-        const next = sortedRanks[i + 1];
-
-        // Example: orange 60%, orange 70%, yellow 70%...
+        const next = sortedRanks[i+1];
         gradientParts.push(`${current.color} ${current.min}%`);
-
-        if (next) {
-            gradientParts.push(`${current.color} ${next.min}%`);
-        } else {
-            gradientParts.push(`${current.color} 100%`);
-        }
+        if (next) gradientParts.push(`${current.color} ${next.min}%`);
+        else gradientParts.push(`${current.color} 100%`);
     }
 
-    fill.style.backgroundSize = "250px 100%";
-    fill.style.backgroundImage = `linear-gradient(to right, ${gradientParts.join(', ')})`;
-}
+    const totalWidth = bar.offsetWidth;
+    const rankGradient = `linear-gradient(to right, ${gradientParts.join(', ')})`;
 
+    fill.style.backgroundImage = `${glassShine}, ${stripes}, ${rankGradient}`;
+    fill.style.backgroundSize = `100% 100%, 20px 20px, ${totalWidth}px 100%`;
+
+    // Apply the stripe flow animation
+    fill.style.animation = "stripeFlow 1s linear infinite";
+}
 function resetScoreBar() {
     const fill = document.getElementById("scoreBarFill");
     if (!fill) return;
