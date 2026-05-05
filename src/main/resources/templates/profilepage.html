@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KaraBang Profile</title>
+    <link rel="stylesheet" href="CSS/profilepage.css">
+</head>
+<body>
+
+<div id="topButtonBar">
+    <h1 id="webLogo">Kara<span>Bang</span></h1>
+
+    <div id="rightButtons">
+        <button class="navButton" onclick="goToSongs()">Songs</button>
+        <button class="navButton" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<main class="profile-wrapper">
+
+    <section class="card scoreboard-card">
+        <h2>Scoreboard</h2>
+
+        <div class="score-box">
+            <p>Total Songs Sung</p>
+            <h3>24</h3>
+        </div>
+
+        <div class="score-box">
+            <p>Highest Score</p>
+            <h3>98%</h3>
+        </div>
+
+        <div class="score-box">
+            <p>Average Score</p>
+            <h3>91%</h3>
+        </div>
+
+        <div class="score-box">
+            <p>Current Rank</p>
+            <h3>Karaoke Star</h3>
+        </div>
+    </section>
+
+    <section class="card profile-card">
+        <div class="profile-pic">
+            <img id="profileImage" src="images/default-profile.png" alt="Profile picture">
+        </div>
+
+        <input type="file" id="pfpUpload" accept="image/*" hidden>
+        <button id="uploadPicBtn">Upload Picture</button>
+
+        <h2 id="usernameDisplay">KaraBang User</h2>
+        <p class="member-text">KaraBang Member</p>
+        <p class="genre-text">Favorite Genre: <span id="genreDisplay">Pop</span></p>
+
+        <div class="profile-form">
+            <label for="usernameInput">Change Username</label>
+            <input type="text" id="usernameInput" placeholder="Enter new username">
+
+            <label for="genreSelect">Favorite Genre</label>
+            <select id="genreSelect">
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="R&B">R&B</option>
+                <option value="Hip-Hop">Hip-Hop</option>
+                <option value="Country">Country</option>
+            </select>
+
+            <button id="saveProfileBtn">Save Profile</button>
+        </div>
+    </section>
+
+    <section class="card liked-card">
+        <h2>Liked Songs</h2>
+
+        <div class="liked-song-text">
+            <h3>Blinding Lights</h3>
+            <p>The Weeknd</p>
+        </div>
+
+        <div class="liked-song-text">
+            <h3>Anti-Hero</h3>
+            <p>Taylor Swift</p>
+        </div>
+
+        <div class="liked-song-text">
+            <h3>Levitating</h3>
+            <p>Dua Lipa</p>
+        </div>
+
+        <div class="liked-song-text">
+            <h3>Die With A Smile</h3>
+            <p>Lady Gaga & Bruno Mars</p>
+        </div>
+    </section>
+
+</main>
+
+<script src="JS/profilepage.js"></script>
+</body>
+</html>

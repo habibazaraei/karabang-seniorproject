@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<link rel="icon" href="/images/KaraBangLogoIcon.ico">
+<head>
+    <meta charset="UTF-8">
+    <title>KaraBang</title>
+
+    <link rel="stylesheet" href="/css/MusicPlayer.css">
+
+</head>
+
+<body>
+
+<div id="backgroundPane">
+    <img id="backgroundImage" src="/images/purple_song_selection_background.png">
+    <audio id="audio"></audio>
+    <div id="tierFloatLayer"></div>
+    <div id="subtitle"></div>
+
+    <!-- Top and bottom bars -->
+    <div id="topBar">
+        <button id="goBack">
+            <img id="goBackImg" src="/images/go_back_icon.svg">
+        </button>
+        <div id="songTitle"></div>
+        <button id="heart">
+            <img id="heartImg" src="/images/heart_gray_icon.svg">
+        </button>
+        <button id="dropdown">
+            <img id="dropdownImg" src="/images/drop_down_icon.svg">
+        </button>
+
+            <button id="settings">
+                <img id="settingsImg" src="/images/settings_icon.svg">
+            </button>
+            <div id="settingsMenu" class="dropdown-menu">
+                <label>Font Size</label>
+                <input type="range" id="fontSize" min="2" max="10" step="0.5" value="5">
+            </div>
+
+        </button>
+        <div id="dropdownMenu" class="dropdown-menu">
+            <!-- Empty for now -->
+        </div>
+
+    </div>
+    <div id="karaokeStartOverlay">
+        <div id="karaokeStartPanel">
+            <div id="startMicIcon">🎤</div>
+            <div id="startText">Ready to Sing</div>
+            <button id="startKaraokeBtn">START</button>
+        </div>
+    </div>
+
+    <div id="bottomBar">
+        <button id="playPause">
+            <img id="playImg" src="/images/play_icon.svg">
+        </button>
+
+        <button id="restart">
+            <img id="restartImg" src="/images/restart_icon.svg">
+        </button>
+
+        <div id="progressContainer">
+            <div id="progress"></div>
+        </div>
+        <div id="rightControls">
+            <div class="volume-container">
+                <button id="volumeButton">
+                    <img id="volumeIcon" src="/images/volume_high_icon.svg">
+                </button>
+                <input type="range" id="volume" min="0" max="100" value="50">
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<script type="module" src="/js/KaraokeScorer.js"></script>
+<script type="module" src="/js/MusicPlayer.js"></script>
+
+</body>
+</html>

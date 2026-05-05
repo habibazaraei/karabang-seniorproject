@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="icon" href="/images/KaraBangLogoIcon.ico">
+<link rel="preload" href="/images/scoredButton.png" as="image">
+<link rel="preload" href="/images/playButton.png" as="image">
+<link rel="preload" as="image" href="/images/textureCirclesDropDown.png">
+<head>
+    <link rel="stylesheet" href="CSS/SongSelection.css">
+    <title>KaraBang</title>
+
+</head>
+<body>
+
+<!-- Top button bar -->
+<div id="topButtonBar">
+    <div id="webLogo">
+
+    </div>
+
+    <div id="rightButtons">
+
+        <!-- Profile dropdown -->
+        <div class="dropdown">
+            <button id="profile" class="topButton">
+                <img src="/images/blank_profile_icon.svg" alt="Profile">
+            </button>
+            <div class="dropdown-menu" id="myDropdown">
+                <div id="loggedOut">
+                    <a href="login">Login</a>
+                    <a href="signup">Sign Up</a>
+                </div>
+                <div id="loggedIn" style="display:none;">
+                    <a href="profilepage">Profile</a>
+                    <a href="#" id="scoreboardBtn" onclick="document.getElementById('scoreboardModal').style.cssText='display:flex !important; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center;'; openGlobalScoreboard(); return false;">Scoreboard</a>
+                    <a href="#" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings dropdown -->
+        <!-- Settings button -->
+        <button id="settings" class="topButton">
+            <img src="/images/settings_icon.svg" alt="Settings">
+        </button>
+
+        <!-- Settings modal -->
+
+        <div id="settingsModal">
+            <div id="settingsPanel">
+                <div class="settingsHeader">
+                    <h2 class="settingsTitle">Settings</h2>
+                    <button id="closeSettingsBtn">&#x2715;</button>
+                </div>
+                <div class="settingsContent">
+                <!-- teaser volume -->
+                <div class="settingsSection">
+                    <hr class="divider">
+                    <div class="settingsRow">
+                        <span>Teaser Volume</span><span id="volumeLabel">50%</span>
+                    </div>
+                    <div class="volumeControls">
+                        <button id="teaserMuteButton">
+                            <img id="teaserVolumeIcon" src="/images/volume_high_icon.svg">
+                        </button>
+                        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+                    </div>
+                </div>
+                <!-- sfx volume -->
+                <div class="settingsSection">
+                    <hr class="divider">
+                    <div class="settingsRow">
+                        <span>SFX Volume</span><span id="sfxLabel">50%</span>
+                    </div>
+                    <div class="volumeControls">
+                        <button id="sfxMuteButton">
+                            <img id="sfxVolumeIcon" src="/images/volume_high_icon.svg">
+                        </button>
+                        <input type="range" id="sfxSlider" min="0" max="1" step="0.01" value="0.4">
+                    </div>
+
+                </div>
+                <!-- scroll speed volume -->
+                <div class="settingsSection">
+                    <hr class="divider">
+                    <div class="settingsRow">
+                        <span>Scroll speed</span><span id="scrollSpeedLabel">Normal</span>
+                    </div>
+                    <input type="range" id="scrollSlider" min="50" max="500" step="10" value="200">
+                </div>
+                </div>
+
+
+                <hr class="divider">
+
+                <button id="resetPrefsBtn">Reset to defaults</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="mainLayout">
+
+    <!-- Left -->
+    <div id="leftPanel">
+        <!-- Category bar -->
+        <div id="leftTop">
+            <!-- Search field -->
+            <div class="searchWrapper">
+                <img src="/images/search_icon.svg" class="searchIcon" />
+                <input type="text" id="searchField" placeholder="Search songs...">
+            </div>
+            <div id="categoryTabs"></div>
+            <div id="categoryBar">
+                <button class="categoryButton">Artist <img class="sortIcon" src="/images/AtoZ_icon.svg"></button>
+                <button class="categoryButton">Genre <img class="sortIcon" src="/images/AtoZ_icon.svg"></button>
+                <button class="categoryButton">Difficulty <img class="sortIcon" src="/images/AtoZ_icon.svg"></button>
+                <button class="categoryButton">Language <img class="sortIcon" src="/images/AtoZ_icon.svg" /></button>
+                <button class="categoryButton">Top Songs <img class="sortIcon" src="/images/top_songs_icon.svg" /></button>
+                <button id="shuffleButton" class="categoryButton shuffleButton">Shuffle <img class="sortIcon" src="/images/shuffle_icon.svg" alt="shuffle"> </button>
+                <button class="categoryButton">Favorites <img class="sortIconHeart" src="/images/heart_gray_icon.svg" /></button>
+
+            </div>
+        </div>
+        <!-- Song list selection -->
+        <div id="songList">
+            <div id="scrollTop" class="scrollZone"></div>
+
+            <div id="songListInner" class="songListInner"></div>
+
+            <div id="scrollBottom" class="scrollZone"></div>
+        </div>
+    </div>
+    <audio id="teaserPlayer"></audio>
+    <!-- Right -->
+    <div id="rightPanel">
+        <div id="rightTop"></div>
+        <div id="songContainer">
+            <div id="songImageFrame">
+                <img id="songImage" src="/images/questionmark_icon.svg">
+            </div>
+            <!-- Selected song info -->
+            <div id="songInfo">
+                <div class = "grid-container">
+                    <div id="songInfoLeftTop"> </div>
+                    <div id="songInfoLeftBottom"> </div>
+                    <div id="songText">
+                        <div class="scroll">
+                            <h3 id="songName" class="double-outline-song"></h3>
+                        </div>
+                        <div class="scroll">
+                            <p id="artistName" class="double-outline-artist"></p>
+                        </div>
+                    </div>
+                </div>
+                <button class="favoriteButtonRight" data-id="">
+                    <img src="/images/heart_gray_icon.svg" alt="favorite">
+                </button>
+            </div>
+            <div id="singButtonGroup">
+                <button id="singButtonPrimary" class="singButton primary" disabled></button>
+                <button id="singButtonSecondary" class="singButton secondary"></button>
+
+            </div>
+            <button id="singButtonBattle" class="battleButton">Battle WIP</button>
+        </div>
+    </div>
+    <br>
+</div>
+
+
+<!-- ScoreBoard Modal Screen -->
+<div id="scoreboardModal" class="scoreboard-modal">
+    <div id="scoreboardPanel" class="scoreboard-panel">
+        <div class="scoreboard-header">
+            <span class="scoreboard-title">Global Scoreboard</span>
+            <button id="closeScoreboardBtn" class="scoreboard-close">✕</button>
+        </div>
+
+        <div id="scoreboardSongSelect" class="scoreboard-select-wrap">
+            <select id="scoreboardSongFilter" class="scoreboard-select">
+                <option value="all">All Songs</option>
+            </select>
+        </div>
+
+        <div id="scoreboardList" class="scoreboard-list">
+            <div class="scoreboard-loading">Loading...</div>
+        </div>
+
+        <div id="scoreboardYourBest" class="scoreboard-your-best"></div>
+    </div>
+</div>
+
+    <!--
+    Modal for duet or solo choice screen
+     Creates the screen that appears when one of the play buttons is clicked.
+     Solo or duet buttons allow for respected mode to be chosen
+     Solo is the single singer mode and duet is the dual singer mode
+     Author: @Tyler Radisch
+     -->
+<div id="modeModal">
+    <div class="modal-content">
+        <div class="modal-title">Choose Mode</div>
+
+        <div class="button-group">
+            <button id="soloBtn" class="mode-btn">Solo</button>
+            <button id="duetBtn" class="mode-btn">Duet</button>
+        </div>
+
+        <button class="cancel-btn" onclick="document.getElementById('modeModal').style.display='none'">
+            Cancel
+        </button>
+    </div>
+</div>
+
+<script type="module" src="/js/SongSelection.js"></script>
+
+</body>
+</html>

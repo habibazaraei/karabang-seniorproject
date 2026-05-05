@@ -1,0 +1,1299 @@
+@font-face {
+  font-family: "VarelaRound";
+  src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Nirmala UI";
+  src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Audiowide";
+  src: url("../fonts/Audiowide-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "RubikMonoOne";
+  src: url("../fonts/RubikMonoOne-Regular.ttf") format("truetype");
+}
+/*cursor click effect*/
+/* WATER RIPPLE */
+/* WATER RIPPLE */
+.click-effect {
+  position: fixed;
+  width: 40px; /* Start a bit larger for better scaling */
+  height: 40px;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 9999;
+
+  /* The "Refraction" Edge */
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+
+  /* Inner highlights for a 3D water look */
+  box-shadow:
+          inset 0 0 10px rgba(255, 255, 255, 0.2),
+          0 0 15px rgba(128, 204, 252, 0.2),
+          0 0 5px rgba(255, 255, 255, 0.5);
+
+  /* The outer distortion ring */
+  background: radial-gradient(circle,
+  rgba(255, 255, 255, 0.05) 0%,
+  rgba(128, 204, 252, 0.02) 50%,
+  transparent 70%
+  );
+
+  /* Use a more "liquid" timing function */
+  animation: rippleWater 0.8s cubic-bezier(0.1, 0.2, 0.3, 1) forwards;
+}
+
+@keyframes rippleWater {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0;
+    border-width: 3px; /* Thick at the start */
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5); /* Don't scale too huge or it blurs */
+    opacity: 0;
+    border-width: 0.5px; /* Thins out as it expands */
+  }
+}
+/* Body */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Nirmala UI", sans-serif;
+  font-weight: bold;
+}
+
+body {
+  margin: 0;
+  flex-direction: column;
+  background: url("../images/purple_song_selection_background.png") no-repeat center;
+  background-size: cover;
+  display: flex;
+
+
+}
+
+/* container */
+#songList {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+  box-sizing: border-box;
+
+}
+
+/* inner scrolling wrapper */
+.songListInner {
+  position: relative;
+  height: 100%;
+  perspective: 1000px;
+  overflow: visible;
+
+}
+
+/* card */
+.songCard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(450px, 40vw, 900px);
+  aspect-ratio: 7 / 1;
+  height: auto;
+  transition: all 0.3s ease;
+  opacity: 0;
+  border: 0.1em solid red;
+  cursor: pointer;
+  box-sizing: border-box;
+  pointer-events: auto;
+  background: #e94c4c;
+  /* Reset button defaults */
+  padding: 0;
+  margin: 0;
+  border-radius: 6px;
+  outline: none;
+  font: inherit;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.songCard.placeholder {
+  opacity: 0.4;
+  filter: grayscale(100%);
+  cursor: default;
+  border: 0.2em solid #6d6d6d;
+}
+
+.songCard:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: transparent;
+  transition-duration: 0.4s;
+}
+.songCard.pop {
+  border: 0.2em solid #FF5252;
+}
+.songCard.pop:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #fcdbdb;
+}
+.songCard.rock {
+  border: 0.2em solid #920A65;
+}
+.songCard.rock:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #ffbae7;
+}
+/* track selection like cards */
+
+.songCard.active0 {
+  transform: translate(-50%, -50%) scale(1.1);
+  z-index: 5;
+  opacity: 1;
+}
+.songCard.active1 {
+  transform: translate(-50%, calc(-50% + clamp(80px, 10vh, 150px))) scale(0.95);
+  z-index: 4;
+  opacity: 0.8;
+}
+.songCard.active-1 {
+  transform: translate(-50%, calc(-50% - clamp(80px, 10vh, 150px))) scale(0.95);
+  z-index: 4;
+  opacity: 0.8;
+}
+.songCard.active2 {
+  transform: translate(-50%, calc(-50% + clamp(160px, 20vh, 300px))) scale(0.85);
+  z-index: 3;
+  opacity: 0.6;
+}
+.songCard.active-2 {
+  transform: translate(-50%, calc(-50% - clamp(160px, 20vh, 300px))) scale(0.85);
+  z-index: 3;
+  opacity: 0.6;
+}
+.songCard.active3 {
+  transform: translate(-50%, calc(-50% + clamp(240px, 30vh, 450px))) scale(0.7);
+  z-index: 2;
+  opacity: 0.4;
+}
+.songCard.active-3 {
+  transform: translate(-50%, calc(-50% - clamp(240px, 30vh, 450px))) scale(0.7);
+  z-index: 2;
+  opacity: 0.4;
+}
+.songCard.active4 {
+  transform: translate(-50%, calc(-50% + clamp(320px, 40vh, 600px))) scale(0.6);
+  z-index: 1;
+  opacity: 0.3;
+}
+.songCard.active-4 {
+  transform: translate(-50%, calc(-50% - clamp(320px, 40vh, 600px))) scale(0.6);
+  z-index: 1;
+  opacity: 0.3;
+}
+
+/* top half */
+
+.songTop {
+  position: relative;
+  padding: 12px;
+  white-space: nowrap;
+  font-weight: bold;
+  font-size: clamp(14px, 1.2vw, 22px);
+  color: black;
+
+  /*background: #e0e0e0; */
+  background: url('../images/white_background.svg');
+  background-size: cover;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow:
+          -2px -2px 0 #ebebeb,
+          2px -2px 0 #ebebeb,
+          -2px 2px 0 #ebebeb,
+          2px 2px 0 #ebebeb;
+}
+/* favorite heart button */
+.songTop .favoriteButton {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+
+  width: clamp(42px, 3vw, 60px);
+  height: clamp(42px, 3vw, 60px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  z-index: 10;
+
+  transform: translateY(clamp(-3px, -0.3vw, -9px));
+}
+.songTop .favoriteButton img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+
+}
+/* bottom half */
+
+.songBottom {
+  padding: 0 12px;
+  font-size: clamp(10px, 0.8vw, 16px);
+  background: #e94c4c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 100%;
+  height: 30%;
+  overflow: hidden;
+
+}
+
+/* artist on the left */
+.songBottom .artistText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 12px;
+  display: block;
+  color: #FFFFFF;
+}
+
+/* right group: difficulty, language, genre */
+.songBottom .songInfoRight {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  overflow: hidden;
+  margin-left: auto;
+}
+.songBottom .songInfoRight span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 60px;
+}
+
+.songBottom .difficultyText,
+.songBottom .languageText,
+.songBottom .genre {
+  background: rgba(255,255,255,0.2);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: clamp(9px, 0.7vw, 13px);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+
+
+.songBottom .favoriteButton img {
+  display: block;
+  height: 100%;
+  min-width: 20px;
+  vertical-align: middle;
+}
+.songBottom.pop {
+  background: url('../images/red_background_2.svg');
+  background-size: cover;
+
+}
+.songBottom.rock {
+  background: url('../images/purple_background.svg');
+  background-size: cover;
+}
+/* invisible hover zones for scrolling */
+.scrollZone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 25%;
+  z-index: 5;
+}
+
+#scrollTop {
+  top: 0;
+}
+
+#scrollBottom {
+  bottom: 0;
+}
+/* Top button bar */
+#topButtonBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  padding: 10px 20px;
+  z-index: 1000;
+  height: 80px;
+  box-sizing: border-box;
+
+  background-size: contain;
+
+}
+/* logo */
+#webLogo {
+  background: url("../images/KaraBangLogoRetouched.png") no-repeat center;
+  background-size: contain;
+
+  height: 100%;
+  width: 120px;
+  flex-shrink: 0;
+}
+#rightButtons {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+/* Buttons in top bar */
+.topButton {
+  width: 60px;
+  height: 60px;
+  padding: 4px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin: 0;
+
+}
+
+@media (max-width: 600px) {
+  #topButtonBar {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+
+  .topButton {
+    width: 100%;
+  }
+}
+/* Top bar buttons */
+#settings img, #profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/*spinning settings button*/
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinning img {
+  animation: spin 0.5s ease-in-out;
+}
+
+/* Category bar */
+#categoryBar {
+  display: flex;
+
+
+  padding-bottom: 10px;
+  justify-content: flex-start;
+  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Category tabs visual */
+#categoryTabs {
+  height: 0;
+  overflow: hidden;
+  background: #523da2;
+
+  transition: all 0.3s ease;
+  position: relative;
+  top: 10px;
+  z-index: 1;
+}
+
+#leftTop:hover #categoryTabs {
+  height: 40px;
+}
+
+.categoryButton.active {
+  background: #523da2;
+}
+
+.categoryButton:hover {
+  background: #523da2;
+  color: white;
+  border-radius: 0 0 15px 15px; /
+}
+
+.categoryButton {
+  padding: clamp(6px, 1vw, 10px) clamp(6px, 1.5vw, 12px);
+  font-size: clamp(0.2rem, 0.4vw + 0.4rem, 3rem);
+
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  font-weight: 1000;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #ffffff;
+  /*border: 1px solid #2b176f;*/
+  display: flex;
+  gap: clamp(2px, 0.5vw, 6px);
+
+  transition-duration: 0.4s;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 15%;
+}
+
+.categoryButton:first-child {
+  margin-left: 20px;
+}
+.categoryButton:last-child {
+  margin-right: 20px;
+}
+.categoryButton .sortIcon {
+  width:  clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
+  height: clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
+}
+.categoryButton .sortIconHeart {
+  width:  clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
+  height: clamp(0.5rem, 0.5vw + 0.8rem, 3rem);
+}
+/* Search Field */
+.searchWrapper {
+  position: relative;
+  border-radius: 20px 20px 20px 20px;
+  width: 100%;
+  height: 45px;
+  overflow: hidden;
+  border: 1px solid #2b176f;
+  background: #17094E;
+  box-sizing: border-box;
+}
+
+/* ICON INSIDE INPUT */
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 18px;
+  height: 18px;
+
+  pointer-events: none;
+}
+
+/* INPUT */
+#searchField {
+  width: 100%;
+  height: 100%;
+
+  padding-left: 40px;
+
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: white;
+  font-size: 1rem;
+}
+/* Focus effect */
+#searchField:focus {
+  background: #523da2;
+}
+/* Main Screen */
+#mainLayout {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  height: calc(100% - 60px);
+  margin-top: 60px;
+  overflow: hidden;
+
+}
+/* LEFT SIDE */
+#leftPanel {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+  position: relative;
+  padding-top: 10px;
+}
+
+#leftTop {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border: 1.0em black;
+  background: #17094E;
+
+  /**/
+  border-radius: 20px;
+}
+/* RIGHT SIDE */
+#rightPanel {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding-top: 20px;
+  max-height: 80vh;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+#rightTop {
+  height: 100px;
+  flex-shrink: 0;
+}
+/* wrap image + info + button */
+#songContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 600px;
+  width: 100%;
+  height: auto;
+
+}
+/* Wider screens → adjust left/right ratio */
+@media (min-aspect-ratio: 4/3) {
+  #leftPanel { width: 65%; }
+  #rightPanel { width: 35%; }
+
+}
+
+@media (min-aspect-ratio: 16/9) {
+  #leftPanel { width: 70%; }
+  #rightPanel { width: 30%; }
+}
+/* song Art cover on the right side of screen */
+#songImageFrame {
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  background-image: url("../images/imageBackground.png");
+  background-size: cover;
+  background-position: center;
+
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#songImage {
+  position: absolute;
+
+  inset: 6px;
+
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+
+  object-fit: cover;
+
+  border-radius: clamp(16px, 1vw, 24px);
+  box-shadow: 0 0 20px rgba(37, 37, 36, 0.5);
+}
+/* information of the song under image */
+#songInfo {
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  padding: clamp(6px, 1vw, 10px);
+  gap: clamp(2px, 0.4vw, 6px);
+  justify-content: space-between;
+
+  background-image: url("../images/song_info_plate.png");
+  background-size: 100% 100%;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+  border-radius: 8px;
+  flex-shrink: 1;
+  overflow: hidden;
+
+}
+.grid-container {
+  display: grid;
+  height: 100%;
+  row-gap: 0;
+  grid-template-columns: clamp(50px, 8vw, 110px) 1fr;
+  column-gap: clamp(30px, 1.5vw, 50px);
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  gap: 3px;
+
+  border-radius: 10px;
+
+}
+
+
+#songInfoLeftTop,
+#songInfoLeftBottom {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% auto;
+  justify-self: stretch;
+  align-self: stretch;
+  display: block;
+  flex-shrink: 0;
+}
+
+#songInfoLeftTop {
+  background-position: center;
+  grid-column: 1;
+  grid-row: 1;
+  background-image: url("../images/song_info_plate_left_top.png");
+
+}
+
+#songInfoLeftBottom {
+
+  grid-column: 1;
+  grid-row: 2;
+  background-image: url("../images/song_info_plate_left_bottom.png");
+  background-position: center;
+
+}
+
+/* scrolling through long word*/
+
+.scroll {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.scroll > * {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+  padding-right: 40px;
+}
+
+.scroll.can-scroll {
+  display: flex;
+}
+
+.scroll.can-scroll > * {
+  animation: scrollText linear infinite;
+  animation-delay: 0.5s;
+  flex-shrink: 0;
+
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+#songText {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: start;
+
+  font-family: "RubikMonoOne", Serif;
+
+}
+.double-outline-song,
+.double-outline-artist {
+  background: url("../images/metal.png");
+
+  /* KEY FIX */
+  background-size: 10px 10px;
+  letter-spacing: -1px;
+  word-spacing: -4px;
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+
+/* TRUE OUTER WHITE OUTLINE (8-direction fake stroke) */
+.double-outline-song::before,
+.double-outline-artist::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  z-index: -1;
+  pointer-events: none;
+
+}
+.double-outline-song::after,
+.double-outline-artist::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  color: transparent;
+
+  z-index: -2;
+  pointer-events: none;
+}
+
+.double-outline-song::after {
+  -webkit-text-stroke: 0.5px black;
+}
+.double-outline-artist::after {
+  -webkit-text-stroke: 0.5px black;
+}
+#songName,
+#artistName {
+  margin: 0;
+
+}
+#songName {
+  letter-spacing: -2px;
+  font-size: clamp(14px, 2.5vw, 1.8em);
+}
+
+#artistName {
+  letter-spacing: -2px;
+  font-size: clamp(14px, 2.5vw, 1.8em);
+
+
+}
+.favoriteButtonRight {
+  margin-left: auto;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.favoriteButtonRight img {
+  width: clamp(20px, 4vw, 60px);
+  height: clamp(20px, 4vw, 60px);
+  display: block;
+}
+/* preload images */
+body::after {
+  content:
+          url("../images/scoredButton.png")
+          url("../images/playButton.png")
+          url("../images/scoredplayButton.png")
+          url("../images/textureCirclesDropDown.png");
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* button that goes to song */
+#singButtonGroup {
+  width: 100%;
+  align-self: stretch;
+
+  aspect-ratio: 248 / 52;
+  max-width: none;
+
+  background: url("../images/scoredplayButton.png") no-repeat center;
+  background-size: 100% 100%;
+  position: relative;
+
+}
+/* base */
+.singButton {
+  will-change: transform;
+  transform: translateZ(0);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  cursor: pointer;
+  background: transparent;
+  z-index: 2;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  margin-bottom: 10px;
+
+}
+.singButton::before {
+  pointer-events: none;
+}
+
+.primary {
+  left: 0;
+  width: 62%;
+}
+
+.secondary {
+  right: 0;
+  width: 42%;
+}
+
+.singButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.primary::before,
+.secondary::before {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+.singButton:hover::before {
+  opacity: 1;
+}
+
+.battleButton {
+
+  aspect-ratio: 248 / 26;
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background-color: #4BA7FF;
+  background-size: 100% 100%;
+  border: none;
+  cursor: pointer;
+
+}
+
+.battleButton:hover {
+  filter: brightness(1.1);
+}
+/*Dropdown Menu*/
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+  .dropdown-menu {
+    will-change: transform, opacity;
+    display: none;
+    position: absolute;
+    background-color: #000043;
+    min-width: 80px;
+    width: auto;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    z-index: 1;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+  }
+
+.dropdown-menu a {
+  display: block;
+  padding: 5px 10px;
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+/*This is for the audio slider*/
+
+#audioSetting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+}
+
+#audioSetting label {
+    white-space: nowrap;
+    color: white;
+    font-size: 14px;
+}
+
+#volumeControl, #scrollControl {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     max-height: 60px;
+     box-sizing: border-box;
+ }
+/* Container to put them side-by-side */
+.volumeControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Let the slider grow to fill the space */
+#volumeSlider, #sfxSlider {
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Style the mute button/icon area */
+#teaserMuteButton, #sfxMuteButton{
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+#teaserVolumeIcon,
+#sfxVolumeIcon {
+  width: 24px;
+  height: 24px;
+}
+ #volumeInner, #scrollInner {
+     display: flex;
+     flex-direction: row;
+     align-items: center;
+     gap: 8px;
+     padding: 0 8px;
+     max-height: 60px;
+     box-sizing: border-box;
+ }
+
+ #volumeSlider, #scrollSlider, #sfxSlider {
+     width: 100%;
+     cursor: pointer;
+     accent-color: white;
+ }
+
+ #volumeLabel, #scrollSpeedLabel {
+     white-space: nowrap;
+     font-size: 12px;
+     color: white;
+ }
+
+/* Settings modal */
+#settingsModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: clamp(320px, 45vw, 800px);
+  height: clamp(220px, 55vh, 600px);
+  background-image: url("../images/textureCirclesDropDown.png");
+  background-size: contain;
+  background-repeat: repeat;
+  background-color: rgba(53, 52, 52, 0.8);
+
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  border-radius: 8px;
+}
+
+#settingsPanel {
+  width: 100%;
+  height: 100%;
+  border: 2px solid black;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  max-width: 90vw;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
+
+.settingsHeader {
+  position: sticky;
+  top: 0;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 16px;
+
+  background: #000000;
+  border-bottom: 2px solid black;
+
+  z-index: 10;
+}
+.settingsContent {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.settingsTitle {
+  color: white;
+  font-size: 30px;
+  font-weight: 500;
+  margin: 0;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+#closeSettingsBtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.settingsSection {
+  margin-bottom: 1.25rem;
+}
+
+.settingsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+#volumeSlider,
+#scrollSlider {
+  width: 100%;
+}
+
+.divider {
+  border: none;
+  border-top: 0.5px solid #000000;
+  margin: 1rem 0;
+}
+
+#resetPrefsBtn {
+  width: 100%;
+  padding: 10px;
+
+  font-size: 20px;
+  font-weight: bold;
+
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid black;
+
+  background: rgb(33, 32, 32);
+  color: #ffffff;
+
+  margin-top: auto;
+}
+/* The full-screen overlay */
+#modeModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The modal box */
+.modal-content {
+  background: rgba(123, 39, 245, 0.9);
+  border: 1px solid #3e007d;
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  color: #fff;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.button-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* Shared style for Solo and Duet buttons */
+.mode-btn {
+  padding: 12px 28px;
+  border-radius: 12px;
+  border: 1px solid #4BA7FF;
+  background: rgba(75, 167, 255, 0.2);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.mode-btn:hover {
+  background: rgba(75, 167, 255, 0.4);
+}
+
+/* The cancel button at the bottom */
+.cancel-btn {
+  margin-top: 20px;
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.cancel-btn:hover {
+  color: #fff;
+}
+/* scoreboard*/
+.scoreboard-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(123, 39, 245, 0.75);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoreboard-panel {
+  background: rgba(123, 39, 245, 0.75);
+  border: 1px solid #3e007d;
+  border-radius: 16px;
+  padding: 24px;
+  min-width: 320px;
+  max-width: 480px;
+  width: 90%;
+}
+
+.scoreboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.scoreboard-title {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.scoreboard-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.scoreboard-select-wrap {
+  margin-bottom: 16px;
+}
+
+.scoreboard-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  background: #2a2a3e;
+  color: #fff;
+  border: 1px solid #3e007d;
+}
+
+.scoreboard-list {
+  /* optional container styling */
+}
+
+.scoreboard-loading {
+  text-align: center;
+  color: #aaa;
+  padding: 20px;
+}
+
+.scoreboard-your-best {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #aaa;
+}
