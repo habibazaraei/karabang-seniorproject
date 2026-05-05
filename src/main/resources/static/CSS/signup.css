@@ -1,210 +1,155 @@
-*{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family: "Poppins", sans-serif;
-        }
+@font-face {
+    font-family: "VarelaRound";
+    src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
+    font-weight: 700;
+}
 
-        body{
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            background: radial-gradient(circle at top right, #1b1b1f, #050505 70%);
-            color:white;
-            overflow:hidden;
-            position:relative;
-        }
+@font-face {
+    font-family: "Nirmala UI";
+    src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
+    font-weight: 700;
+}
 
-        /*  MANY FLOATING ICONS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .icon{
-            position:absolute;
-            font-size:26px;
-            opacity:0.15;
-            animation: float 6s infinite ease-in-out;
-        }
+html, body {
+    min-height: 100%;
+    font-family: "Nirmala UI", sans-serif;
+    font-weight: bold;
+    overflow-x: hidden;
+}
 
-        .icon:nth-child(1){ top:5%; left:10%; }
-        .icon:nth-child(2){ top:20%; left:25%; }
-        .icon:nth-child(3){ top:40%; left:5%; }
-        .icon:nth-child(4){ bottom:10%; left:20%; }
+body {
+    background: #0f0638;
+    background-image: url("../images/purple_song_selection_background.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: white;
+}
 
-        .icon:nth-child(5){ top:15%; right:15%; }
-        .icon:nth-child(6){ top:50%; right:10%; }
-        .icon:nth-child(7){ bottom:20%; right:25%; }
-        .icon:nth-child(8){ top:70%; left:45%; }
+.signup-wrapper {
+    min-height: 100vh;
+    padding: 45px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+    align-items: center;
+    max-width: 1150px;
+    margin: 0 auto;
+}
 
-        .icon:nth-child(9){ top:30%; right:40%; }
-        .icon:nth-child(10){ bottom:5%; right:5%; }
-        .icon:nth-child(11){ top:60%; left:60%; }
-        .icon:nth-child(12){ top:10%; left:70%; }
+.left-panel,
+.right-panel {
+    background: rgba(23, 9, 78, 0.92);
+    border: 2px solid #523da2;
+    border-radius: 28px;
+    padding: 40px;
+    min-height: 500px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
 
-        @keyframes float{
-            0%{ transform:translateY(0); }
-            50%{ transform:translateY(-20px); }
-            100%{ transform:translateY(0); }
-        }
+.brand {
+    font-family: "VarelaRound", sans-serif;
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 15px;
+}
 
-        /* 🔴 glow background circles */
-        .glow{
-            position:absolute;
-            width:300px;
-            height:300px;
-            background: radial-gradient(circle, rgba(255,0,0,0.25), transparent 70%);
-            filter: blur(80px);
-        }
+.brand span {
+    color: #ff5252;
+}
 
-        .glow1{ top:-100px; left:-100px; }
-        .glow2{ bottom:-120px; right:-120px; }
+.subtitle {
+    color: #dcd7ff;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
 
-        /* main container */
-        .signup-wrapper{
-            display:flex;
-            width:1000px;
-            max-width:95%;
-            min-height:560px;
-            background: rgba(255,255,255,0.03);
-            border:1px solid rgba(255,255,255,0.08);
-            border-radius:28px;
-            overflow:hidden;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-        }
+#signup-form {
+    display: flex;
+    flex-direction: column;
+}
 
-        /* LEFT SIDE */
-        .left-panel{
-            flex:1;
-            padding:50px 40px;
-            display:flex;
-            flex-direction:column;
-            justify-content:center;
-        }
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    border: 1px solid #523da2;
+    background: #0f0638;
+    color: white;
+    outline: none;
+    font-size: 1rem;
+}
 
-        .brand{
-            font-size:36px;
-            font-weight:700;
-        }
+input::placeholder {
+    color: #9f95d8;
+}
 
-        .brand span{
-            color:#ff3b30;
-        }
+input:focus {
+    border-color: white;
+    background: #17094E;
+}
 
-        .subtitle{
-            color:#aaa;
-            margin:15px 0 30px;
-            line-height:1.6;
-        }
+button {
+    margin-top: 8px;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    background: #523da2;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-        /* inputs */
+button:hover {
+    background: #6f58c9;
+}
 
-        input{
-            width:100%;
-            padding:12px;
-            margin:10px 0;
-            border-radius:10px;
-            border:1px solid #ddd;
-            font-size:14px;
-        }
+.home-link {
+    margin-top: 22px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
 
-        input:focus{
-            border:1px solid #ff3b30;
-        }
+.home-link:hover {
+    color: #ff5252;
+}
 
-        /* button */
-        button{
-            width:100%;
-            padding:14px;
-            border:none;
-            margin-top:10px;
-            border-radius:12px;
-            background: linear-gradient(90deg,#ff3b30,#d91e18);
-            color:white;
-            font-size:16px;
-            cursor:pointer;
-            transition:0.3s;
-        }
+.album-card h2 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+}
 
-        button:hover{
-            transform:scale(1.05);
-        }
+.album-card p {
+    color: #dcd7ff;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
 
-        .links{
-            text-align:right;
-            margin-bottom:10px;
-        }
+.feature-box {
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
 
-        .links a{
-            color:#ff5a52;
-            font-size:13px;
-            text-decoration:none;
-        }
+.feature-box:hover {
+    background: #17094E;
+    border-color: white;
+}
 
-        .signup{
-            margin-top:15px;
-            color:#aaa;
-        }
-
-        .signup a{
-            color:#ff5a52;
-            text-decoration:none;
-        }
-
-        /* RIGHT SIDE */
-        .right-panel{
-            flex:1;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            position:relative;
-        }
-
-        /* album card */
-        .album-card{
-            width:320px;
-            background:#0f0f0f;
-            border-radius:25px;
-            padding:20px;
-            text-align:center;
-            box-shadow:0 20px 40px rgba(0,0,0,0.6);
-
-        }
-
-        .album-card img{
-            width:100%;
-            height:300px;
-            border-radius:15px;
-            object-fit:cover;
-            margin-bottom:15px;
-        }
-
-        .album-card img,
-        .song-title,
-        .artist {
-            opacity: 1;
-            transition: opacity 0.6s ease;
-        }
-
-        .song-title{
-            font-size:22px;
-            font-weight:700;
-        }
-
-        .artist{
-            color:#aaa;
-            margin-bottom:15px;
-        }
-
-        .sing-btn{
-            background:white;
-            color:black;
-            padding:10px;
-            border-radius:10px;
-            font-weight:600;
-        }
-
-        @media(max-width:850px){
-            .login-wrapper{
-                flex-direction:column;
-            }
-        }
+@media (max-width: 900px) {
+    .signup-wrapper {
+        grid-template-columns: 1fr;
+        padding: 25px;
+    }
+}

@@ -1,70 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>KaraBang Login</title>
+    <meta charset="UTF-8">
+    <title>KaraBang Signup</title>
     <link rel="stylesheet" href="CSS/signup.css">
-
-
 </head>
 
 <body>
 
-<!-- 🔴 glow -->
-<div class="glow glow1"></div>
-<div class="glow glow2"></div>
+<div class="signup-wrapper">
 
-<!-- 🎸 LOTS OF ICONS -->
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-
-
-<div class ="signup-wrapper">
-
-    <!-- LEFT -->
     <div class="left-panel">
-        <h1 class="brand">🎤 Kara<span>Bang</span></h1>
+        <h1 class="brand">Kara<span>Bang</span></h1>
+
         <p class="subtitle">
-           Please enter your email and password to sign up.
+            Create your account and start your karaoke journey.
         </p>
 
-       <form id="signup-form">
+        <form id="signup-form">
             <input id="username" type="text" placeholder="Username" required>
             <input id="email" type="email" placeholder="Email" required>
             <input id="password" type="password" placeholder="Password" required>
 
-             <button id="signupBtn">Sign Up</button>
+            <button id="signupBtn" type="submit">Sign Up</button>
 
-                <a href="login.html">
-                     <button id="homeBtn">Home</button>
-                </a>
-
+            <a class="home-link" href="/login">Back to Login</a>
         </form>
- 
     </div>
 
-    <!-- RIGHT -->
     <div class="right-panel">
         <div class="album-card">
-            <img>
-            <div class="song-title"></div>
-            <div class="artist"></div>
+            <h2>Join KaraBang</h2>
+            <p>Save your favorite songs, track your scores, and build your karaoke profile.</p>
+
+            <div class="feature-box">Create your profile</div>
+            <div class="feature-box">Save liked songs</div>
+            <div class="feature-box">Track your best scores</div>
         </div>
     </div>
 
 </div>
 
-
-<script type="module" src="/js/signup.js"></script>
+<script type="module" src="JS/signup.js"></script>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut } from './firebase.js';
+import { db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut, increment } from './firebase.js';
 
 let songList = document.getElementById("songList")
 let searchField = document.getElementById("searchField")
@@ -186,6 +186,44 @@ categoryButtons.forEach(buttons => {
             loadFavoriteStates();
             return;
         }
+
+        if (name === "Top Songs") {
+            try {
+                const snapshot = await getDocs(collection(db, "songStats"));
+
+                const stats = snapshot.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => (b.playCount || 0) - (a.playCount || 0));
+
+                const top10Ids = stats.slice(0, 10).map(s => s.id);
+
+                const topSongs = songs.filter(s => top10Ids.includes(String(s.id)));
+
+                topSongs.sort((a, b) => {
+                    const aCount = stats.find(s => s.id === String(a.id))?.playCount || 0;
+                    const bCount = stats.find(s => s.id === String(b.id))?.playCount || 0;
+                    return bCount - aCount;
+                });
+
+                if (topSongs.length === 0) {
+                    songListInner.innerHTML = "<p>No play data yet! Sing some songs first.</p>";
+                    currentList = [];
+                    currentIndex = 0;
+                    return;
+                }
+
+                currentList = buildCurrentList(topSongs);
+                currentIndex = currentList.findIndex(s => !s.isPlaceholder);
+                if (currentIndex === -1) currentIndex = 0;
+                renderSongCardsNoAnimation(false);
+                loadFavoriteStates();
+                return;
+            } catch (err) {
+                console.error("Failed to load top songs:", err);
+                return;
+            }
+        }
+
 
         if (!key) return;
 
@@ -512,13 +550,17 @@ singButton.onclick = () => {
     document.getElementById("modeModal").style.display = "flex";
 };
 
-    document.getElementById("soloBtn").onclick = () => {
+    document.getElementById("soloBtn").onclick = async () => {
+        if (!selectedSong) return;
+        await trackSongPlay(selectedSong.id);
         window.location.href = "/musicplayer?song=" + selectedSong.id;
     };
 
-    document.getElementById("duetBtn").onclick = () => {
-            window.location.href = "/musicplayer?song=" + selectedSong.id + "&mode=duet";
-        };
+    document.getElementById("duetBtn").onclick = async () => {
+        if (!selectedSong) return;
+        await trackSongPlay(selectedSong.id);
+        window.location.href = "/musicplayer?song=" + selectedSong.id + "&mode=duet";
+    };
 
 function updateTrackSelect() {
     const cards = document.querySelectorAll(".songCard");
@@ -929,3 +971,14 @@ function shuffleSong() {
 }
 
 window.shuffleSong = shuffleSong;
+
+
+async function trackSongPlay(songId) {
+    try {
+        await setDoc(doc(db, "songStats", String(songId)), {
+            playCount: increment(1)
+        }, { merge: true });
+    } catch (err) {
+        console.error("Failed to track play count:", err);
+    }
+}

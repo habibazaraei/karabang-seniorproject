@@ -1,111 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <meta charset="UTF-8">
     <title>KaraBang Login</title>
     <link rel="stylesheet" href="CSS/login.css">
-
-
-
-
 </head>
-
-
 <body>
 
-<!-- 🔴 glow -->
-<div class="glow glow1"></div>
-<div class="glow glow2"></div>
+<div id="topButtonBar">
+    <h1 id="webLogo">Kara<span>Bang</span></h1>
 
-<!-- 🎸 LOTS OF ICONS -->
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
+    <div id="rightButtons">
+    </div>
+</div>
 
-<div class="login-wrapper">
+<main class="login-wrapper">
 
-    <!-- LEFT -->
-    <div class="left-panel">
-        <h1 class="brand">🎤 Kara<span>Bang</span></h1>
-        <p class="subtitle">
-            Log in and start singing. Queue songs, explore music,
-            and enjoy the full karaoke experience.
-        </p>
+    <section class="welcome-card">
+        <h2>Welcome to Kara<span>Bang</span></h2>
+        <p>Sing your favorite songs, save liked music, and track your karaoke scores.</p>
 
-        <form id="login-form">
+        <div class="mini-box">
+            <h3>Popular Tonight</h3>
+            <p>Blinding Lights</p>
+            <p>Levitating</p>
+            <p>Die With A Smile</p>
+        </div>
+    </section>
 
-            <input id="username" type="text" placeholder="Username" required>
+    <section class="login-card">
+        <h2>Welcome Back</h2>
+        <p class="small-text">Log in to continue your karaoke journey.</p>
 
-            <input id="password" type="password" placeholder="Password" required>
+        <form id="loginForm">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter username">
 
-                <div class="links">
-                    <a href="forgot">Forgot Password?</a>
-                 </div>
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" placeholder="Enter password">
+                <button type="button" id="togglePassword">👁</button>
+            </div>
 
-            <button id="loginBtn" type="submit">Login</button>
-
+            <button type="submit">Login</button>
         </form>
 
-        <p class="signup">
-            Don’t have an account? <a href="signup">Sign Up</a>
-        </p>
+        <p id="loginMessage"></p>
 
-        
-    </div>
-
-    <!-- RIGHT -->
-    <div class="right-panel">
-        <div class="album-card">
-            <img src="/artCover/blindingLightsArtCover.jpg">
-
-            <div class="song-title">Blinding Lights</div>
-            <div class="artist">The Weeknd</div>
-
+        <div class="links">
+            <a href="/forgot">Forgot password?</a>
+            <span>|</span>
+            <a href="/signup">Create account</a>
         </div>
-    </div>
+    </section>
 
-</div>
-<script>
-    const songs = [
-        {
-            title: "Blinding Lights",
-            artist: "The Weeknd",
-            image: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png"
-        },
-        {
-            title: "Bohemian Rhapsody",
-            artist: "Queen",
-            image: "https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png"
-        }
-    ];
+</main>
 
-    const songTitle = document.querySelector(".song-title");
-    const artist = document.querySelector(".artist");
-    const image = document.querySelector(".album-card img");
-
-    let index = 0;
-
-    function changeSong(){
-        index = (index + 1) % songs.length;
-
-        songTitle.textContent = songs[index].title;
-        artist.textContent = songs[index].artist;
-        image.src = songs[index].image;
-    }
-
-    setInterval(changeSong, 15000);
-</script>
-
-
-     <script type= "module" src="/js/login.js"></script>
+<script type="module" src="js/login.js"></script>
 </body>
 </html>
