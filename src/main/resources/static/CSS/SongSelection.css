@@ -871,6 +871,8 @@ body::after {
   border: none;
   outline: none;
   box-shadow: none;
+  margin-bottom: 10px;
+
 }
 .singButton::before {
   pointer-events: none;
@@ -907,14 +909,26 @@ body::after {
 }
 
 
-
-
 .singButton:hover::before {
   opacity: 1;
 }
 
+.battleButton {
 
+  aspect-ratio: 248 / 26;
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background-color: #4BA7FF;
+  background-size: 100% 100%;
+  border: none;
+  cursor: pointer;
 
+}
+
+.battleButton:hover {
+  filter: brightness(1.1);
+}
 /*Dropdown Menu*/
 .dropdown {
   position: relative;

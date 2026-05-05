@@ -349,6 +349,7 @@ categoryButtons.forEach(buttons => {
         }
 
         if (name === "Top Songs") {
+
             try {
                 const snapshot = await getDocs(collection(db, "songStats"));
 
@@ -1529,6 +1530,16 @@ function setupInfiniteScroll(el, forceScroll = false) {
 
 //Scoreboard feature JS
 
+const shuffleButton = document.getElementById("shuffleButton");
+
+shuffleButton.addEventListener("click", () => {
+    playCategorySound();
+
+    shuffleSong();
+
+    shuffleButton.classList.add("active");
+    setTimeout(() => shuffleButton.classList.remove("active"), 150);
+});
 
 document.getElementById("closeScoreboardBtn").addEventListener("click", () => {
     document.getElementById("scoreboardModal").style.cssText = "display:none;";
