@@ -4,7 +4,6 @@
  * using lrc timestamps.
  * @author Jason Yi
  */
-import { db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut } from './firebase.js';
 
 const audio = document.getElementById("audio")
 const progress = document.getElementById("progress")
@@ -32,14 +31,12 @@ let settingsButton = document.getElementById("settings");
 let settingsMenu = document.getElementById("settingsMenu");
 let fontSizeSlider = document.getElementById("fontSize");
 
-
-
 // toggle settings menu
 settingsButton.onclick = () => {
     settingsMenu.style.display =
         settingsMenu.style.display === "block" ? "none" : "block";
 };
-import { restartSong } from "./KaraokeScorer.js";
+
 // close when clicking outside
 window.addEventListener("click", (e) => {
     if (
@@ -57,12 +54,8 @@ fontSizeSlider.oninput = () => {
 
 // Top Bar
 // Go back to Song Selection
-// Go back to Song Selection and pass the current song ID
-goBackButton.onclick = () => {
-    const params = new URLSearchParams(window.location.search);
-    const songId = params.get("song");
-
-    window.location.href = `/songselection?song=${songId}`;
+goBackButton.onclick = () =>{
+    window.location.href = "/songselection"
 }
 // Open Drop down
 dropDownButton.onclick = () => {
@@ -122,46 +115,33 @@ playPause.onclick = () => {
     }
 }
 // Restarts the song
-document.getElementById("restart").addEventListener("click", () => {
-    console.log("[UI] restart button clicked");
-
-    if (window.KaraokeScorer?.restartSong) {
-        window.KaraokeScorer.restartSong();
+restart.onclick = () => {
+    audio.currentTime = 0
+    subtitle.innerHTML = ""
+    progress.style.width = "0%"
+    if(audio.paused){
+        audio.pause()
+        playImg.src = "/images/play_icon.svg"
+    }else{
+        audio.play()
+        playImg.src = "/images/pause_icon.svg"
     }
-});
+}
 
 // Update progress bar as audio plays
-function updateLyrics() {
-    if (!audio.duration || audio.paused || audio.ended) return;
-
-    const t = audio.currentTime;
-
-
-    const percent = (t / audio.duration) * 100;
+audio.ontimeupdate = () => {
+    if (!audio.duration) return;
+    const percent = (audio.currentTime / audio.duration) * 100;
     progress.style.width = percent + "%";
 
-    let activeLine = null;
-
-    for (let i = 0; i < lyrics.length; i++) {
-        const line = lyrics[i];
-
-        if (t >= line.startTime && t < line.endTime) {
-            activeLine = line;
+    const t = audio.currentTime;
+    for (let line of lyrics) {
+        const nextLine = lyrics[lyrics.indexOf(line) + 1];
+        if (t >= line.startTime && (!nextLine || t < nextLine.startTime)) {
+            renderKaraoke(line.words, t);
             break;
         }
     }
-
-    if (activeLine) {
-        renderKaraoke(activeLine.words, t);
-    } else {
-        subtitle.innerHTML = "";
-    }
-
-    requestAnimationFrame(updateLyrics);
-}
-
-audio.onplay = () => {
-    requestAnimationFrame(updateLyrics);
 };
 // Seek on click
 progressContainer.onclick = (e) => {
@@ -222,66 +202,34 @@ function parseLyrics(text){
                     : lineTime + 5
                 const duration = Math.min(nextTime - lineTime, 10) * 0.9
                 const totalChars = splitWords.reduce((sum, w) => sum + w.length, 0)
-                let elapsed = 0
-                for(let j = 0; j < splitWords.length; j++){
-                    words.push({time: lineTime + elapsed, text: splitWords[j]})
-                    const weight = splitWords[j].length / totalChars
-                    elapsed += weight * duration
-                }
+                        let elapsed = 0
+                        for(let j = 0; j < splitWords.length; j++){
+                            words.push({time: lineTime + elapsed, text: splitWords[j]})
+                            const weight = splitWords[j].length / totalChars
+                            elapsed += weight * duration
+                        }
             }
         }
 
-        if (words.length > 0) {
-            lyrics.push({ startTime: lineTime, words });
+        if(words.length > 0){
+            lyrics.push({startTime: lineTime, words})
         }
-
-    }
-    finalizeLyrics();
-}
-function finalizeLyrics() {
-    for (let i = 0; i < lyrics.length; i++) {
-        const line = lyrics[i];
-        const next = lyrics[i + 1];
-
-        const naturalEnd = next ? next.startTime : line.startTime + 5;
-
-        line.endTime = naturalEnd; // IMPORTANT: no lingering logic
     }
 }
+
 // Renders word highlighting
-function renderKaraoke(words, currentTime) {
+function renderKaraoke(words, currentTime){
     let html = ""
-
-    for (let i = 0; i < words.length; i++) {
+    for(let i=0;i<words.length;i++){
         const w = words[i]
-        const next = words[i + 1]
-
-        const start = w.time
-        const end = next ? next.time : start + 0.4
-
-        const progress = (currentTime - start) / (end - start)
-        if (currentTime >= end) {
+        // A word is sung if currentTime >= its timestamp
+        if(currentTime >= w.time){
             html += `<span class="sung">${w.text}</span> `
-        } else if (currentTime >= start) {
-            const pct = Math.min(1, Math.max(0, progress))
-
-            html += `
-                <span class="partial" style="
-                    background: linear-gradient(
-                        to right,
-                        gold ${pct * 100}%,
-                        white ${pct * 100}%
-                    );
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                ">
-                    ${w.text}
-                </span> `
         } else {
             html += `<span class="unsung">${w.text}</span> `
         }
     }
-    subtitle.innerHTML = html;
+    subtitle.innerHTML = html
 }
 // Updates the volume bar when starting a song
 function updateVolumeUI() {
@@ -312,91 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(err => console.error("Failed to load song:", err));
 });
 
-// Favorite Button Logic
-heartButton.onclick = async () => {
-    const user = auth.currentUser;
-    if (!user) {
-        alert("Please log in to favorite songs!");
-        return;
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    const songId = params.get("song");
-
-    const response = await fetch("/api/songs");
-    const songs = await response.json();
-    const songData = songs.find(s => String(s.id) === String(songId));
-
-    if (!songData) return;
-
-    const favRef = doc(db, "users", user.uid, "favorites", String(songId));
-    const isCurrentlyFavorite = heartButton.classList.contains("active");
-
-    // Use the ID from your HTML to find the image
-    const heartImg = document.getElementById("heartImg");
-
-    if (isCurrentlyFavorite) {
-        if (typeof playHeartOffSound === "function") playHeartOffSound();
-        heartButton.classList.remove("active");
-
-        // Update the image source specifically
-        if (heartImg) heartImg.src = "/images/heart_gray_icon.svg";
-
-        await deleteDoc(favRef);
-    } else {
-        if (typeof playHeartSound === "function") playHeartSound();
-        heartButton.classList.add("active");
-
-        // Update the image source specifically
-        if (heartImg) heartImg.src = "/images/heart_icon.svg";
-
-        await setDoc(favRef, {
-            title: songData.title,
-            artist: songData.artist,
-            mp3URL: songData.audioPath || "",
-            coverURL: songData.artCoverPath || "",
-            genre: songData.genre || "",
-            language: songData.language || "",
-            difficulty: songData.difficulty || ""
-        });
-    }
-};
-
-/**
- * Check initial favorite status when page loads
- */
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const params = new URLSearchParams(window.location.search);
-        const songId = params.get("song");
-        if (!songId) return;
-
-        const favRef = doc(db, "users", user.uid, "favorites", String(songId));
-        const docSnap = await getDoc(favRef);
-
-        if (docSnap.exists()) {
-            heartButton.classList.add("active");
-
-            // Fix the image on load
-            const heartImg = document.getElementById("heartImg");
-            if (heartImg) {
-                heartImg.src = "/images/heart_icon.svg";
-            }
-        }
-    }
-});
-const heartButtonSound = new Audio("/soundEffects/heartSound.ogg");
-const heartButtonOffSound = new Audio("/soundEffects/heartOffSound.ogg");
-
-function playHeartSound() {
-    heartButtonSound.volume = 0.4;
-    heartButtonSound.play();
-}
-
-function playHeartOffSound() {
-    heartButtonOffSound.volume = 0.4;
-    heartButtonOffSound.play();
-}
 audio.volume = 0.5
 volume.value = 50
 updateVolumeUI()

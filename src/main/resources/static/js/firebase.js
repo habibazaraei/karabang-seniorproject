@@ -23,4 +23,4 @@ const auth = getAuth(app);
 
 
 // Export for use in other JS files
-export { app, analytics, db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut, increment };
+export { app, analytics, db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut };

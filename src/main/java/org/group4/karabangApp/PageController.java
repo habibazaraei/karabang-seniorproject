@@ -28,4 +28,7 @@ public class PageController {
     }
     @GetMapping("/profilepage")
     public String profilePage() { return "profilepage"; }
+    @GetMapping("/musicplayerplay")
+    public String musicPlayerPlay() { return "musicplayerplay"; }
+
 }
