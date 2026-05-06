@@ -257,7 +257,7 @@ categoryButtons.forEach(buttons => {
         });
         // cycle asc → desc → none → asc ...
         // Favorites should NOT cycle sort
-        if (name !== "Favorites" && name !== "Top Songs" && name !== "Shuffle" ){
+        if (name !== "Favorites" && name !== "Popular" && name !== "Shuffle" ){
             if (sortState[name] === "none") sortState[name] = "asc";
             else if (sortState[name] === "asc") sortState[name] = "desc";
             else sortState[name] = "none";
@@ -352,7 +352,7 @@ categoryButtons.forEach(buttons => {
             return;
         }
 
-        if (name === "Top Songs") {
+        if (name === "Popular") {
 
             const isOn = sortState[name] === "on";
             sortState[name] = isOn ? "none" : "on";
@@ -399,14 +399,14 @@ categoryButtons.forEach(buttons => {
                 renderSongCardsNoAnimation(false);
 
             } catch (err) {
-                console.error("Failed to load top songs:", err);
+                console.error("Failed to load Popular:", err);
             }
 
             return;
         }
 
 
-        if (name !== "Top Songs" && name !== "Shuffle" && name !== "Favorites") {
+        if (name !== "Popular" && name !== "Shuffle" && name !== "Favorites") {
             setButtonIcon(
                 buttons,
                 sortState[name] === "none"
@@ -423,7 +423,7 @@ categoryButtons.forEach(buttons => {
             categoryButtons.forEach(b => {
                 const bName = b.innerText.trim();
 
-                if (bName === "Top Songs" || bName === "Shuffle") return;
+                if (bName === "Popular" || bName === "Shuffle") return;
 
                 if (b !== activeButton) {
                     sortState[bName] = "none";
