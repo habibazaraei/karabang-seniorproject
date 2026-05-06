@@ -18,6 +18,12 @@ saveProfileBtn.addEventListener("click", function () {
     }
 
     genreDisplay.textContent = favoriteGenre;
+
+    saveProfileBtn.textContent = "Profile Saved ✓";
+
+    setTimeout(() => {
+        saveProfileBtn.textContent = "Save Profile";
+    }, 1800);
 });
 
 uploadPicBtn.addEventListener("click", function () {
@@ -39,9 +45,9 @@ pfpUpload.addEventListener("change", function () {
 });
 
 function goToSongs() {
-    window.location.href = "SongSelection.html";
+    window.location.href = "/songselection";
 }
 
 function logout() {
-    window.location.href = "login.html";
+    window.location.href = "/login";
 }
