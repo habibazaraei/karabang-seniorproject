@@ -1,97 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>KaraBang Login</title>
+    <meta charset="UTF-8">
+    <title>KaraBang Forgot Password</title>
     <link rel="stylesheet" href="CSS/forgot.css">
-
 </head>
 
 <body>
 
-<!-- 🔴 glow -->
-<div class="glow glow1"></div>
-<div class="glow glow2"></div>
+<main class="forgot-wrapper">
 
-<!-- 🎸 LOTS OF ICONS -->
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
-<div class="icon">🎸</div>
-<div class="icon">🎵</div>
-<div class="icon">🎤</div>
-<div class="icon">🎶</div>
+    <section class="forgot-card">
 
+        <img
+                src="images/KaraBangLogoRetouched.png"
+                alt="KaraBang Logo"
+                class="forgot-logo"
+        >
 
-<div class ="forgot-wrapper">
+        <h2>Forgot Password?</h2>
 
-    <!-- LEFT -->
-    <div class="left-panel">
-        <h1 class="brand">🎤 Kara<span>Bang</span></h1>
-        <p class="subtitle">
-           Please enter your email to receive a Password Reset Link.
+        <p class="small-text">
+            No worries. Enter your email below and we’ll send you a password reset link.
         </p>
 
         <form id="reset-form">
-             <input id="resetEmail" type="email" placeholder="Enter your email" required>
+            <label for="resetEmail">Email Address</label>
+
+            <input
+                    id="resetEmail"
+                    type="email"
+                    placeholder="Enter your email"
+                    required
+            >
 
             <button type="submit">Send Reset Email</button>
-             <a href="login.html">
-        <button id="homeBtn">Home</button>
-             </a>
         </form>
- 
-    </div>
 
-    <!-- RIGHT -->
-    <div class="right-panel">
-        <div class="album-card">
-            <img src="https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png">
+        <p id="resetMessage"></p>
 
-            <div class="song-title">Blinding Lights</div>
-            <div class="artist">The Weeknd</div>
+        <div class="links">
+            <a href="/login">Return to Login</a>
+            <span>|</span>
+            <a href="/signup">Create Account</a>
         </div>
-    </div>
 
-</div>
-<script>
-    const songs = [
-        {
-            title: "Blinding Lights",
-            artist: "The Weeknd",
-            image: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png"
-        },
-        {
-            title: "Bohemian Rhapsody",
-            artist: "Queen",
-            image: "https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png"
-        }
-    ];
+    </section>
 
-    const songTitle = document.querySelector(".song-title");
-    const artist = document.querySelector(".artist");
-    const image = document.querySelector(".album-card img");
+</main>
 
-    let index = 0;
-
-    function changeSong(){
-        index = (index + 1) % songs.length;
-
-        songTitle.textContent = songs[index].title;
-        artist.textContent = songs[index].artist;
-        image.src = songs[index].image;
-    }
-
-    setInterval(changeSong, 15000);
-</script>
-
-
-
-
-    <script type="module" src="/js/forgot.js"></script>
+<script type="module" src="js/forgot.js"></script>
 </body>
 </html>
