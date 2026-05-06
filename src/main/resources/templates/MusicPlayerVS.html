@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>KaraBang — Battle Mode</title>
+    <link rel="stylesheet" href="/css/MusicPlayer.css">
+    <link rel="stylesheet" href="/css/MusicPlayerVS.css">
+    <link rel="icon" href="/images/KaraBangLogoIcon.ico">
+</head>
+<body>
+
+<div id="backgroundPane">
+    <img id="backgroundImage" src="/images/purple_song_selection_background.png">
+    <audio id="audio"></audio>
+    <div id="tierFloatLayer"></div>
+
+    <!-- Top Bar -->
+    <div id="topBar">
+        <button id="goBack">
+            <img id="goBackImg" src="/images/go_back_icon.svg">
+        </button>
+        <div id="songTitle"></div>
+        <div style="margin-left:auto; padding-right:10px; font-family:'LTKaraoke',sans-serif; color:#7b27f5; font-size:1.2rem;">VS Mode</div>
+    </div>
+
+    <!-- Battle UI (two player panels stacked) -->
+    <div id="battleUI">
+
+        <!-- Player 1 Panel (top) -->
+        <div class="playerPanel" id="p1Panel">
+            <div class="playerHeader">
+                <span class="playerLabel" id="p1Label">PLAYER 1</span>
+                <span class="playerPitch" id="p1PitchDisplay">— Hz</span>
+                <span class="playerScore" id="p1Score">0</span>
+            </div>
+            <div class="battleScoreBar" id="p1Bar">
+                <div class="battleScoreBarFill" id="p1BarFill"></div>
+                <div class="battleRankMarker" style="left:3%"><img src="/images/TierF.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:60%"><img src="/images/TierD.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:70%"><img src="/images/TierC.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:80%"><img src="/images/TierB.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:88%"><img src="/images/TierA.png" class="battleRankImg"></div>
+                <div class="battleRankMarker rank-ex" style="left:95%"><img src="/images/TierEX.png" class="battleRankImg"></div>
+            </div>
+            <!-- Player 1 lyrics -->
+            <div id="subtitleP1" class="battleSubtitle"></div>
+        </div>
+
+        <!-- VS Divider -->
+        <div id="vsDivider">
+            <span id="vsLabel">Singer 1 |VS| Singer 2</span>
+        </div>
+
+        <!-- Player 2 Panel (bottom) -->
+        <div class="playerPanel" id="p2Panel">
+            <!-- Player 2 lyrics sit above their score bar -->
+            <div id="subtitleP2" class="battleSubtitle"></div>
+            <div class="playerHeader">
+                <span class="playerLabel" id="p2Label">PLAYER 2</span>
+                <span class="playerPitch" id="p2PitchDisplay">— Hz</span>
+                <span class="playerScore" id="p2Score">0</span>
+            </div>
+            <div class="battleScoreBar" id="p2Bar">
+                <div class="battleScoreBarFill" id="p2BarFill"></div>
+                <div class="battleRankMarker" style="left:3%"><img src="/images/TierF.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:60%"><img src="/images/TierD.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:60%"><img src="/images/TierD.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:70%"><img src="/images/TierC.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:80%"><img src="/images/TierB.png" class="battleRankImg"></div>
+                <div class="battleRankMarker" style="left:88%"><img src="/images/TierA.png" class="battleRankImg"></div>
+                <div class="battleRankMarker rank-ex" style="left:95%"><img src="/images/TierEX.png" class="battleRankImg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div id="bottomBar">
+        <button id="playPause">
+            <img id="playImg" src="/images/play_icon.svg">
+        </button>
+        <button id="restart">
+            <img id="restartImg" src="/images/restart_icon.svg">
+        </button>
+        <div id="progressContainer">
+            <div id="progress"></div>
+        </div>
+        <div id="rightControls">
+            <div class="volume-container">
+                <button id="volumeButton">
+                    <img id="volumeIcon" src="/images/volume_high_icon.svg">
+                </button>
+                <input type="range" id="volume" min="0" max="100" value="50">
+            </div>
+        </div>
+    </div>
+
+    <!-- Karaoke Start Overlay -->
+    <div id="karaokeStartOverlay">
+        <div id="karaokeStartPanel">
+            <div id="startMicIcon">LET'S ROCK</div>
+            <div id="startText">Battle Mode</div>
+            <button id="startKaraokeBtn">START BATTLE</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Mic Selector Overlay -->
+<div id="micSelectOverlay">
+    <div id="micSelectPanel">
+        <h2>🎤 Select Microphones</h2>
+        <div class="micRow">
+            <label class="micRow" id="p1MicLabel">Player 1 Mic</label>
+            <select id="p1MicSelect"></select>
+        </div>
+        <div class="micRow">
+            <label class="micRow" id="p2MicLabel">Player 2 Mic</label>
+            <select id="p2MicSelect"></select>
+        </div>
+        <button id="confirmMicsBtn">Confirm & Continue</button>
+    </div>
+</div>
+
+<!-- Winner Overlay -->
+<div id="winnerOverlay">
+    <div id="winnerPanel">
+        <div id="winnerTitle">WINNER</div>
+        <div id="winnerName"></div>
+        <div class="winnerScoreRow">
+            <div class="winnerScoreCard" id="p1ScoreCard">
+                <span class="wLabel">PLAYER 1</span>
+                <span class="wScore" id="wP1Score">0</span>
+            </div>
+            <div class="winnerScoreCard" id="p2ScoreCard">
+                <span class="wLabel">PLAYER 2</span>
+                <span class="wScore" id="wP2Score">0</span>
+            </div>
+        </div>
+        <div class="winnerBtns">
+            <button class="winnerBtn primary" id="retryBattleBtn">Play Again</button>
+            <button class="winnerBtn secondary" id="backFromBattleBtn">Back to Songs</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="/js/KaraokeScorerVS.js"></script>
+<script type="module" src="/js/MusicPlayerVS.js"></script>
+
+</body>
+</html>

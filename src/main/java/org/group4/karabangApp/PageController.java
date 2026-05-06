@@ -30,5 +30,6 @@ public class PageController {
     public String profilePage() { return "profilepage"; }
     @GetMapping("/musicplayerplay")
     public String musicPlayerPlay() { return "musicplayerplay"; }
-
+    @GetMapping("/musicplayervs")
+    public String battle() { return "musicplayervs"; }
 }
