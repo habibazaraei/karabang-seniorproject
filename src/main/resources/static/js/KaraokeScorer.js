@@ -459,7 +459,14 @@ async function loadTopScores() {
 
 
 // ─── Scoreboard Popup ─────────────────────────────────────────────────────────
+const scoreboardOpenBtn = document.getElementById("scoreboardOpenBtn");
 
+if (scoreboardOpenBtn) {
+    scoreboardOpenBtn.onclick = (e) => {
+        e.stopPropagation();
+        openScoreboard();
+    };
+}
 function initScoreboard() {
     // Add "Scoreboard" option to the existing dropdown menu
     const dropdownMenu = document.getElementById("dropdownMenu");
@@ -591,15 +598,20 @@ function injectScoreboardStyles() {
             justify-content: center;
         }
         #scoreboardPanel {
-            position: fixed; 
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        
             background: rgba(123, 39, 245, 0.9);
-            border:1px solid #3e007d;
-            bottom: 60px;  
+            border: 1px solid #3e007d;
             border-radius: 16px;
             padding: 24px;
+        
             min-width: 320px;
             max-width: 420px;
             width: 90%;
+        
             z-index: 9999;
         }
         #scoreboardHeader {
@@ -671,14 +683,15 @@ function injectScoreboardStyles() {
             position: absolute;
             top: 6%;
             left: 0;
-    
+            
+            display: flex;
+            justify-content: flex-start;
+            
             width: 100%;
     
             box-sizing: border-box; 
             height: 5%;
         
-            display: flex;
-            justify-content: space-between; 
             align-items: center;
             gap: 15px;
             padding: 0 20px; 
@@ -693,13 +706,16 @@ function injectScoreboardStyles() {
             font-weight: bold;
             font-size: 1.8rem; 
             color: white;
-            
-    
+             
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         
             min-width: 120px; 
-            text-align: right;
+            text-align: center;
             flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 10px;
         }
     `;
     document.head.appendChild(style);
@@ -940,6 +956,7 @@ function injectScorerStyles() {
         }
 
         #scorerPanel {
+
             display: flex;
             align-items: center;
             gap: 15px;
@@ -948,6 +965,7 @@ function injectScorerStyles() {
             box-sizing: border-box;
             overflow: visible !important;
             height: 60px;
+            
         }
 
         #scoreBar {
@@ -1026,7 +1044,6 @@ function updateScoreBar(pct) {
     const safePct = Math.max(0, Math.min(pct, 100));
     fill.style.width = safePct + "%";
 
-    // Common Layers
     const glassShine = `linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%)`;
     const stripes = `linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent)`;
 
@@ -1035,7 +1052,6 @@ function updateScoreBar(pct) {
         fill.style.backgroundImage = `${glassShine}, ${stripes}, ${rainbow}`;
         fill.style.backgroundSize = `100% 100%, 20px 20px, 100% 100%`;
 
-        // Use the combined animation for rainbow + flowing stripes
         fill.style.animation = "rainbowGlowWithFlow 2s linear infinite";
         return;
     }

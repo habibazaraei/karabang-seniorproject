@@ -10,7 +10,6 @@ const audio = document.getElementById("audio")
 const progress = document.getElementById("progress")
 const progressContainer = document.getElementById("progressContainer")
 
-let subtitle = document.getElementById("subtitle")
 let volume = document.getElementById("volume")
 
 let restart = document.getElementById("restart")
@@ -22,38 +21,97 @@ let volumeIcon = document.getElementById("volumeIcon")
 
 let goBackButton = document.getElementById("goBack")
 
-let dropDownButton = document.getElementById("dropdown");
-let dropdownMenu = document.getElementById("dropdownMenu");
+
 
 let heartButton = document.getElementById("heart");
 
 let lyrics = []
+
+
 let settingsButton = document.getElementById("settings");
-let settingsMenu = document.getElementById("settingsMenu");
-let fontSizeSlider = document.getElementById("fontSize");
+let settingsModal = document.getElementById("settingsModal");
+let closeSettingsBtn = document.getElementById("closeSettingsBtn");
+let fontSizeSlider = document.getElementById("fontSizeSlider");
+let subtitle = document.getElementById("subtitle");
+let saveTimeout;
+
+audio.volume = 0.5
+volume.value = 50
+updateVolumeUI();
+let fontSize = "5";
+
+let currentUser = null;
 
 
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+});
+//load user settings
+onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
 
-// toggle settings menu
-settingsButton.onclick = () => {
-    settingsMenu.style.display =
-        settingsMenu.style.display === "block" ? "none" : "block";
-};
-import { restartSong } from "./KaraokeScorer.js";
-// close when clicking outside
-window.addEventListener("click", (e) => {
-    if (
-        !settingsButton.contains(e.target) &&
-        !settingsMenu.contains(e.target)
-    ) {
-        settingsMenu.style.display = "none";
+    const snap = await getDoc(doc(db, "users", user.uid, "preferences", "settings"));
+
+    if (snap.exists()) {
+        const prefs = snap.data();
+
+        if (prefs.volume !== undefined) {
+            audio.volume = prefs.volume;
+            volume.value = prefs.volume * 100;
+            updateVolumeUI();
+        }
+
+        if (prefs.fontSize !== undefined) {
+            fontSize = Math.round(Number(prefs.fontSize));
+            subtitle.style.fontSize = fontSize + "vw";
+
+            fontSizeSlider.value = fontSize;
+            fontSizeLabel.textContent = fontSize;
+        }
     }
 });
+async function savePreferences() {
+    if (!currentUser) return;
 
-// change font size LIVE
-fontSizeSlider.oninput = () => {
-    subtitle.style.fontSize = fontSizeSlider.value + "vw";
-};
+    await setDoc(doc(db, "users", currentUser.uid, "preferences", "settings"), {
+        volume: audio.volume,
+        fontSize: fontSize
+    }, { merge: true });
+}
+//setting menu
+if (settingsButton && settingsModal && closeSettingsBtn && fontSizeSlider && subtitle) {
+
+    settingsButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        settingsModal.style.display = "flex";
+    });
+
+    closeSettingsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        settingsModal.style.display = "none";
+    });
+
+    settingsModal.addEventListener("click", (e) => {
+        if (e.target === settingsModal) {
+            settingsModal.style.display = "none";
+        }
+    });
+
+
+    fontSizeSlider.addEventListener("input", () => {
+        fontSize = Math.round(Number(fontSizeSlider.value));
+
+        subtitle.style.fontSize = fontSize + "vw";
+        fontSizeLabel.textContent = fontSize;
+
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(savePreferences, 200);
+    });
+
+} else {
+    console.warn("[Settings] Missing DOM elements. Check HTML IDs.");
+}
+
 
 // Top Bar
 // Go back to Song Selection
@@ -64,21 +122,27 @@ goBackButton.onclick = () => {
 
     window.location.href = `/songselection?song=${songId}`;
 }
-// Open Drop down
-dropDownButton.onclick = () => {
-    dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
-};
+const dropDownButton = document.getElementById("dropdown");
+const dropdownMenu = document.getElementById("dropdownMenu");
 
-// click outside to close
-window.onclick = (e) => {
-    if (!dropDownButton.contains(e.target)) {
-        dropdownMenu.style.display = "none";
+if (dropDownButton && dropdownMenu) {
+    dropDownButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdownMenu.style.display =
+            dropdownMenu.style.display === "block" ? "none" : "block";
+    });
+}
+window.addEventListener("click", (e) => {
+    if (dropDownButton && dropdownMenu) {
+        if (!dropDownButton.contains(e.target)) {
+            dropdownMenu.style.display = "none";
+        }
     }
-};
+});
 // Bottom Bar
 // Single volume slider handler
 volume.oninput = () => {
-    audio.volume = volume.value / 100
+    audio.volume = volume.value / 100;
 
     if(audio.volume === 0){
         volumeIcon.src = "/images/mute_icon.svg"
@@ -87,8 +151,9 @@ volume.oninput = () => {
     } else {
         volumeIcon.src = "/images/volume_high_icon.svg"
     }
-
-    updateVolumeUI()
+    updateVolumeUI();
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(savePreferences, 200);
 }
 
 // Mute/unmute button
@@ -181,6 +246,9 @@ fetch("/api/songs")
         const song = data.find(s => s.id === songId)
         if(song){
             audio.src = song.audioPath
+
+            applyGenreTheme(song.genre);
+
             fetch(song.lyricsPath)
                 .then(r => r.text())
                 .then(parseLyrics)
@@ -285,8 +353,8 @@ function renderKaraoke(words, currentTime) {
 }
 // Updates the volume bar when starting a song
 function updateVolumeUI() {
-    const percent = volume.value
-    volume.style.background = `linear-gradient(to right, #4BA7FF ${percent}%, #FFFFFF ${percent}%)`
+    const percent = (audio.volume * 100);
+    volume.style.background = `linear-gradient(to right, #4BA7FF ${percent}%, #FFFFFF ${percent}%)`;
 }
 
 
@@ -397,7 +465,27 @@ function playHeartOffSound() {
     heartButtonOffSound.volume = 0.4;
     heartButtonOffSound.play();
 }
-audio.volume = 0.5
-volume.value = 50
-updateVolumeUI()
-subtitle.style.fontSize = "5vw";
+// apply top and bottom bar based on song genre
+function applyGenreTheme(genre) {
+    const topBar = document.getElementById("topBar");
+    const bottomBar = document.getElementById("bottomBar");
+
+    if (!topBar || !bottomBar) return;
+
+    const g = (genre || "").toLowerCase();
+
+    let topImg = "../images/top_bar_background.svg";
+    let bottomImg = "../images/bottom_bar_background.svg";
+
+    if (g.includes("pop")) {
+        topImg = "../images/top_bar_pop.svg";
+        bottomImg = "../images/bottom_bar_pop.svg";
+    } else if (g.includes("rock")) {
+        topImg = "../images/top_bar_rock.svg";
+        bottomImg = "../images/bottom_bar_rock.svg";
+    }
+
+    topBar.style.backgroundImage = `url("${topImg}")`;
+    bottomBar.style.backgroundImage = `url("${bottomImg}")`;
+}
+

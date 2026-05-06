@@ -80,7 +80,7 @@ body {
     width: clamp(24px, 4vh, 48px);
     height: clamp(24px, 4vh, 48px);
 }
-#dropdown Img, #heartImg {
+#dropdown Img, #heartImg, #scoreboardImg{
     width: clamp(21px, 3vh, 42px);
     height: clamp(21px, 3vh, 42px);
 }
@@ -266,7 +266,7 @@ button:active {
     transition: transform 0.3s ease, opacity 0.3s ease;
     line-height: 1;
     background-size: 100% 100%;
-    opacity: 70%;
+
 }
 
 #topBar {
@@ -279,7 +279,8 @@ button:active {
     box-sizing: border-box;
     align-items: center;
     top: 0;
-
+    position: relative;
+    z-index: 2000;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-left-radius: 12px;
@@ -455,19 +456,15 @@ button:active {
 }
 
 .tier-ex-plus {
-    /* Classic Rainbow Gradient */
     background: linear-gradient(
             to right,
             #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff
     ) !important;
 
-    /* Make sure all colors fit in the bar */
     background-size: 100% 100% !important;
 
-    /* This animates the colors by rotating the 'hue' rather than sliding the image */
     animation: rainbowGlow 3s linear infinite !important;
 
-    /* Optional: Add a white inner glow to make it look 'charged' */
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
@@ -488,4 +485,134 @@ button:active {
     align-items: center;
     justify-content: center;
     z-index: 9999;
+}
+/* Settings modal */
+#settingsModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: clamp(320px, 45vw, 800px);
+    height: clamp(220px, 55vh, 600px);
+
+    background-image: url("../images/textureCirclesDropDown.png");
+    background-size: contain;
+    background-repeat: repeat;
+    background-color: rgba(53, 52, 52, 0.8);
+
+    z-index: 1000;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+}
+
+#settingsPanel {
+    width: 100%;
+    height: 100%;
+    border: 2px solid black;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    max-width: 90vw;
+    box-sizing: border-box;
+    justify-content: flex-start;
+}
+
+.settingsHeader {
+    position: sticky;
+    top: 0;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px 16px;
+
+    background: #000000;
+    border-bottom: 2px solid black;
+
+    z-index: 10;
+}
+.settingsContent {
+    flex: 1;
+    overflow: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+.settingsTitle {
+    color: white;
+    font-size: 30px;
+    font-weight: 500;
+    margin: 0;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+#closeSettingsBtn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+    line-height: 1;
+}
+
+
+
+.settingsRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.settingsRow span {
+    white-space: nowrap;
+}
+
+.settingsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.settingsSection input[type="range"] {
+    width: 100%;
+}
+
+.settingsRow {
+    display: flex;
+    justify-content: space-between;
+}
+
+.divider {
+    border: none;
+    border-top: 0.5px solid #000000;
+    margin: 1rem 0;
+}
+
+#resetPrefsBtn {
+    width: 100%;
+    padding: 10px;
+
+    font-size: 20px;
+    font-weight: bold;
+
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid black;
+
+    background: rgb(33, 32, 32);
+    color: #ffffff;
+
+    margin-top: auto;
 }
