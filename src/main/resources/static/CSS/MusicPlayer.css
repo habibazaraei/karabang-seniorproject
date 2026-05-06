@@ -47,7 +47,13 @@ body {
     -webkit-text-stroke: 1px black;
     display: inline-block;
 }
-
+#lyricColorPicker {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
 .sung {
     color: #FFD700;
     -webkit-text-stroke: 1px black;
@@ -493,6 +499,8 @@ button:active {
     left: 50%;
     transform: translate(-50%, -50%);
 
+    justify-content: center;
+    align-items: center;
     width: clamp(320px, 45vw, 800px);
     height: clamp(220px, 55vh, 600px);
 
@@ -504,9 +512,6 @@ button:active {
     z-index: 1000;
 
     display: none;
-
-    align-items: center;
-    justify-content: center;
 
     border-radius: 8px;
 }
@@ -615,4 +620,28 @@ button:active {
     color: #ffffff;
 
     margin-top: auto;
+}
+/* font color selector*/
+.colorGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.colorOption {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s ease, border 0.15s ease;
+}
+
+.colorOption:hover {
+    transform: scale(1.2);
+}
+
+.colorOption.active {
+    border: 2px solid white;
 }

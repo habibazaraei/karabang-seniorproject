@@ -35,6 +35,7 @@ let fontSizeSlider = document.getElementById("fontSizeSlider");
 let subtitle = document.getElementById("subtitle");
 let saveTimeout;
 
+let lyricColor = "#FFD700";
 audio.volume = 0.5
 volume.value = 50
 updateVolumeUI();
@@ -68,6 +69,10 @@ onAuthStateChanged(auth, async (user) => {
             fontSizeSlider.value = fontSize;
             fontSizeLabel.textContent = fontSize;
         }
+        if (prefs.lyricColor !== undefined) {
+            lyricColor = prefs.lyricColor;
+            refreshColorPickerUI();
+        }
     }
 });
 async function savePreferences() {
@@ -75,7 +80,8 @@ async function savePreferences() {
 
     await setDoc(doc(db, "users", currentUser.uid, "preferences", "settings"), {
         volume: audio.volume,
-        fontSize: fontSize
+        fontSize: fontSize,
+        lyricColor: lyricColor
     }, { merge: true });
 }
 //setting menu
@@ -112,7 +118,49 @@ if (settingsButton && settingsModal && closeSettingsBtn && fontSizeSlider && sub
     console.warn("[Settings] Missing DOM elements. Check HTML IDs.");
 }
 
+// colors for color picker
+const colors = [
+    "#FFD700", // gold
+    "#FFFFFF", // white
+    "#FF4D4D", // red
+    "#4DA6FF", // blue
+    "#4DFF88", // green
+    "#B84DFF", // purple
+    "#FF8C4D", // orange
+    "#FF4DD2", // pink
+    "#00E6E6", // cyan
+    "#A0A0A0"  // gray
+];
 
+const picker = document.getElementById("lyricColorPicker");
+
+colors.forEach(color => {
+    const btn = document.createElement("div");
+    btn.className = "colorOption";
+    btn.style.background = color;
+    btn.dataset.color = color;
+    if (color === lyricColor) btn.classList.add("active");
+
+    btn.onclick = () => {
+        lyricColor = color;
+
+        refreshColorPickerUI();
+
+        savePreferences();
+    };
+
+    picker.appendChild(btn);
+});
+
+function refreshColorPickerUI() {
+    document.querySelectorAll(".colorOption").forEach(btn => {
+        btn.classList.remove("active");
+
+        if (btn.dataset.color === lyricColor) {
+            btn.classList.add("active");
+        }
+    });
+}
 // Top Bar
 // Go back to Song Selection
 // Go back to Song Selection and pass the current song ID
@@ -200,7 +248,6 @@ function updateLyrics() {
     if (!audio.duration || audio.paused || audio.ended) return;
 
     const t = audio.currentTime;
-
 
     const percent = (t / audio.duration) * 100;
     progress.style.width = percent + "%";
@@ -318,37 +365,44 @@ function finalizeLyrics() {
 }
 // Renders word highlighting
 function renderKaraoke(words, currentTime) {
-    let html = ""
+    let html = "";
 
     for (let i = 0; i < words.length; i++) {
-        const w = words[i]
-        const next = words[i + 1]
+        const w = words[i];
+        const next = words[i + 1];
 
-        const start = w.time
-        const end = next ? next.time : start + 0.4
+        const start = w.time;
+        const end = next ? next.time : start + 0.4;
 
-        const progress = (currentTime - start) / (end - start)
-        if (currentTime >= end) {
-            html += `<span class="sung">${w.text}</span> `
-        } else if (currentTime >= start) {
-            const pct = Math.min(1, Math.max(0, progress))
+        // CURRENT word (gradient fill)
+        if (currentTime >= start && currentTime < end) {
+            const pct = (currentTime - start) / (end - start);
 
             html += `
-                <span class="partial" style="
+                <span style="
                     background: linear-gradient(
                         to right,
-                        gold ${pct * 100}%,
+                        ${lyricColor} ${pct * 100}%,
                         white ${pct * 100}%
                     );
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                 ">
                     ${w.text}
-                </span> `
-        } else {
-            html += `<span class="unsung">${w.text}</span> `
+                </span> `;
+        }
+
+        // PAST words (same color as selected lyricColor)
+        else if (currentTime >= end) {
+            html += `<span style="color:${lyricColor}">${w.text}</span> `;
+        }
+
+        // FUTURE words
+        else {
+            html += `<span style="color:white">${w.text}</span> `;
         }
     }
+
     subtitle.innerHTML = html;
 }
 // Updates the volume bar when starting a song
