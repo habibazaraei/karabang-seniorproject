@@ -666,14 +666,6 @@ button:active {
     0%   { background-position: 0 0, 0 0,   0 0; }
     100% { background-position: 0 0, 40px 0, 0 0; }
 }
-@keyframes scoreShake {
-    0%   { transform: translate(0, 0) rotate(0deg); }
-    20%  { transform: translate(-var(--shake), 0) rotate(-1deg); }
-    40%  { transform: translate(var(--shake), 0) rotate(1deg); }
-    60%  { transform: translate(-var(--shake), 0) rotate(-1deg); }
-    80%  { transform: translate(var(--shake), 0) rotate(1deg); }
-    100% { transform: translate(0, 0) rotate(0deg); }
-}
 
 #scoreDisplay.shaking {
     animation: scoreShake 0.15s linear infinite;
@@ -692,4 +684,7 @@ button:active {
     0%,100% { transform: translate(0,0) rotate(0deg); }
     25%     { transform: translate(-10px, 4px) rotate(-2deg); }
     75%     { transform: translate(10px, -4px) rotate(2deg); }
+}
+#startKaraokeBtn:disabled {
+    pointer-events: none;
 }

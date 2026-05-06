@@ -331,7 +331,12 @@ export async function restartSong() {
     const scorer = document.getElementById("scorerPanel");
     if (scorer) scorer.style.display = "flex";
     restoreGameUI();
-
+    const startBtn = document.getElementById("startKaraokeBtn");
+    if (startBtn) {
+        startBtn.disabled = false;
+        startBtn.style.opacity = "1";
+        startBtn.style.cursor = "pointer";
+    }
 }
 window.addEventListener("DOMContentLoaded", () => {
     window.KaraokeScorer = window.KaraokeScorer || {};
@@ -932,7 +937,7 @@ function flashTier(tier) {
 }
 
 function showFinalScore() {
-    // 1. USE THE TARGET SCORE (100,000) INSTEAD OF maxPossible
+
     const targetScore = 100000;
     const pct = Math.round((totalScore / targetScore) * 100);
 
@@ -948,31 +953,55 @@ function showFinalScore() {
     else { grade = "F"; color = "#ff6b6b"; }
 
     // Hide UI Bars
+
     const topBar = document.querySelector(".top-bar") || document.getElementById("topBar");
     const bottomBar = document.getElementById("bottomBar");
     if (topBar) topBar.style.display = "none";
     if (bottomBar) bottomBar.style.display = "none";
 
+
+    const scorer = document.getElementById("scorerPanel");
+    if (scorer) scorer.style.display = "none";
+
     const sub = document.getElementById("subtitle");
     if (sub) {
-        const gradeStyle = isRainbow
-            ? `font-size:8vw; font-weight:bold; animation: rainbowGlow 2s linear infinite; -webkit-background-clip: text; color: transparent; background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);`
-            : `font-size:8vw; color:${color}; font-weight:bold;`;
+
+        const gradeImgMap = {
+            "EX+": "/images/TierEX.png",
+            "A": "/images/TierA.png",
+            "B": "/images/TierB.png",
+            "C": "/images/TierC.png",
+            "D": "/images/TierD.png",
+            "F": "/images/TierF.png"
+        };
+
+        const gradeImg = gradeImgMap[grade];
 
         sub.innerHTML = `
-            <div class="results-container" style="text-align:center; background: rgba(0,0,0,0.85); padding: 40px; border-radius: 20px; backdrop-filter: blur(10px);">
-                <div style="font-size:3vw; color:#fff; margin-bottom: 10px;">Final Score</div>
-                <div style="font-size:8vw; color:${isRainbow ? '#FFD700' : color}; font-weight:bold; line-height:1;">${totalScore.toLocaleString()}</div>
-                <div style="${gradeStyle}">Grade: ${grade}</div>
-                <div style="font-size:2vw; color:#aaa; margin-bottom: 30px;">Best Combo: ${maxCombo}x</div>
-                
-                <div class="results-actions" style="display: flex; gap: 20px; justify-content: center;">
-                    <button id="retryBtn" class="result-btn primary">Retry</button>
-                    <button id="backBtn" class="result-btn secondary">Back to Songs</button>
+            <div class="scoreboard-style-final">
+                <div class="final-header">
+                    <span>🏆 Results</span>
+                </div>
+            
+                <div class="final-score">
+                    <span id="finalScoreText">0</span>
+                </div>
+            
+                <div class="final-grade">
+                    <img src="${gradeImg}" class="final-grade-img">
+                </div>
+            
+                <div class="final-combo">
+                    Best Combo: ${maxCombo}x
+                </div>
+            
+                <div class="results-actions">
+                    <button id="retryBtn" class="scoreboard-btn">Retry</button>
+                    <button id="backBtn" class="scoreboard-btn secondary">Back</button>
                 </div>
             </div>
-        `;
-
+`;
+        animateFinalScore(totalScore);
 
         document.getElementById("retryBtn").onclick = async () => {
             isRestarting = true;
@@ -994,6 +1023,32 @@ function showFinalScore() {
             window.location.href = `/songselection?song=${songId}`;
         };
     }
+}
+function animateFinalScore(target) {
+    const el = document.getElementById("finalScoreText");
+    if (!el) return;
+
+    let current = 0;
+    const duration = 1200; // ms
+    const startTime = performance.now();
+
+    function update(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+
+        // ease-out curve (smooth slowdown)
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        current = Math.floor(target * eased);
+        el.textContent = current.toLocaleString();
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            el.textContent = target.toLocaleString();
+        }
+    }
+
+    requestAnimationFrame(update);
 }
 function hzToNote(hz) {
     if (hz <= 0) return "—";
@@ -1140,6 +1195,48 @@ function injectScorerStyles() {
             25%     { transform: translate(-6px, 3px); }
             75%     { transform: translate(6px, -3px); }
         }
+        .scoreboard-style-final {
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        .final-header {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .final-score {
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: #FFD700;
+        
+            margin: 15px 0;
+        
+            animation: scorePop 0.4s ease;
+        
+        }
+        
+        @keyframes scorePop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .final-grade-img {
+            width: 120px;
+            margin: 10px 0;
+        }
+        
+        .final-combo {
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        .scoreboard-style-final,
+        .scoreboard-style-final * {
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
     `;
 
     document.head.appendChild(style);
@@ -1228,6 +1325,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (startBtn) {
         startBtn.onclick = async () => {
+            startBtn.disabled = true;
+            startBtn.style.opacity = "0.5";
+            startBtn.style.cursor = "not-allowed";
+
             resetScore();
             await startCountdownAndPlay();
         };
@@ -1238,5 +1339,6 @@ window.addEventListener("DOMContentLoaded", () => {
             window.stopMic();
         };
     }
+
 
 });
