@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,20 +6,34 @@
     <title>KaraBang Login</title>
     <link rel="stylesheet" href="CSS/login.css">
 </head>
+
 <body>
 
 <div id="topButtonBar">
-    <h1 id="webLogo">Kara<span>Bang</span></h1>
+
+    <a href="/login" id="webLogo">
+        <img
+                src="images/KaraBangLogoRetouched.png"
+                alt="KaraBang Logo"
+                class="logo-img"
+        >
+    </a>
 
     <div id="rightButtons">
+        <a href="/signup" class="navButton">Sign Up</a>
     </div>
+
 </div>
 
 <main class="login-wrapper">
 
     <section class="welcome-card">
         <h2>Welcome to Kara<span>Bang</span></h2>
-        <p>Sing your favorite songs, save liked music, and track your karaoke scores.</p>
+
+        <p>
+            Sing your favorite songs, track your karaoke scores,
+            and build your own music experience.
+        </p>
 
         <div class="mini-box">
             <h3>Popular Tonight</h3>
@@ -29,29 +44,53 @@
     </section>
 
     <section class="login-card">
+
         <h2>Welcome Back</h2>
-        <p class="small-text">Log in to continue your karaoke journey.</p>
+
+        <p class="small-text">
+            Login to continue your karaoke journey.
+        </p>
 
         <form id="loginForm">
+
             <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Enter username">
+
+            <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter username"
+                    required
+            >
 
             <label for="password">Password</label>
+
             <div class="password-wrapper">
-                <input type="password" id="password" placeholder="Enter password">
-                <button type="button" id="togglePassword">👁</button>
+
+                <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter password"
+                        required
+                >
+
+                <button type="button" id="togglePassword">
+                    👁
+                </button>
+
             </div>
 
             <button type="submit">Login</button>
+
         </form>
 
         <p id="loginMessage"></p>
 
         <div class="links">
-            <a href="/forgot">Forgot password?</a>
+            <a href="/forgotpassword">Forgot Password?</a>
             <span>|</span>
-            <a href="/signup">Create account</a>
+            <a href="/signup">Create Account</a>
         </div>
+
     </section>
 
 </main>
