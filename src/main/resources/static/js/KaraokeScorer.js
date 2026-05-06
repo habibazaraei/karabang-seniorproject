@@ -21,8 +21,8 @@ window.stopMic = () => {
 
 const TIERS = [
     { label: "PERFECT", maxSemitones: 0.5, points: 30, color: "#FFD700" },
-    { label: "GOOD", maxSemitones: 1.0, points: 20, color: "#4BA7FF" },
-    { label: "CLOSE",maxSemitones: 2.0, points: 10, color: "#6bff8e" },
+    { label: "GOOD", maxSemitones: 1.5, points: 20, color: "#4BA7FF" },
+    { label: "CLOSE",maxSemitones: 2.5, points: 10, color: "#6bff8e" },
     { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
 ];
 
@@ -65,6 +65,8 @@ let currentUser = null;
 onAuthStateChanged(auth, user => { currentUser = user; });
 // for final score screen retry
 let isRestarting = false;
+
+
 // ─── UI Elements ──────────────────────────────────────────────────────────────
 
 let scoreDisplay    = null;
@@ -251,7 +253,7 @@ function scoringTick() {
         if (currentCombo >= 50) multiplier = 10;     // Huge reward for 50+
         else if (currentCombo >= 25) multiplier = 5;
         else if (currentCombo >= 10) multiplier = 3;
-        else if (currentCombo >= 2)  multiplier = 200;
+        else if (currentCombo >= 2)  multiplier = 500;
 
         let pointsEarned = tier.points;
         // Make 'PERFECT' significantly better than others to reward accuracy
@@ -284,7 +286,10 @@ function resetScore() {
     currentCombo = 0;
     maxCombo = 0;
     consecutiveMisses = 0;
-    scoreDisplay.textContent = "0";
+    const scoreTextEl = document.getElementById("scoreText");
+    if (scoreTextEl) scoreTextEl.textContent = "0";
+    if (scoreDisplay) scoreDisplay.style.animation = "none";
+    if (scoreTextEl) scoreTextEl.style.animation = "none";
     resetScoreBar();
 }
 
@@ -409,6 +414,7 @@ async function toggleMic() {
  * scores/{songId}/entries/{userId}
  * Only saves if it's a new personal high score.
  */
+
 async function saveScoreToFirebase() {
     if (!currentUser) {
         console.warn("[KaraokeScorer] Not logged in — score not saved.");
@@ -596,6 +602,10 @@ function injectScoreboardStyles() {
             z-index: 9999;
             align-items: center;
             justify-content: center;
+            font-family: "LTKaraoke", sans-serif;
+        }
+        #scoreboardList {
+            font-family: "LTKaraoke", sans-serif;
         }
         #scoreboardPanel {
             position: fixed;
@@ -618,36 +628,82 @@ function injectScoreboardStyles() {
             color: white;
             font-size: 1.2rem;
         }
-        #closeScoreboardBtn {
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 1.1rem;
-            cursor: pointer;
+
+        #scoreboardEmail {
+            margin-top: 8px;
+        
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        
+            color: #ffffff;
+        
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        #closeScoreboardBtn:hover { color: #fff; }
         #scoreboardSongTitle {
             font-size: 0.85rem;
-            color: #4BA7FF;
+            color: #FFFFFF;
             margin-bottom: 16px;
         }
         .scoreboardEntry {
-            display: flex;
+            display: grid;
+            grid-template-columns: 40px 1fr 90px; 
             align-items: center;
-            gap: 12px;
+        
             padding: 10px 12px;
             border-radius: 8px;
             margin-bottom: 6px;
             background: rgba(255,255,255,0.05);
         }
+
         .scoreboardYou {
             background: rgba(75, 167, 255, 0.15);
             border: 1px solid #4BA7FF;
         }
-
-        .scoreboardRank { font-size: 1.2rem; min-width: 28px; }
-        .scoreboardName { flex: 1; color: #fff; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .scoreboardScore { font-weight: bold; color: #FFD700; font-size: 1rem; }
+        #scoreboardSongTitle {
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+        #closeScoreboardBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .scoreboardScore {
+            min-width: 90px;
+            text-align: center; 
+            font-weight: bold;
+            color: #FFD700;
+            font-size: 1rem;
+        }
+        #closeScoreboardBtn:hover {
+            color: #fff;
+        }
+        .scoreboardRank { font-size: 1.2rem; min-width: 28px; text-align: center;}
+        .scoreboardName {
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .scoreboardScore {
+            text-align: center;
+            font-weight: bold;
+            color: #FFD700;
+            font-size: 1rem;
+        }
         .scoreboardLoading, .scoreboardEmpty {
             text-align: center;
             color: #aaa;
@@ -656,9 +712,20 @@ function injectScoreboardStyles() {
         }
         #scoreboardYourBest {
             margin-top: 14px;
+            padding: 10px;
+        
             text-align: center;
-            font-size: 0.85rem;
-            color: #aaa;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #fff;
+
+            display: flex;
+            justify-content: center;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+        
+            align-items: center;
         }
         #pitchDisplay {
             width: 180px;
@@ -776,7 +843,7 @@ function initScorerUI() {
             </div>
         </div>
 
-        <span id="scoreDisplay">0</span>
+        <span id="scoreDisplay"><span id="scoreText">0</span></span>
     `;
 
     document.body.appendChild(panel);
@@ -798,7 +865,6 @@ function updateScorerUI(userHz, expectedHz) {
 
     // Update the visual bar and text
     updateScoreBar(pct);
-    scoreDisplay.textContent = totalScore.toLocaleString();
 
     // Update Pitch Display
     if (pitchDisplay) {
@@ -811,6 +877,8 @@ function updateScorerUI(userHz, expectedHz) {
 
     // 4. Update Combo UI
     const comboEl = document.getElementById("comboDisplay");
+    const scoreEl = document.getElementById("scoreDisplay");
+
     if (comboEl) {
         if (currentCombo > 1) {
             comboEl.textContent = `Combo ${currentCombo}x`;
@@ -818,6 +886,35 @@ function updateScorerUI(userHz, expectedHz) {
             comboEl.style.opacity = "1";
         } else {
             comboEl.style.opacity = "0";
+        }
+    }
+
+    const scoreTextEl = document.getElementById("scoreText");
+    if (scoreTextEl) scoreTextEl.textContent = totalScore.toLocaleString();
+
+    if (scoreEl) {
+        void scoreEl.offsetWidth;
+        if (currentCombo >= 25) {
+            scoreEl.style.animation = "scoreShakeLg 0.1s linear infinite";
+        } else if (currentCombo >= 10) {
+            scoreEl.style.animation = "scoreShakeMd 0.15s linear infinite";
+        } else if (currentCombo >= 2) {
+            scoreEl.style.animation = "scoreShakeSm 0.2s linear infinite";
+        } else {
+            scoreEl.style.animation = "none";
+        }
+    }
+
+    if (scoreTextEl) {
+        void scoreTextEl.offsetWidth;
+        if (currentCombo >= 25) {
+            scoreTextEl.style.animation = "textShakeLg 0.13s linear infinite";
+        } else if (currentCombo >= 10) {
+            scoreTextEl.style.animation = "textShakeMd 0.18s linear infinite";
+        } else if (currentCombo >= 2) {
+            scoreTextEl.style.animation = "textShakeSm 0.25s linear infinite";
+        } else {
+            scoreTextEl.style.animation = "none";
         }
     }
 }
@@ -1028,6 +1125,21 @@ function injectScorerStyles() {
             left: 50%;
             transform: translateX(-40%);
         }
+        @keyframes textShakeSm {
+            0%,100% { transform: translate(0,0); }
+            25%     { transform: translate(-1px, 1px); }
+            75%     { transform: translate(1px, -1px); }
+        }
+        @keyframes textShakeMd {
+            0%,100% { transform: translate(0,0); }
+            25%     { transform: translate(-3px, 2px); }
+            75%     { transform: translate(3px, -2px); }
+        }
+        @keyframes textShakeLg {
+            0%,100% { transform: translate(0,0); }
+            25%     { transform: translate(-6px, 3px); }
+            75%     { transform: translate(6px, -3px); }
+        }
     `;
 
     document.head.appendChild(style);
@@ -1045,36 +1157,37 @@ function updateScoreBar(pct) {
     fill.style.width = safePct + "%";
 
     const glassShine = `linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%)`;
-    const stripes = `linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent)`;
+    const stripes = `repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.18) 0px,
+        rgba(255,255,255,0.18) 10px,
+        transparent 10px,
+        transparent 20px
+    )`;
 
     if (safePct >= 95) {
-        const rainbow = `linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)`;
+        const rainbow = `linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet, red)`;
         fill.style.backgroundImage = `${glassShine}, ${stripes}, ${rainbow}`;
-        fill.style.backgroundSize = `100% 100%, 20px 20px, 100% 100%`;
-
-        fill.style.animation = "rainbowGlowWithFlow 2s linear infinite";
+        fill.style.backgroundSize = `100% 100%, 20px 20px, 300% 100%`;
+        fill.style.animation = "exRainbowShift 2s linear infinite";
         return;
     }
 
-    // Build standard rank gradient
     const sortedRanks = [...Ranks].filter(r => r.min < 95).sort((a, b) => a.min - b.min);
     let gradientParts = [];
     for (let i = 0; i < sortedRanks.length; i++) {
         const current = sortedRanks[i];
-        const next = sortedRanks[i+1];
+        const next = sortedRanks[i + 1];
         gradientParts.push(`${current.color} ${current.min}%`);
         if (next) gradientParts.push(`${current.color} ${next.min}%`);
-        else gradientParts.push(`${current.color} 100%`);
+        else       gradientParts.push(`${current.color} 100%`);
     }
 
     const totalWidth = bar.offsetWidth;
     const rankGradient = `linear-gradient(to right, ${gradientParts.join(', ')})`;
-
     fill.style.backgroundImage = `${glassShine}, ${stripes}, ${rankGradient}`;
     fill.style.backgroundSize = `100% 100%, 20px 20px, ${totalWidth}px 100%`;
-
-    // Apply the stripe flow animation
-    fill.style.animation = "stripeFlow 1s linear infinite";
+    fill.style.animation = "barberSpin 1.6s linear infinite";
 }
 function resetScoreBar() {
     const fill = document.getElementById("scoreBarFill");

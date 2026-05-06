@@ -582,7 +582,6 @@ button:active {
 }
 
 
-
 .settingsRow {
     display: flex;
     justify-content: space-between;
@@ -652,4 +651,45 @@ button:active {
 
 .colorOption.active {
     border: 2px solid white;
+}
+@keyframes exRainbowShift {
+    0% {
+        filter: hue-rotate(0deg);
+        background-position: 0% 50%;
+    }
+    100% {
+        filter: hue-rotate(360deg);
+        background-position: 200% 50%;
+    }
+}
+@keyframes barberSpin {
+    0%   { background-position: 0 0, 0 0,   0 0; }
+    100% { background-position: 0 0, 40px 0, 0 0; }
+}
+@keyframes scoreShake {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    20%  { transform: translate(-var(--shake), 0) rotate(-1deg); }
+    40%  { transform: translate(var(--shake), 0) rotate(1deg); }
+    60%  { transform: translate(-var(--shake), 0) rotate(-1deg); }
+    80%  { transform: translate(var(--shake), 0) rotate(1deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+#scoreDisplay.shaking {
+    animation: scoreShake 0.15s linear infinite;
+}
+@keyframes scoreShakeSm {
+    0%,100% { transform: translate(0,0) rotate(0deg); }
+    25%     { transform: translate(-2px, 1px) rotate(-0.5deg); }
+    75%     { transform: translate(2px, -1px) rotate(0.5deg); }
+}
+@keyframes scoreShakeMd {
+    0%,100% { transform: translate(0,0) rotate(0deg); }
+    25%     { transform: translate(-5px, 2px) rotate(-1deg); }
+    75%     { transform: translate(5px, -2px) rotate(1deg); }
+}
+@keyframes scoreShakeLg {
+    0%,100% { transform: translate(0,0) rotate(0deg); }
+    25%     { transform: translate(-10px, 4px) rotate(-2deg); }
+    75%     { transform: translate(10px, -4px) rotate(2deg); }
 }
