@@ -53,15 +53,15 @@
   0% {
     transform: translate(-50%, -50%) scale(0.2);
     opacity: 0;
-    border-width: 3px; /* Thick at the start */
+    border-width: 3px;
   }
   20% {
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.5); /* Don't scale too huge or it blurs */
+    transform: translate(-50%, -50%) scale(2.5);
     opacity: 0;
-    border-width: 0.5px; /* Thins out as it expands */
+    border-width: 0.5px;
   }
 }
 /* Body */

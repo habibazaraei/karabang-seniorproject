@@ -34,6 +34,8 @@ let closeSettingsBtn = document.getElementById("closeSettingsBtn");
 let fontSizeSlider = document.getElementById("fontSizeSlider");
 let subtitle = document.getElementById("subtitle");
 let saveTimeout;
+const resetPrefsBtn = document.getElementById("resetPrefsBtn");
+
 
 let lyricColor = "#FFD700";
 audio.volume = 0.5
@@ -75,6 +77,7 @@ onAuthStateChanged(auth, async (user) => {
         }
     }
 });
+
 async function savePreferences() {
     if (!currentUser) return;
 
@@ -83,6 +86,12 @@ async function savePreferences() {
         fontSize: fontSize,
         lyricColor: lyricColor
     }, { merge: true });
+}
+// reset settings
+if (resetPrefsBtn) {
+    resetPrefsBtn.addEventListener("click", () => {
+        resetPreferences();
+    });
 }
 //setting menu
 if (settingsButton && settingsModal && closeSettingsBtn && fontSizeSlider && subtitle) {
@@ -129,7 +138,23 @@ const colors = [
     "#FF8C4D", // orange
     "#FF4DD2", // pink
     "#00E6E6", // cyan
-    "#A0A0A0"  // gray
+    "#A0A0A0", // gray
+    "#FFADAD", // Soft Red
+    "#FFD6A5", // Sunset Peach
+    "#FDFFB6", // Pale Lemon
+    "#CAFFBF", // Mint Green
+    "#9BFBC0", // Seafoam
+    "#A0C4FF", // Sky Blue
+    "#BDB2FF", // Lavender
+    "#FFC6FF", // Bubblegum
+    "#FF00FF", // Neon Magenta
+    "#39FF14", // Electric Lime
+    "#00FFFF", // Cyan Ice
+    "#FF3131", // Radical Red
+    "#8A2BE2", // Blue Violet
+    "#FFFF33", // Neon Yellow
+    "#FF5F1F", // Neon Orange
+    "#BC13FE", // Deep Mauve
 ];
 
 const picker = document.getElementById("lyricColorPicker");
@@ -192,13 +217,6 @@ window.addEventListener("click", (e) => {
 volume.oninput = () => {
     audio.volume = volume.value / 100;
 
-    if(audio.volume === 0){
-        volumeIcon.src = "/images/mute_icon.svg"
-    } else if(audio.volume <= 0.5){
-        volumeIcon.src = "/images/volume_low_icon.svg"
-    } else {
-        volumeIcon.src = "/images/volume_high_icon.svg"
-    }
     updateVolumeUI();
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(savePreferences, 200);
@@ -407,6 +425,13 @@ function renderKaraoke(words, currentTime) {
 }
 // Updates the volume bar when starting a song
 function updateVolumeUI() {
+    if(audio.volume === 0){
+        volumeIcon.src = "/images/mute_icon.svg"
+    } else if(audio.volume <= 0.5){
+        volumeIcon.src = "/images/volume_low_icon.svg"
+    } else {
+        volumeIcon.src = "/images/volume_high_icon.svg"
+    }
     const percent = (audio.volume * 100);
     volume.style.background = `linear-gradient(to right, #4BA7FF ${percent}%, #FFFFFF ${percent}%)`;
 }
@@ -543,3 +568,27 @@ function applyGenreTheme(genre) {
     bottomBar.style.backgroundImage = `url("${bottomImg}")`;
 }
 
+async function resetPreferences() {
+    if (!currentUser) return;
+
+    // default values
+    audio.volume = 0.5;
+    volume.value = 50;
+
+    fontSize = 5;
+    subtitle.style.fontSize = fontSize + "vw";
+    fontSizeSlider.value = fontSize;
+    fontSizeLabel.textContent = fontSize;
+
+    lyricColor = "#FFD700";
+
+    updateVolumeUI();
+    refreshColorPickerUI();
+
+    // clear Firebase saved settings
+    await setDoc(doc(db, "users", currentUser.uid, "preferences", "settings"), {
+        volume: 0.5,
+        fontSize: 5,
+        lyricColor: "#FFD700"
+    }, { merge: true });
+}
