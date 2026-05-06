@@ -25,7 +25,7 @@ html, body {
 }
 
 body {
-    background: url("../images/purple_song_selection_background.svg") no-repeat center fixed;
+    background: url("../images/purple_song_selection_background.png") no-repeat center fixed;
     background-size: cover;
     color: white;
 }
@@ -39,9 +39,9 @@ body {
 }
 
 #webLogo {
-    font-family: "VarelaRound", sans-serif;
-    font-size: 2rem;
-    color: white;
+        height: 45px;
+      width: auto;
+
 }
 
 #webLogo span {
@@ -121,6 +121,51 @@ body {
     color: white;
 }
 
+/* ── Top Scores List ────────────────────────────────── */
+.score-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+
+.score-entry:hover {
+    background: #17094E;
+    border-color: white;
+}
+
+.score-entry-rank {
+    font-size: 1rem;
+    color: #ff5252;
+    min-width: 28px;
+}
+
+.score-entry-info {
+    flex: 1;
+}
+
+.score-entry-info h3 {
+    font-size: 1.05rem;
+    color: white;
+    margin-bottom: 3px;
+}
+
+.score-entry-info p {
+    font-size: 0.85rem;
+    color: #dcd7ff;
+}
+
+.score-entry-score {
+    font-size: 1.2rem;
+    color: #a78bfa;
+    font-weight: bold;
+}
+
+/* ── Profile Card ───────────────────────────────────── */
 .profile-card {
     min-height: 620px;
     text-align: center;
@@ -222,6 +267,7 @@ body {
     background: #6f58c9;
 }
 
+/* ── Liked Songs Card ───────────────────────────────── */
 .liked-card {
     min-height: 520px;
 }

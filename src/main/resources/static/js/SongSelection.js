@@ -1,3 +1,7 @@
+//SongSelection.js
+//@Author Jason
+//@Editor Tyler
+
 import { db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut } from './firebase.js';
 
 let songList = document.getElementById("songList")
@@ -743,7 +747,7 @@ function addSongCard(listToRender){
                     <span class="genre">${song.genre}</span>
                     <span class="languageText">${song.language}</span>
                 </div>
-                
+
             </div>
         `;
         if (!song.isPlaceholder) {
@@ -1023,6 +1027,11 @@ singButtonSecondary.onclick = () => {
     if (!selectedSong) return;
     window.location.href = "/musicplayerplay?song=" + selectedSong.id;
 };
+singButtonVS.onclick = () => {
+    if (!selectedSong) return;
+    window.location.href = "/musicplayervs?song=" + selectedSong.id;
+};
+
 
 
 

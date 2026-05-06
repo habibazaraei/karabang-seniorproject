@@ -8,8 +8,7 @@
 <body>
 
 <div id="topButtonBar">
-    <h1 id="webLogo">Kara<span>Bang</span></h1>
-
+    <img id="webLogo" src="images/KaraBangLogoRetouched.png" alt="KaraBang">
     <div id="rightButtons">
         <button class="navButton" onclick="goToSongs()">Songs</button>
         <button class="navButton" onclick="logout()">Logout</button>
@@ -18,30 +17,15 @@
 
 <main class="profile-wrapper">
 
+    <!-- TOP SCORES -->
     <section class="card scoreboard-card">
-        <h2>Scoreboard</h2>
-
-        <div class="score-box">
-            <p>Total Songs Sung</p>
-            <h3>24</h3>
-        </div>
-
-        <div class="score-box">
-            <p>Highest Score</p>
-            <h3>98%</h3>
-        </div>
-
-        <div class="score-box">
-            <p>Average Score</p>
-            <h3>91%</h3>
-        </div>
-
-        <div class="score-box">
-            <p>Current Rank</p>
-            <h3>Karaoke Star</h3>
+        <h2>Top Scores</h2>
+        <div id="topScoresList">
+            <p style="color:#dcd7ff;font-size:0.95rem;">Loading scores...</p>
         </div>
     </section>
 
+    <!-- PROFILE -->
     <section class="card profile-card">
         <div class="profile-pic">
             <img id="profileImage" src="images/default-profile.png" alt="Profile picture">
@@ -50,9 +34,9 @@
         <input type="file" id="pfpUpload" accept="image/*" hidden>
         <button id="uploadPicBtn">Upload Picture</button>
 
-        <h2 id="usernameDisplay">KaraBang User</h2>
+        <h2 id="usernameDisplay">Loading...</h2>
         <p class="member-text">KaraBang Member</p>
-        <p class="genre-text">Favorite Genre: <span id="genreDisplay">Pop</span></p>
+        <p class="genre-text">Favorite Genre: <span id="genreDisplay">—</span></p>
 
         <div class="profile-form">
             <label for="usernameInput">Change Username</label>
@@ -68,35 +52,20 @@
             </select>
 
             <button id="saveProfileBtn">Save Profile</button>
+            <p id="saveStatus" style="color:#a0f0a0;font-size:0.9rem;text-align:center;min-height:20px;"></p>
         </div>
     </section>
 
+    <!-- LIKED SONGS -->
     <section class="card liked-card">
         <h2>Liked Songs</h2>
-
-        <div class="liked-song-text">
-            <h3>Blinding Lights</h3>
-            <p>The Weeknd</p>
-        </div>
-
-        <div class="liked-song-text">
-            <h3>Anti-Hero</h3>
-            <p>Taylor Swift</p>
-        </div>
-
-        <div class="liked-song-text">
-            <h3>Levitating</h3>
-            <p>Dua Lipa</p>
-        </div>
-
-        <div class="liked-song-text">
-            <h3>Die With A Smile</h3>
-            <p>Lady Gaga & Bruno Mars</p>
+        <div id="likedSongsList">
+            <p style="color:#dcd7ff;font-size:0.95rem;">Loading liked songs...</p>
         </div>
     </section>
 
 </main>
 
-<script src="JS/profilepage.js"></script>
+<script type="module" src="JS/profilepage.js"></script>
 </body>
 </html>

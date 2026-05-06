@@ -1,0 +1,382 @@
+/* ── Battle Layout ─────────────────────────────────── */
+#battleUI {
+    position: absolute;
+    top: 6%;
+    left: 0;
+    width: 100%;
+    height: 88%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* ── Player Panels ─────────────────────────────────── */
+.playerPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 6px 16px;
+    box-sizing: border-box;
+    gap: 4px;
+}
+
+#p1Panel {
+    border-bottom: 2px solid rgba(255,255,255,0.15);
+}
+
+/* ── Player Header (name + score) ──────────────────── */
+.playerHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.playerLabel {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+#p1Label {
+    background: rgba(75, 167, 255, 0.25);
+    border: 1px solid #4BA7FF;
+    color: #4BA7FF;
+}
+
+#p2Label {
+    background: rgba(255, 107, 107, 0.25);
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+}
+
+.playerScore {
+    font-family: "LTKaraoke", monospace;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 8px;
+    min-width: 100px;
+    text-align: center;
+}
+
+.playerPitch {
+    font-size: 0.75rem;
+    color: #aaa;
+    flex: 1;
+    text-align: center;
+}
+
+/* ── Score Bar ─────────────────────────────────────── */
+.battleScoreBar {
+    position: relative;
+    height: 16px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid #333;
+    overflow: visible;
+}
+
+.battleScoreBarFill {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    transition: width 0.1s linear;
+}
+
+#p1BarFill {
+    background: linear-gradient(to right, #1a6bbf, #4BA7FF, #7dd4ff);
+}
+
+#p2BarFill {
+    background: linear-gradient(to right, #8b0000, #ff6b6b, #ffaaaa);
+}
+
+/* Rank markers on bar */
+.battleRankMarker {
+    position: absolute;
+    top: -8px;
+    width: 3px;
+    height: 30px;
+    background: #808080;
+    z-index: 5;
+    transform: translateX(-50%);
+    overflow: visible;
+}
+
+.battleRankImg {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: auto;
+    display: block;
+}
+
+.battleRankMarker.rank-ex .battleRankImg {
+    width: 50px;
+    transform: translateX(-40%);
+}
+
+
+/* ── Divider / VS Label ────────────────────────────── */
+#vsDivider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#vsLabel {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background: rgba(123, 39, 245, 0.7);
+    border: 1px solid #7b27f5;
+    padding: 2px 16px;
+    border-radius: 20px;
+    z-index: 2;
+}
+
+/* ── Lyrics center zone ────────────────────────────── */
+#subtitle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    text-align: center;
+    font-size: 4vw;
+    z-index: 10;
+    line-height: 1.2em;
+    pointer-events: none;
+}
+
+/* ── Mic selector overlay ──────────────────────────── */
+#micSelectOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+#micSelectPanel {
+    background: rgba(123, 39, 245, 0.85);
+    border: 1px solid #7b27f5;
+    border-radius: 20px;
+    padding: 36px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    max-width: 500px;
+    width: 90%;
+}
+
+#micSelectPanel h2 {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 1.8rem;
+    color: white;
+    margin: 0;
+}
+
+.micRow {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.micRow label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+#p1MicLabel {
+    background: rgba(75,167,255,0.25);
+    border: 1px solid #4BA7FF;
+    color: #4BA7FF;
+}
+
+#p2MicLabel {
+    background: rgba(255,107,107,0.25);
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+}
+
+.micRow select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #555;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 0.9rem;
+}
+
+#confirmMicsBtn {
+    padding: 12px 40px;
+    font-size: 1.1rem;
+    border-radius: 999px;
+    border: 1px solid #4BA7FF;
+    background: rgba(75,167,255,0.3);
+    color: white;
+    cursor: pointer;
+    font-family: "LTKaraoke", sans-serif;
+    transition: background 0.2s;
+}
+
+#confirmMicsBtn:hover {
+    background: rgba(75,167,255,0.6);
+}
+
+/* ── Winner Screen ─────────────────────────────────── */
+#winnerOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 99998;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#winnerPanel {
+    background: rgba(123, 39, 245, 0.85);
+    border: 1px solid #7b27f5;
+    border-radius: 24px;
+    padding: 48px 60px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: fadeInScale 0.5s ease-out forwards;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+#winnerTitle {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 3vw;
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255,215,0,0.5);
+}
+
+#winnerName {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 5vw;
+    font-weight: bold;
+    color: white;
+}
+
+.winnerScoreRow {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.winnerScoreCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.3);
+}
+
+.winnerScoreCard .wLabel {
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.winnerScoreCard .wScore {
+    font-family: "LTKaraoke", monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+}
+
+#p1ScoreCard .wLabel { color: #4BA7FF; }
+#p2ScoreCard .wLabel { color: #ff6b6b; }
+
+.winnerBtns {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.winnerBtn {
+    padding: 12px 32px;
+    font-size: 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: "LTKaraoke", sans-serif;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.winnerBtn:hover { transform: scale(1.05); }
+
+.winnerBtn.primary {
+    background: #4BA7FF;
+    color: white;
+    border: none;
+}
+
+.winnerBtn.secondary {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+/* ── Tier float layer ──────────────────────────────── */
+#tierFloatLayer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20000;
+}
+
+/* ── Per-player lyric subtitles ────────────────────────────── */
+.battleSubtitle {
+    width: 100%;
+    text-align: center;
+    font-size: 2.5vw;
+    line-height: 1.2em;
+    pointer-events: none;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.2em;
+    padding: 4px 0;
+}
