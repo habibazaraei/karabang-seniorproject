@@ -179,7 +179,7 @@
     "lyricsPath": "/lyrics/LoveStory.lrc",
     "artCoverPath": "/artCover/loveStoryArtCover.jpg",
     "songTeaserPath": "/teaser/loveStoryTeaser.mp3",
-    "pitchesPath": null
+    "pitchesPath": "/audio/loveStory_pitches.json"
   },
   {
     "id": 26,
