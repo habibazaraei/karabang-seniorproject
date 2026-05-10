@@ -87,6 +87,7 @@ body {
     height: clamp(21px, 3vh, 42px);
 }
 
+
 #volumeButton img,
 #volumeButton .volumeSVG {
     width: clamp(21px, 3vh, 42px);

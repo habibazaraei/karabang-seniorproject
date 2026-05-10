@@ -357,14 +357,14 @@ export async function restartSong() {
     const audio = document.getElementById("audio");
     const subtitle = document.getElementById("subtitle");
     const progress = document.getElementById("progress");
-    const overlay = document.getElementById("karaokeStartOverlay");
-    const startText = document.getElementById("startText");
+    const micOverlay = document.getElementById("micSelectOverlay");
+    const bottomBar = document.getElementById("bottomBar");
 
+    // Set flag BEFORE stopMic so the final score screen doesn't fire
+    isRestarting = true;
     stopMic();
     clearInterval(scoringInterval);
     scoringActive = false;
-
-    resetScore();
 
     audio.pause();
     audio.currentTime = 0;
@@ -372,19 +372,34 @@ export async function restartSong() {
     if (subtitle) subtitle.innerHTML = "";
     if (progress) progress.style.width = "0%";
 
-    overlay.style.display = "flex";
-    startText.textContent = "READY";
-
-    setMicButton(false);
-    const scorer = document.getElementById("scorerPanel");
-    if (scorer) scorer.style.display = "flex";
+    resetScore();
+    resetScoreBar();
     restoreGameUI();
-    const startBtn = document.getElementById("startKaraokeBtn");
-    if (startBtn) {
-        startBtn.disabled = false;
-        startBtn.style.opacity = "1";
-        startBtn.style.cursor = "pointer";
+
+    // Reset the mic overlay UI back to its original state
+    const micTitle    = document.getElementById("micPanelTitle");
+    const micRow      = document.querySelector("#micSelectPanel .micRow");
+    const confirmBtn  = document.getElementById("confirmMicsBtn");
+    const countdownEl = document.getElementById("micCountdown");
+
+    if (micTitle)    micTitle.style.display    = "block";
+    if (micRow)      micRow.style.display      = "flex";
+    if (confirmBtn) {
+        confirmBtn.style.display  = "block";
+        confirmBtn.disabled       = false;
+        confirmBtn.style.opacity  = "1";
     }
+    if (countdownEl) countdownEl.style.display = "none";
+
+    // Lock bottom bar and show the mic overlay again
+    if (bottomBar)   bottomBar.style.pointerEvents = "none";
+    if (micOverlay)  micOverlay.style.display      = "flex";
+
+    // Pre-select the previously chosen mic so it's not a blank choice
+    const sel = document.getElementById("micSelectSingle");
+    if (sel && selectedMicId) sel.value = selectedMicId;
+
+    isRestarting = false;
 }
 window.addEventListener("DOMContentLoaded", () => {
     window.KaraokeScorer = window.KaraokeScorer || {};
@@ -994,118 +1009,359 @@ function flashTier(tier) {
 }
 
 function showFinalScore() {
-
     const targetScore = 100000;
     const pct = Math.round((totalScore / targetScore) * 100);
 
-    let grade, color, isRainbow = false;
+    let grade;
+    if (pct >= 95)      grade = "EX+";
+    else if (pct >= 88) grade = "A";
+    else if (pct >= 80) grade = "B";
+    else if (pct >= 70) grade = "C";
+    else if (pct >= 60) grade = "D";
+    else                grade = "F";
 
-    // 2. Logic to determine Rank based on the new percentage
-    if (pct >= 95) { grade = "EX+"; color = "#FFD700"; isRainbow = true; }
-    else if (pct >= 88) { grade = "A"; color = "#4BA7FF"; }
-    else if (pct >= 80) { grade = "B"; color = "#6bff8e"; }
-    else if (pct >= 70) { grade = "C"; color = "#f0c040"; }
-    else if (pct >= 60) { grade = "D"; color = "#f0c040"; }
-    else if (pct >= 50) { grade = "F"; color = "#f0c040"; }
-    else { grade = "F"; color = "#ff6b6b"; }
-
-    // Hide UI Bars
-
-    const topBar = document.querySelector(".top-bar") || document.getElementById("topBar");
+    // Hide game UI
+    const topBar    = document.querySelector(".top-bar") || document.getElementById("topBar");
     const bottomBar = document.getElementById("bottomBar");
-    if (topBar) topBar.style.display = "none";
+    const scorer    = document.getElementById("scorerPanel");
+    if (topBar)    topBar.style.display    = "none";
     if (bottomBar) bottomBar.style.display = "none";
+    if (scorer)    scorer.style.display    = "none";
 
-
-    const scorer = document.getElementById("scorerPanel");
-    if (scorer) scorer.style.display = "none";
+    const gradeImgMap = {
+        "EX+": "/images/TierEX.png",
+        "A":   "/images/TierA.png",
+        "B":   "/images/TierB.png",
+        "C":   "/images/TierC.png",
+        "D":   "/images/TierD.png",
+        "F":   "/images/TierF.png",
+    };
 
     const sub = document.getElementById("subtitle");
-    if (sub) {
+    if (!sub) return;
 
-        const gradeImgMap = {
-            "EX+": "/images/TierEX.png",
-            "A": "/images/TierA.png",
-            "B": "/images/TierB.png",
-            "C": "/images/TierC.png",
-            "D": "/images/TierD.png",
-            "F": "/images/TierF.png"
-        };
+    sub.innerHTML = `
+        <div class="scoreboard-style-final">
+            <div class="final-header"><span>🏆 Results</span></div>
 
-        const gradeImg = gradeImgMap[grade];
+            <div class="final-score">
+                <span id="finalScoreText">0</span>
+            </div>
 
-        sub.innerHTML = `
-            <div class="scoreboard-style-final">
-                <div class="final-header">
-                    <span>🏆 Results</span>
-                </div>
-            
-                <div class="final-score">
-                    <span id="finalScoreText">0</span>
-                </div>
-            
-                <div class="final-grade">
-                    <img src="${gradeImg}" class="final-grade-img">
-                </div>
-            
-                <div class="final-combo">
-                    Best Combo: ${maxCombo}x
-                </div>
-            
-                <div class="results-actions">
-                    <button id="retryBtn" class="scoreboard-btn">Retry</button>
-                    <button id="backBtn" class="scoreboard-btn secondary">Back</button>
+            <div class="final-rank-bar-wrapper">
+                <!-- Rank zone labels -->
+            <div class="final-rank-labels">
+                <img src="/images/TierF.png"  class="rbl-img rbl-img-f" style="left:0%">
+                <img src="/images/TierD.png"  class="rbl-img rbl-img-d" style="left:60%">
+                <img src="/images/TierC.png"  class="rbl-img" style="left:70%">
+                <img src="/images/TierB.png"  class="rbl-img" style="left:80%">
+                <img src="/images/TierA.png"  class="rbl-img" style="left:88%">
+                <img src="/images/TierEX.png" class="rbl-img rbl-img-ex" style="left:95%">
+            </div>
+
+                <!-- The bar track -->
+                <div class="final-rank-track">
+                    <div id="finalRankFill" class="final-rank-fill"></div>
+
+                    <!-- Divider lines -->
+                    <div class="frb-divider" style="left:60%"></div>
+                    <div class="frb-divider" style="left:70%"></div>
+                    <div class="frb-divider" style="left:80%"></div>
+                    <div class="frb-divider" style="left:88%"></div>
+                    <div class="frb-divider" style="left:95%"></div>
+
+                    <!-- Marker that slides to your position -->
+                    <div id="finalRankMarker" class="final-rank-marker"></div>
                 </div>
             </div>
-`;
-        animateFinalScore(totalScore);
 
-        document.getElementById("retryBtn").onclick = async () => {
-            isRestarting = true;
+            <!-- Rank badge, hidden until bar finishes -->
+            <div id="finalGradeBadge" class="final-grade-badge" style="opacity:0;">
+                <img id="finalGradeImg"
+                     src="${gradeImgMap[grade]}"
+                     class="final-grade-img-result ${grade === 'EX+' ? 'ex-grade' : ''}">
+            </div>
 
-            sub.innerHTML = "";
+            <div class="final-combo">Best Combo: ${maxCombo}x</div>
 
-            await restartSong();
+            <div class="results-actions">
+                <button id="retryBtn" class="scoreboard-btn">Retry</button>
+                <button id="backBtn"  class="scoreboard-btn secondary">Back</button>
+            </div>
+        </div>
+    `;
 
+    // Inject final screen styles
+    injectFinalScoreStyles();
 
-            isRestarting = false;
+    // Run animations in sequence
+    animateFinalScore(totalScore, () => {
+        animateFinalRankBar(pct, grade, gradeImgMap);
+    });
 
-            const overlay = document.getElementById("karaokeStartOverlay");
-            if (overlay) overlay.style.display = "flex";
-        };
-        document.getElementById("backBtn").onclick = () => {
-            const params = new URLSearchParams(window.location.search);
-            const songId = params.get("song");
+    document.getElementById("retryBtn").onclick = async () => {
+        isRestarting = true;
+        sub.innerHTML = "";
+        await restartSong();
+        isRestarting = false;
+    };
 
-            window.location.href = `/songselection?song=${songId}`;
-        };
-    }
+    document.getElementById("backBtn").onclick = () => {
+        const p = new URLSearchParams(window.location.search);
+        window.location.href = `/songselection?song=${p.get("song")}`;
+    };
 }
-function animateFinalScore(target) {
-    const el = document.getElementById("finalScoreText");
-    if (!el) return;
 
-    let current = 0;
-    const duration = 1200; // ms
+// Counts up the score, then calls onDone when finished
+function animateFinalScore(target, onDone) {
+    const el = document.getElementById("finalScoreText");
+    if (!el) { onDone?.(); return; }
+
+    const duration  = 1200;
     const startTime = performance.now();
 
     function update(now) {
         const progress = Math.min((now - startTime) / duration, 1);
-
-        // ease-out curve (smooth slowdown)
-        const eased = 1 - Math.pow(1 - progress, 3);
-
-        current = Math.floor(target * eased);
-        el.textContent = current.toLocaleString();
+        const eased    = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(target * eased).toLocaleString();
 
         if (progress < 1) {
             requestAnimationFrame(update);
         } else {
             el.textContent = target.toLocaleString();
+            onDone?.();
         }
     }
 
     requestAnimationFrame(update);
+}
+
+function animateFinalRankBar(pct, grade, gradeImgMap) {
+    const fill   = document.getElementById("finalRankFill");
+    const marker = document.getElementById("finalRankMarker");
+    const badge  = document.getElementById("finalGradeBadge");
+    if (!fill || !marker || !badge) return;
+
+    const safePct   = Math.min(pct, 100);
+    const duration  = 1400;
+    const startTime = performance.now();
+
+    const glassShine = `linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%)`;
+    const stripes    = `repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.18) 0px, rgba(255,255,255,0.18) 10px,
+        transparent 10px, transparent 20px
+    )`;
+
+    const isEX = safePct >= 95;
+
+    // Build background layers once
+    function applyBackground(trackWidth) {
+        if (isEX) {
+            const rainbow = `linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet, red)`;
+            fill.style.backgroundImage = `${glassShine}, ${stripes}, ${rainbow}`;
+            fill.style.backgroundSize  = `100% 100%, 20px 20px, 300% 100%`;
+        } else {
+            const sortedRanks = [...Ranks].filter(r => r.min < 95).sort((a, b) => a.min - b.min);
+            const gradientParts = [];
+            for (let i = 0; i < sortedRanks.length; i++) {
+                const r    = sortedRanks[i];
+                const next = sortedRanks[i + 1];
+                gradientParts.push(`${r.color} ${r.min}%`);
+                gradientParts.push(`${r.color} ${next ? next.min : 100}%`);
+            }
+            const rankGradient = `linear-gradient(to right, ${gradientParts.join(", ")})`;
+            fill.style.backgroundImage = `${glassShine}, ${stripes}, ${rankGradient}`;
+            fill.style.backgroundSize  = `100% 100%, 20px 20px, ${trackWidth}px 100%`;
+        }
+    }
+
+    const trackWidth = fill.parentElement?.offsetWidth ?? 400;
+    applyBackground(trackWidth);
+
+    // Start state
+    fill.style.width      = "0%";
+    marker.style.left     = "0%";
+    marker.style.opacity  = "0";
+    badge.style.transform = "scale(0.5)";
+
+    // fill animation
+    function step(now) {
+        const elapsed  = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased    = 1 - Math.pow(1 - progress, 2.5);
+        const current  = eased * safePct;
+
+        fill.style.width         = current + "%";
+        marker.style.left        = current + "%";
+        marker.style.opacity     = "1";
+
+        // Scroll stripes during fill
+        if (isEX) {
+            fill.style.backgroundPosition = `0 0, 0 0, ${-(elapsed / 2000) * 300}% 0`;
+        } else {
+            const offset = (elapsed / 1000) * 40;
+            fill.style.backgroundPosition = `0 0, ${offset}px 0, 0 0`;
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            // Lock fill at final width
+            fill.style.width  = safePct + "%";
+            marker.style.left = safePct + "%";
+            marker.classList.add("marker-bounce");
+
+
+            const loopStart = performance.now();
+
+            const offsetAtEnd = (duration / 1000) * 40;
+
+            function stripeLoop(now) {
+                const loopElapsed = now - loopStart;
+
+                if (isEX) {
+                    // Rainbow shift keeps scrolling
+                    fill.style.backgroundPosition =
+                        `0 0, 0 0, ${-((duration + loopElapsed) / 2000) * 300}% 0`;
+                } else {
+                    // Barber-pole stripes keep scrolling
+                    const offset = offsetAtEnd + (loopElapsed / 1000) * 40;
+                    fill.style.backgroundPosition = `0 0, ${offset}px 0, 0 0`;
+                }
+
+                requestAnimationFrame(stripeLoop);
+            }
+            requestAnimationFrame(stripeLoop);
+
+            // Pop badge after marker bounce
+            setTimeout(() => {
+                badge.style.transition = "opacity 0.3s ease, transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)";
+                badge.style.opacity    = "1";
+                badge.style.transform  = "scale(1)";
+            }, 400);
+        }
+    }
+
+    requestAnimationFrame(step);
+}
+
+function injectFinalScoreStyles() {
+    if (document.getElementById("finalScoreStyles")) return;
+    const style = document.createElement("style");
+    style.id = "finalScoreStyles";
+    style.textContent = `
+        .final-rank-bar-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .final-rank-labels {
+            position: relative;
+            width: 100%;
+            height: 36px;
+            font-family: "LTKaraoke", sans-serif;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .rbl-img {
+            position: absolute;
+            width: 20px;
+            height: auto;
+            transform: translateX(-50%);
+            user-select: none;
+            bottom: 0;
+        }
+        .rbl-img-f {
+            transform: translateX(-30%);
+        }
+        .rbl-img-d {
+            transform: translateX(-40%);
+        }
+        .rbl-img-ex {
+            width: 45px;
+            transform: translateX(-40%);
+        }
+
+        .final-rank-track {
+            position: relative;
+            width: 100%;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 7px;
+            border: 1px solid #333;
+            overflow: visible;
+        }
+
+
+        .final-rank-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            border-radius: 7px;
+            z-index: 1;
+        }
+
+        .frb-divider {
+            position: absolute;
+            top: -8px;
+            width: 3px;
+            height: 30px;
+            background: #808080;
+            transform: translateX(-50%);
+            z-index: 5;
+        }
+
+        /* Sliding position marker */
+        .final-rank-marker {
+            position: absolute;
+            top: 50%;
+            width: 3px;
+            height: 30px;
+            background: white;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.5);
+            z-index: 10;
+            opacity: 0;
+            border-radius: 2px;
+        }
+
+        .final-rank-marker.marker-bounce {
+            animation: markerBounce 0.45s ease forwards;
+        }
+
+        @keyframes markerBounce {
+            0%   { transform: translate(-50%, -50%) scaleY(1); }
+            30%  { transform: translate(-50%, -50%) scaleY(1.6); }
+            65%  { transform: translate(-50%, -50%) scaleY(0.8); }
+            100% { transform: translate(-50%, -50%) scaleY(1); }
+        }
+
+        .final-grade-badge {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 4px;
+            transform: scale(0.5);
+        }
+
+        .final-grade-img-result {
+            width: 110px;
+            filter: drop-shadow(0 0 12px rgba(255,215,0,0.5));
+            user-select: none;
+        }
+        .final-grade-img-result.ex-grade {
+            width: 200px; /* bigger only for EX+ */
+            filter: drop-shadow(0 0 20px gold);
+            animation: exPulse 1.2s ease-in-out infinite;
+        }
+    `;
+    document.head.appendChild(style);
 }
 function hzToNote(hz) {
     if (hz <= 0) return "—";
@@ -1126,7 +1382,66 @@ function injectScorerStyles() {
             0% { filter: hue-rotate(0deg); }
             100% { filter: hue-rotate(360deg); }
         }
-
+        .scoreboard-btn {
+            font-family: "LTKaraoke", sans-serif;
+        
+            min-width: 180px;
+            padding: 16px 28px;
+        
+            font-size: 1.4rem;
+            font-weight: bold;
+        
+            color: white;
+        
+            border: none;
+            border-radius: 18px;
+        
+            cursor: pointer;
+        
+            background: linear-gradient(
+                to bottom,
+                #a855ff 0%,
+                #7b27f5 45%,
+                #5d12cc 100%
+            );
+        
+            box-shadow:
+                0 6px 0 #3e007d,
+                0 10px 18px rgba(0,0,0,0.35);
+        
+            transition:
+                transform 0.08s ease,
+                box-shadow 0.08s ease,
+                filter 0.15s ease;
+        
+            user-select: none;
+        }
+        
+        .scoreboard-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+        
+        .scoreboard-btn:active {
+            transform: translateY(4px);
+        
+            box-shadow:
+                0 2px 0 #3e007d,
+                0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .scoreboard-btn.secondary {
+            background: linear-gradient(
+                to bottom,
+                #555 0%,
+                #3a3a3a 45%,
+                #222 100%
+            );
+        
+            box-shadow:
+                0 6px 0 #111,
+                0 10px 18px rgba(0,0,0,0.35);
+        }
         .result-btn {
             padding: 15px 40px;
             font-size: 1.5rem;
@@ -1140,12 +1455,15 @@ function injectScorerStyles() {
         .result-btn.primary {
             background: #4BA7FF;
             color: white;
+            font-family: "LTKaraoke", sans-serif;
         }
 
         .result-btn.secondary {
             background: rgba(255,255,255,0.1);
             color: white;
             border: 2px solid rgba(255,255,255,0.2);
+            font-family: "LTKaraoke", sans-serif;
+            
         }
 
         .result-btn:hover {
@@ -1158,6 +1476,12 @@ function injectScorerStyles() {
         .results-container {
             animation: fadeInScale 0.5s ease-out forwards;
         }
+        
+        .results-actions {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
 
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.9); }
@@ -1165,7 +1489,6 @@ function injectScorerStyles() {
         }
 
         #scorerPanel {
-
             display: flex;
             align-items: center;
             gap: 15px;
@@ -1199,15 +1522,16 @@ function injectScorerStyles() {
         }
 
         #comboDisplay {
-            font-size: 1rem;
+            font-size: 2rem;
             font-weight: bold;
             min-width: 60px;
             text-align: center;
             opacity: 0;
             transition: opacity 1.5s ease;
+            font-family: "LTKaraoke", sans-serif;
         }
 
-    .rankMarker {
+        .rankMarker {
             position: absolute;
             top: -8px;
             width: 3px;
@@ -1215,7 +1539,6 @@ function injectScorerStyles() {
             background: #808080;
             z-index: 5;
         
-            /* IMPORTANT: anchor positioning correctly */
             transform: translateX(-50%);
         }
         
@@ -1237,31 +1560,35 @@ function injectScorerStyles() {
             left: 50%;
             transform: translateX(-40%);
         }
-        @keyframes textShakeSm {
-            0%,100% { transform: translate(0,0); }
-            25%     { transform: translate(-1px, 1px); }
-            75%     { transform: translate(1px, -1px); }
-        }
-        @keyframes textShakeMd {
-            0%,100% { transform: translate(0,0); }
-            25%     { transform: translate(-3px, 2px); }
-            75%     { transform: translate(3px, -2px); }
-        }
-        @keyframes textShakeLg {
-            0%,100% { transform: translate(0,0); }
-            25%     { transform: translate(-6px, 3px); }
-            75%     { transform: translate(6px, -3px); }
-        }
+
         .scoreboard-style-final {
-            border: none !important;
-            box-shadow: none !important;
+            background: rgba(123, 39, 245, 0.85);
+            border: 1px solid #7b27f5;
+            border-radius: 24px;
+        
+            padding: 40px 60px;
+        
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        
+            gap: 20px;
+        
+            min-width: 320px;
+            max-width: 520px;
+        
+            backdrop-filter: blur(10px);
+        
+            animation: fadeInScale 0.35s ease;
         }
         
         .final-header {
-            font-size: 1.5rem;
+            font-family: "LTKaraoke", sans-serif;
+            font-size: 2rem;
             color: white;
-            margin-bottom: 10px;
+            user-select: none;
         }
+
         
         .final-score {
             font-size: 4.5rem;
@@ -1269,7 +1596,7 @@ function injectScorerStyles() {
             color: #FFD700;
         
             margin: 15px 0;
-        
+            user-select: none;
             animation: scorePop 0.4s ease;
         
         }
@@ -1282,17 +1609,29 @@ function injectScorerStyles() {
         .final-grade-img {
             width: 120px;
             margin: 10px 0;
+            user-select: none;
         }
-        
+
         .final-combo {
-            color: #ccc;
-            margin-bottom: 20px;
+            font-family: "LTKaraoke", sans-serif;
+            font-size: 2rem;
+            color: #FFFFFF;
+            margin-top: 30px; 
         }
-        .scoreboard-style-final,
-        .scoreboard-style-final * {
-            border: none !important;
-            box-shadow: none !important;
-            outline: none !important;
+        @keyframes rankFinalPop {
+            0% {
+                transform: scale(0.6);
+                opacity: 0;
+            }
+        
+            70% {
+                transform: scale(1.2);
+            }
+        
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     `;
 
