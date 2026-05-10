@@ -62,50 +62,42 @@
                 <!-- Non-English only settings, hidden by default -->
                 <div id="nonEnglishSettings" style="display:none;">
 
-                    <!-- Romanization size + toggle -->
-                    <div id="romSection">
-                        <div class="settingsSection">
-                            <div class="settingsRow">
-                                <span>Romanization Size</span><span id="romSizeLabel">1.20</span>
-                            </div>
-                            <input type="range" id="romSizeSlider" min="0.5" max="4" step="0.1" value="2">
-                        </div>
-                        <hr class="divider">
-                        <div class="settingsSection">
-                            <div class="settingsRow">
-                                <span>Show Romanization</span>
-                                <input type="checkbox" id="romToggle" checked>
-                            </div>
-                        </div>
-                        <hr class="divider">
-                    </div>
+                    <div class="settingsSection">
 
-                    <!-- Translation size + toggle -->
-                    <div id="transSection">
-                        <div class="settingsSection">
-                            <div class="settingsRow">
-                                <span>Translation Size</span><span id="transSizeLabel">1.70</span>
-                            </div>
-                            <input type="range" id="transSizeSlider" min="0.5" max="5" step="0.1" value="3">
+                        <!-- Romanization -->
+                        <div class="settingsRow">
+                            <span>Romanization Size</span>
+                            <span id="romSizeLabel">1.20</span>
                         </div>
-                        <hr class="divider">
-                        <div class="settingsSection">
-                            <div class="settingsRow">
-                                <span>Show Translation</span>
-                                <input type="checkbox" id="transToggle" checked>
-                            </div>
-                        </div>
-                        <hr class="divider">
-                    </div>
+                        <input type="range" id="romSizeSlider" min="0.5" max="4" step="0.1" value="2">
 
-                    <!-- Swap — only shown when both exist -->
-                    <div id="swapSection">
-                        <div class="settingsSection">
-                            <div class="settingsRow">
-                                <span>Swap Romanization</span>
-                                <input type="checkbox" id="swapToggle">
-                            </div>
+                        <hr class="divider">
+
+                        <!-- Translation -->
+                        <div class="settingsRow">
+                            <span>Translation Size</span>
+                            <span id="transSizeLabel">1.70</span>
                         </div>
+                        <input type="range" id="transSizeSlider" min="0.5" max="5" step="0.1" value="3">
+
+                        <hr class="divider">
+
+                        <!-- Toggles grouped like old UI -->
+                        <div class="settingsRow">
+                            <span>Show Romanization</span>
+                            <input type="checkbox" id="romToggle" checked>
+                        </div>
+
+                        <div class="settingsRow">
+                            <span>Show Translation</span>
+                            <input type="checkbox" id="transToggle" checked>
+                        </div>
+
+                        <div class="settingsRow">
+                            <span>Swap Romanization</span>
+                            <input type="checkbox" id="swapToggle">
+                        </div>
+
                         <hr class="divider">
                     </div>
 
