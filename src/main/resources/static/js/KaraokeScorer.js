@@ -65,8 +65,12 @@ let currentUser = null;
 onAuthStateChanged(auth, user => { currentUser = user; });
 // for final score screen retry
 let isRestarting = false;
+// for mic
+let selectedMicId = null;
 
-
+// score roll up
+let displayedScore = 0;
+let scoreRollInterval = null;
 // ─── UI Elements ──────────────────────────────────────────────────────────────
 
 let scoreDisplay    = null;
@@ -155,6 +159,49 @@ function spawnTierPopup(tier) {
         el.remove();
     }, 1200);
 }
+// ─── Mic Setup ─────────────────────────────────────────────────────────────────
+
+/** Enumerate audio input devices and populate the select dropdowns */
+async function populateMicSelects() {
+    const sel = document.getElementById("micSelectSingle");
+    if (!sel) return;
+
+    try {
+        // Request permission first so device labels are available
+        const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        tempStream.getTracks().forEach(t => t.stop());
+    } catch (err) {
+        console.error("[KaraokeScorer] Mic permission denied:", err);
+        alert("Microphone access was denied. Please allow microphone access and refresh.");
+        return;
+    }
+
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const mics = devices.filter(d => d.kind === "audioinput");
+
+    sel.innerHTML = "";
+    if (mics.length === 0) {
+        alert("No microphones detected. Please connect a microphone and refresh.");
+        return;
+    }
+
+    mics.forEach((mic, i) => {
+        const opt = document.createElement("option");
+        opt.value = mic.deviceId;
+        opt.textContent = mic.label || `Microphone ${i + 1}`;
+        sel.appendChild(opt);
+    });
+}
+
+async function showMicSelectOverlay() {
+    const micOverlay = document.getElementById("micSelectOverlay");
+    const bottomBar  = document.getElementById("bottomBar");
+
+    if (bottomBar)  bottomBar.style.pointerEvents = "none";
+    if (micOverlay) micOverlay.style.display      = "flex";
+
+    await populateMicSelects();
+}
 // ─── Combo on screen ─────────────────────────────────────────────────────────
 function spawnComboPopup(combo) {
     const layer = document.getElementById("tierFloatLayer");
@@ -188,12 +235,11 @@ function getExpectedPitch(currentTimeSec) {
     return songPitchData.pitches[idx] ?? 0;
 }
 
-async function startCountdownAndPlay() {
-    const overlay = document.getElementById("karaokeStartOverlay");
+async function startCountdownAndPlay(deviceId = null) {
+    const overlay   = document.getElementById("karaokeStartOverlay");
     const startText = document.getElementById("startText");
-    const audio = document.getElementById("audio");
+    const audio     = document.getElementById("audio");
     const bottomBar = document.getElementById("bottomBar");
-    const playPause = document.getElementById("playPause");
 
     overlay.style.display = "flex";
 
@@ -211,7 +257,7 @@ async function startCountdownAndPlay() {
 
     resetScore();
     resetScoreBar();
-    await startMic();
+    await startMic(deviceId);
     playImg.src = "/images/pause_icon.svg";
     audio.play().catch(() => {});
 }
@@ -279,17 +325,19 @@ function scoringTick() {
     updateScorerUI(userHz, expectedHz);
 }
 function resetScore() {
-    totalScore = 0;
-    maxPossible = 0;
-    scoredFrames = 0;
-    lastTierLabel = "";
-    currentCombo = 0;
-    maxCombo = 0;
+    totalScore     = 0;
+    displayedScore = 0;
+    maxPossible    = 0;
+    scoredFrames   = 0;
+    lastTierLabel  = "";
+    currentCombo   = 0;
+    maxCombo       = 0;
     consecutiveMisses = 0;
+    if (scoreRollInterval) { clearInterval(scoreRollInterval); scoreRollInterval = null; }
     const scoreTextEl = document.getElementById("scoreText");
     if (scoreTextEl) scoreTextEl.textContent = "0";
     if (scoreDisplay) scoreDisplay.style.animation = "none";
-    if (scoreTextEl) scoreTextEl.style.animation = "none";
+    if (scoreTextEl) scoreTextEl.style.animation   = "none";
     resetScoreBar();
 }
 
@@ -350,9 +398,13 @@ function setMicButton(isOn) {
     micToggleBtn.textContent = isOn ? "🎤 Stop Mic" : "🎤 Start Mic";
 }
 
-async function startMic() {
+async function startMic(deviceId = null) {
     try {
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        const constraints = deviceId
+            ? { audio: { deviceId: { exact: deviceId } } }
+            : { audio: true, video: false };
+
+        micStream = await navigator.mediaDevices.getUserMedia(constraints);
 
         audioCtx     = new (window.AudioContext || window.webkitAudioContext)();
         analyserNode = audioCtx.createAnalyser();
@@ -371,7 +423,6 @@ async function startMic() {
         alert("Microphone access is required for scoring. Please allow mic access and try again.");
     }
 }
-
 function stopMic() {
     console.log("[KaraokeScorer] stopMic execution started");
 
@@ -895,33 +946,39 @@ function updateScorerUI(userHz, expectedHz) {
     }
 
     const scoreTextEl = document.getElementById("scoreText");
-    if (scoreTextEl) scoreTextEl.textContent = totalScore.toLocaleString();
 
-    if (scoreEl) {
-        void scoreEl.offsetWidth;
-        if (currentCombo >= 25) {
-            scoreEl.style.animation = "scoreShakeLg 0.1s linear infinite";
-        } else if (currentCombo >= 10) {
-            scoreEl.style.animation = "scoreShakeMd 0.15s linear infinite";
-        } else if (currentCombo >= 2) {
-            scoreEl.style.animation = "scoreShakeSm 0.2s linear infinite";
-        } else {
-            scoreEl.style.animation = "none";
+    if (scoreTextEl && totalScore !== displayedScore) {
+        // Cancel any in-progress roll
+        if (scoreRollInterval) {
+            clearInterval(scoreRollInterval);
+            scoreRollInterval = null;
         }
+
+        const start     = displayedScore;
+        const end       = totalScore;
+        const diff      = end - start;
+        const duration  = 300; // ms — fast enough to feel responsive
+        const startTime = performance.now();
+
+        scoreRollInterval = setInterval(() => {
+            const elapsed  = performance.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased    = 1 - Math.pow(1 - progress, 2); // ease-out quad
+
+            displayedScore = Math.round(start + diff * eased);
+            scoreTextEl.textContent = displayedScore.toLocaleString();
+
+            if (progress >= 1) {
+                displayedScore = end;
+                scoreTextEl.textContent = end.toLocaleString();
+                clearInterval(scoreRollInterval);
+                scoreRollInterval = null;
+            }
+        }, 16); // ~60fps
     }
 
-    if (scoreTextEl) {
-        void scoreTextEl.offsetWidth;
-        if (currentCombo >= 25) {
-            scoreTextEl.style.animation = "textShakeLg 0.13s linear infinite";
-        } else if (currentCombo >= 10) {
-            scoreTextEl.style.animation = "textShakeMd 0.18s linear infinite";
-        } else if (currentCombo >= 2) {
-            scoreTextEl.style.animation = "textShakeSm 0.25s linear infinite";
-        } else {
-            scoreTextEl.style.animation = "none";
-        }
-    }
+    // Remove all shake animations — score el stays still
+    if (scoreEl) scoreEl.style.animation = "none";
 }
 
 function flashTier(tier) {
@@ -1302,10 +1359,14 @@ function resetScoreBar() {
 // ─── Hook into existing MusicPlayer.js flow ───────────────────────────────────
 
 window.addEventListener("DOMContentLoaded", () => {
+    window.KaraokeScorer = window.KaraokeScorer || {};
+    window.KaraokeScorer.restartSong = restartSong;
+
     initScorerUI();
     initScoreboard();
     resetScore();
     resetScoreBar();
+
     fetch("/api/songs")
         .then(r => r.json())
         .then(data => {
@@ -1313,32 +1374,84 @@ window.addEventListener("DOMContentLoaded", () => {
             if (song) loadSongPitches(song.pitchesPath);
         });
 
-    const startBtn = document.getElementById("startKaraokeBtn");
-    const overlay  = document.getElementById("karaokeStartOverlay");
-    const audioEl  = document.getElementById("audio");
+    const audioEl   = document.getElementById("audio");
     const bottomBar = document.getElementById("bottomBar");
-    const playPause = document.getElementById("playPause");
+    const startBtn  = document.getElementById("startKaraokeBtn");
+    const startOverlay = document.getElementById("karaokeStartOverlay");
+    const micOverlay   = document.getElementById("micSelectOverlay");
 
+    // Lock bottom bar and hide start overlay completely until mic is confirmed
+    if (bottomBar)    bottomBar.style.pointerEvents = "none";
+    if (startOverlay) startOverlay.style.display    = "none";
+    if (startBtn)     startBtn.disabled             = true;
 
-    overlay.style.display = "flex";
-    if (bottomBar) bottomBar.style.pointerEvents = "none";
+    // Show mic select overlay on load, request permission
+    showMicSelectOverlay();
 
-    if (startBtn) {
-        startBtn.onclick = async () => {
-            startBtn.disabled = true;
-            startBtn.style.opacity = "0.5";
-            startBtn.style.cursor = "not-allowed";
+    // Confirm mic → THEN show start overlay
+    const confirmBtn = document.getElementById("confirmMicsBtn");
+    if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+            const sel = document.getElementById("micSelectSingle");
+            selectedMicId = sel ? sel.value : null;
+            if (!selectedMicId) return;
+
+            // Disable confirm button so it can't be clicked again
+            confirmBtn.disabled = true;
+            confirmBtn.style.opacity = "0.5";
+
+            // Countdown inside the mic overlay panel
+            const micTitle    = document.getElementById("micPanelTitle");
+            const micRow      = document.querySelector("#micSelectPanel .micRow");
+            const micLabel    = document.getElementById("micSelectSingleLabel");
+            const micSelect   = document.getElementById("micSelectSingle");
+            const countdownEl = document.getElementById("micCountdown");
+
+            // Hide the selection UI, show the countdown
+            if (micRow)    micRow.style.display    = "none";
+            if (micTitle)  micTitle.style.display  = "none";
+            if (confirmBtn) confirmBtn.style.display = "none";
+            if (countdownEl) countdownEl.style.display = "block";
+
+            for (let i = 3; i > 0; i--) {
+                if (countdownEl) countdownEl.textContent = i;
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            if (countdownEl) countdownEl.textContent = "GO!";
+            await new Promise(r => setTimeout(r, 500));
+
+            // Hide the whole mic overlay now
+            if (micOverlay) micOverlay.style.display = "none";
+            if (startOverlay) startOverlay.style.display = "none";
+            if (bottomBar) bottomBar.style.pointerEvents = "auto";
 
             resetScore();
-            await startCountdownAndPlay();
+            resetScoreBar();
+            await startMic(selectedMicId);
+            const playImg = document.getElementById("playImg");
+            if (playImg) playImg.src = "/images/pause_icon.svg";
+            const audio = document.getElementById("audio");
+            if (audio) audio.play().catch(() => {});
         };
     }
+
+    // ── Step 3: Start button → countdown → play ──────────────────────
+    if (startBtn) {
+        startBtn.onclick = async () => {
+            startBtn.disabled      = true;
+            startBtn.style.opacity = "0.5";
+            startBtn.style.cursor  = "not-allowed";
+
+            resetScore();
+            await startCountdownAndPlay(selectedMicId);
+        };
+    }
+
+    // ── Song ends → stop mic → show final score ───────────────────────
     if (audioEl) {
         audioEl.onended = () => {
             console.log("Audio ended - calling window.stopMic()");
             window.stopMic();
         };
     }
-
-
 });

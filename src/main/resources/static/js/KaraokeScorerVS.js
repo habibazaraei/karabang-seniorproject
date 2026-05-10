@@ -366,6 +366,9 @@ async function loadSongPitches(path) {
 // ─── Boot ──────────────────────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", async () => {
 
+    const bottomBar = document.getElementById("bottomBar");
+    if (bottomBar) bottomBar.style.pointerEvents = "none";
+
     // Load song data
     fetch("/api/songs")
         .then(r => r.json())
@@ -380,10 +383,26 @@ window.addEventListener("DOMContentLoaded", async () => {
     // Populate mic selectors
     await populateMicSelects();
 
-    // ── Confirm mics → show countdown ──────────────────────
+    // ── Confirm mics → countdown → play ────────────────────
     document.getElementById("confirmMicsBtn").onclick = async () => {
         selectedMics.p1 = document.getElementById("p1MicSelect").value;
         selectedMics.p2 = document.getElementById("p2MicSelect").value;
+
+        // Hide selection UI, show countdown inside the same panel
+        document.getElementById("micPanelTitle").style.display  = "none";
+        document.querySelector("#micSelectPanel .micRow:nth-child(2)").style.display = "none";
+        document.querySelector("#micSelectPanel .micRow:nth-child(3)").style.display = "none";
+        document.getElementById("confirmMicsBtn").style.display = "none";
+
+        const countdownEl = document.getElementById("micCountdown");
+        countdownEl.style.display = "block";
+
+        for (let i = 3; i > 0; i--) {
+            countdownEl.textContent = i;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        countdownEl.textContent = "GO!";
+        await new Promise(r => setTimeout(r, 500));
 
         document.getElementById("micSelectOverlay").style.display = "none";
 
@@ -393,15 +412,18 @@ window.addEventListener("DOMContentLoaded", async () => {
             startMicForPlayer(players[1], selectedMics.p2),
         ]);
 
-        // Show start overlay
-        const overlay = document.getElementById("karaokeStartOverlay");
-        overlay.style.display = "flex";
-        document.getElementById("startText").textContent = "Battle Mode";
-    };
+        resetAll();
+        scoringActive   = true;
+        scoringInterval = setInterval(scoringTick, 50);
 
-    // ── Start Battle button ────────────────────────────────
-    document.getElementById("startKaraokeBtn").onclick = async () => {
-        await startCountdownAndPlay();
+        const audio = document.getElementById("audio");
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+
+        const playImg = document.getElementById("playImg");
+        if (playImg) playImg.src = "/images/pause_icon.svg";
+
+        if (bottomBar) bottomBar.style.pointerEvents = "auto";
     };
 
     // ── Song ends → stop scoring → show winner ─────────────
@@ -420,30 +442,31 @@ window.addEventListener("DOMContentLoaded", async () => {
         window.location.href = "/songselection";
     };
 
-    // ── Retry ──────────────────────────────────────────────
+    // ── Retry — reshow mic panel with countdown ────────────
     document.getElementById("retryBattleBtn").onclick = async () => {
-        document.getElementById("winnerOverlay").style.display = "none";
-        document.getElementById("p1ScoreCard").style.border = "none";
-        document.getElementById("p2ScoreCard").style.border = "none";
+        document.getElementById("winnerOverlay").style.display  = "none";
+        document.getElementById("p1ScoreCard").style.border     = "none";
+        document.getElementById("p2ScoreCard").style.border     = "none";
 
         stopAllMics();
         scoringActive = false;
         clearInterval(scoringInterval);
-
         resetAll();
 
-        // Re-start mics and countdown
-        await Promise.all([
-            startMicForPlayer(players[0], selectedMics.p1),
-            startMicForPlayer(players[1], selectedMics.p2),
-        ]);
+        // Reset mic panel UI back to selection state
+        document.getElementById("micPanelTitle").style.display  = "block";
+        document.querySelector("#micSelectPanel .micRow:nth-child(2)").style.display = "flex";
+        document.querySelector("#micSelectPanel .micRow:nth-child(3)").style.display = "flex";
+        document.getElementById("confirmMicsBtn").style.display = "block";
+        document.getElementById("confirmMicsBtn").disabled      = false;
+        document.getElementById("micCountdown").style.display   = "none";
 
-        await startCountdownAndPlay();
+        document.getElementById("micSelectOverlay").style.display = "flex";
+        if (bottomBar) bottomBar.style.pointerEvents = "none";
     };
 
     // ── Back to songs ──────────────────────────────────────
     document.getElementById("backFromBattleBtn").onclick = () => {
         window.location.href = "/songselection";
     };
-
 });

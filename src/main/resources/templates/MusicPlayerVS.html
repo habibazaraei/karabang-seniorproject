@@ -94,30 +94,25 @@
         </div>
     </div>
 
-    <!-- Karaoke Start Overlay -->
-    <div id="karaokeStartOverlay">
-        <div id="karaokeStartPanel">
-            <div id="startMicIcon">LET'S ROCK</div>
-            <div id="startText">Battle Mode</div>
-            <button id="startKaraokeBtn">START BATTLE</button>
-        </div>
-    </div>
 
 </div>
 
 <!-- Mic Selector Overlay -->
 <div id="micSelectOverlay">
     <div id="micSelectPanel">
-        <h2>🎤 Select Microphones</h2>
+        <h2 id="micPanelTitle">🎤 Select Microphones</h2>
         <div class="micRow">
-            <label class="micRow" id="p1MicLabel">Player 1 Mic</label>
+            <label id="p1MicLabel">Player 1 Mic</label>
             <select id="p1MicSelect"></select>
         </div>
         <div class="micRow">
-            <label class="micRow" id="p2MicLabel">Player 2 Mic</label>
+            <label id="p2MicLabel">Player 2 Mic</label>
             <select id="p2MicSelect"></select>
         </div>
-        <button id="confirmMicsBtn">Confirm & Continue</button>
+        <button id="confirmMicsBtn">Confirm &amp; Continue</button>
+        <div id="micCountdown" style="display:none; font-family:'LTKaraoke',sans-serif;
+             font-size:5rem; font-weight:bold; color:white; text-align:center;
+             text-shadow: 0 0 20px rgba(75,167,255,0.8);"></div>
     </div>
 </div>
 
