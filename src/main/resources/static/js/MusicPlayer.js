@@ -61,6 +61,99 @@ let transToggle = document.getElementById("transToggle");
 let swapLyrics = false;
 let swapToggle = document.getElementById("swapToggle");
 
+// ─── Audio Visualizer ─────────────────────────────────────────────────────────
+// ─── Audio Visualizer ─────────────────────────────────────────────────────────
+let vizAudioCtx = null;
+let vizAnalyser = null;
+let vizSource   = null;
+
+
+
+function initMusicPlayerVisualizer() {
+    const canvas = document.getElementById("audioVisualizer");
+    if (!canvas) return;
+
+    if (vizAudioCtx) {
+        if (vizAudioCtx.state === "suspended") vizAudioCtx.resume();
+        return;
+    }
+
+    const ctx = canvas.getContext("2d");
+
+    vizAudioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+    vizAnalyser  = vizAudioCtx.createAnalyser();
+    vizAnalyser.fftSize = 512;
+    vizAnalyser.smoothingTimeConstant = 0.85;
+
+    vizSource = vizAudioCtx.createMediaElementSource(audio);
+    vizSource.connect(vizAnalyser);
+    vizSource.connect(vizAudioCtx.destination);
+
+    function sizeCanvas() {
+        canvas.width  = window.innerWidth;
+        canvas.height = 200;
+    }
+
+    requestAnimationFrame(() => {
+        sizeCanvas();
+        window.addEventListener("resize", sizeCanvas);
+        drawSongBars();
+    });
+
+    function drawSongBars() {
+        requestAnimationFrame(drawSongBars);
+        const W = canvas.width;
+        const H = canvas.height;
+        if (!W || !H) return;
+
+        const bufferLength = vizAnalyser.frequencyBinCount;
+        const dataArray    = new Uint8Array(bufferLength);
+        vizAnalyser.getByteFrequencyData(dataArray);
+
+        ctx.clearRect(0, 0, W, H);
+
+        const useLength  = Math.floor(bufferLength * 0.6);
+        const barCount   = 160;
+        const gap        = 1;
+        const barWidth   = (W - gap * (barCount - 1)) / barCount;
+        const centerY    = H / 2;
+        const maxHalf    = H * 0.45;
+
+        for (let i = 0; i < barCount; i++) {
+            const mirrorI    = i < barCount / 2 ? i : barCount - 1 - i;
+            const dataIndex  = Math.floor((mirrorI / (barCount / 2)) * useLength);
+            const raw        = dataArray[dataIndex] / 255;
+            const boosted    = Math.pow(raw, 0.6);
+            const halfHeight = boosted * maxHalf;
+
+            const x     = i * (barWidth + gap);
+            const alpha = 0.4 + boosted * 0.5;
+
+            const grad = ctx.createLinearGradient(0, centerY - halfHeight, 0, centerY + halfHeight);
+            grad.addColorStop(0,   `hsla(207, 100%, 65%, ${alpha})`);
+            grad.addColorStop(0.5, `hsla(207, 100%, 60%, ${alpha})`);
+            grad.addColorStop(1,   `hsla(290, 100%, 60%, ${alpha})`);
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, centerY - halfHeight, barWidth, halfHeight * 2);
+
+            // Top cap
+            ctx.fillStyle = `hsla(207, 100%, 90%, ${Math.min(alpha + 0.2, 1)})`;
+            ctx.fillRect(x, centerY - halfHeight, barWidth, 2);
+
+            // Bottom cap
+            ctx.fillStyle = `hsla(310, 100%, 80%, ${Math.min(alpha + 0.2, 1)})`;
+            ctx.fillRect(x, centerY + halfHeight - 2, barWidth, 2);
+        }
+    }
+}
+
+
+
+audio.addEventListener("play",    initMusicPlayerVisualizer);
+audio.addEventListener("playing", initMusicPlayerVisualizer);
+
+
 onAuthStateChanged(auth, (user) => {
     currentUser = user;
 });
@@ -639,15 +732,25 @@ function updateVolumeUI() {
 
 
 // Gets song title from url
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const songTitle = document.getElementById("songTitle");
 
-    // Get the song ID from the URL
     const params = new URLSearchParams(window.location.search);
     const songId = parseInt(params.get("song"));
 
-});
+    console.log("Song ID:", songId);
 
+    const response = await fetch("/api/songs");
+    const songs = await response.json();
+
+    const song = songs.find(s => String(s.id) === String(songId));
+
+    console.log("Found Song:", song);
+
+    if (song && songTitle) {
+        songTitle.textContent = song.title;
+    }
+});
 // Favorite Button Logic
 heartButton.onclick = async () => {
     const user = auth.currentUser;

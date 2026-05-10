@@ -47,8 +47,7 @@ teaserPlayer.volume = 0;
 teaserPlayer.loop = false;
 let userVolume = 1;
 
-teaserPlayer.play().catch(() => {});
-teaserPlayer.pause();
+
 
 let topSongsEnabled = false;
 let shuffleEnabled = false;
@@ -76,6 +75,104 @@ images.forEach(src => {
 const group = document.getElementById("singButtonGroup");
 const primary = document.querySelector(".primary");
 const secondary = document.querySelector(".secondary");
+
+// ─── Audio Visualizer ─────────────────────────────────────────────────────────
+let vizAudioCtx = null;
+let vizAnalyser = null;
+let vizSource   = null;
+let vizCanvas   = null;
+let vizCtx2d    = null;
+let vizReady    = false;
+
+function initVisualizer() {
+    if (vizReady) return;
+    vizCanvas = document.getElementById("audioVisualizer");
+    if (!vizCanvas) return;
+
+    try {
+        vizAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        vizAnalyser = vizAudioCtx.createAnalyser();
+        vizAnalyser.fftSize = 512;
+        vizAnalyser.smoothingTimeConstant = 0.85;
+        vizSource = vizAudioCtx.createMediaElementSource(teaserPlayer);
+        vizSource.connect(vizAnalyser);
+        vizSource.connect(vizAudioCtx.destination);
+
+        vizCtx2d = vizCanvas.getContext("2d");
+        vizReady = true;
+
+        // Defer sizing until after layout paint
+        requestAnimationFrame(() => {
+            resizeVizCanvas();
+            window.addEventListener("resize", resizeVizCanvas);
+            drawVisualizer();
+        });
+    } catch(e) {
+        console.warn("[Viz] init failed:", e);
+    }
+    console.log("Visualizer canvas:", vizCanvas);
+    console.log("Canvas rect:", vizCanvas.getBoundingClientRect());
+}
+
+function resizeVizCanvas() {
+    if (!vizCanvas) return;
+    const rect = vizCanvas.getBoundingClientRect();
+    vizCanvas.width  = rect.width  || 600;
+    vizCanvas.height = rect.height || 120;
+}
+
+function drawVisualizer() {
+    requestAnimationFrame(drawVisualizer);
+    if (!vizReady || !vizAnalyser || !vizCtx2d) return;
+
+    const bufferLength = vizAnalyser.frequencyBinCount;
+    const dataArray    = new Uint8Array(bufferLength);
+    vizAnalyser.getByteFrequencyData(dataArray);
+
+    const W = vizCanvas.width;
+    const H = vizCanvas.height;
+    vizCtx2d.clearRect(0, 0, W, H);
+
+    const useLength  = Math.floor(bufferLength * 0.6);
+    const barCount   = 160;          // more bars = narrower on wide screens
+    const gap        = 1;            // tighter gap
+    const barWidth   = (W - gap * (barCount - 1)) / barCount;
+    const centerY    = H / 2;
+    const maxHalf    = H * 0.45;     // max 45% of canvas height each direction
+
+    for (let i = 0; i < barCount; i++) {
+        // Mirror symmetry: low freqs in center, high freqs at edges
+        const mirrorI   = i < barCount / 2 ? i : barCount - 1 - i;
+        const dataIndex = Math.floor((mirrorI / (barCount / 2)) * useLength);
+        const raw       = dataArray[dataIndex] / 255;
+        const boosted   = Math.pow(raw, 0.6);
+        const halfHeight = boosted * maxHalf;
+
+        const x     = i * (barWidth + gap);
+        const alpha = 0.4 + boosted * 0.5;
+
+        // Gradient: top of bar = blue, bottom = purple/pink
+        const grad = vizCtx2d.createLinearGradient(0, centerY - halfHeight, 0, centerY + halfHeight);
+        grad.addColorStop(0,   `hsla(207, 100%, 65%, ${alpha})`);   // blue top
+        grad.addColorStop(0.5, `hsla(207, 100%, 60%, ${alpha})`);   // blue mid
+        grad.addColorStop(1,   `hsla(290, 100%, 60%, ${alpha})`);   // purple/pink bottom
+
+        vizCtx2d.fillStyle = grad;
+        vizCtx2d.fillRect(x, centerY - halfHeight, barWidth, halfHeight * 2);
+
+        // Bright white cap on top
+        vizCtx2d.fillStyle = `hsla(207, 100%, 90%, ${Math.min(alpha + 0.2, 1)})`;
+        vizCtx2d.fillRect(x, centerY - halfHeight, barWidth, 2);
+
+        // Bright pink cap on bottom
+        vizCtx2d.fillStyle = `hsla(310, 100%, 80%, ${Math.min(alpha + 0.2, 1)})`;
+        vizCtx2d.fillRect(x, centerY + halfHeight - 2, barWidth, 2);
+    }
+}
+// Initialise on first play — this is guaranteed to happen after user gesture
+document.addEventListener("click", unlockAudio, { once: true });
+document.addEventListener("touchstart", unlockAudio, { once: true });
+document.addEventListener("keydown", unlockAudio, { once: true });
 
 primary.addEventListener("mouseenter", () => {
     group.style.backgroundImage = 'url("../images/scoredButton.png")';
@@ -130,6 +227,21 @@ let startIndex = 0;
 songList.addEventListener("mousedown", startDrag);
 songList.addEventListener("touchstart", startDrag);
 
+function unlockAudio() {
+    userInteracted = true;
+
+    initVisualizer();
+
+    if (vizAudioCtx && vizAudioCtx.state === "suspended") {
+        vizAudioCtx.resume();
+    }
+
+    // Defer by one frame so the browser fully registers the gesture
+    requestAnimationFrame(() => {
+        playCurrentTeaser();
+    });
+
+}
 function startDrag(e) {
     isDragging = true;
     startY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
@@ -1121,8 +1233,6 @@ function updateTrackSelect() {
                 // preload muted teaser so future autoplay works
                 teaserPlayer.src = centerSong.songTeaserPath;
                 teaserPlayer.volume = 0;
-                teaserPlayer.play().catch(() => {});
-                teaserPlayer.pause();
             }
         }
    } else {
@@ -1139,12 +1249,13 @@ function updateTrackSelect() {
        // Stop teaser
        teaserPlayer.pause();
        teaserPlayer.currentTime = 0;
-       teaserPlayer.volume = userVolume; // ← change this from 1 to userVolume
+       teaserPlayer.volume = userVolume;
        clearInterval(teaserFadeInterval);
        clearTimeout(teaserReplayTimeout);
        currentTeaserId = null;
    }
 }
+
 async function syncHeartState(song) {
     const user = auth.currentUser;
     if (!user || !song) return;
@@ -1152,13 +1263,13 @@ async function syncHeartState(song) {
     const favRef = doc(db, "users", user.uid, "favorites", String(song.id));
     const snap = await getDoc(favRef);
 
-    const img = heartButton.querySelector("img");
+    const img = favoriteButtonRight.querySelector("img");
 
     if (snap.exists()) {
-        heartButton.classList.add("active");
+        favoriteButtonRight.classList.add("active");
         img.src = "/images/heart_icon.svg";
     } else {
-        heartButton.classList.remove("active");
+        favoriteButtonRight.classList.remove("active");
         img.src = "/images/heart_gray_icon.svg";
     }
 }
@@ -1250,9 +1361,6 @@ function buildCurrentList(filteredSongs) {
     return list;
 }
 // replays song teaser
-// unlock teaser on first click/touch
-document.addEventListener("click", () => { userInteracted = true; playCurrentTeaser(); }, { once: true });
-document.addEventListener("touchstart", () => { userInteracted = true; playCurrentTeaser(); }, { once: true });
 
 function playCurrentTeaser() {
     const centerSong = currentList[currentIndex];
@@ -1263,22 +1371,30 @@ function playCurrentTeaser() {
 
 function playTeaserWithFade(song) {
     if (!song.songTeaserPath) return;
+    if (!userInteracted) return;
 
     clearInterval(teaserFadeInterval);
     clearTimeout(teaserReplayTimeout);
+    teaserFadeInterval = null;
 
+    // Cancel any existing play promise before starting a new one
     teaserPlayer.pause();
     teaserPlayer.src = song.songTeaserPath;
     teaserPlayer.currentTime = 0;
+    teaserPlayer.volume = userVolume;
 
-    // Play muted if user hasn't interacted
-    teaserPlayer.volume = userInteracted ? userVolume : 0;
+    const playPromise = teaserPlayer.play();
+    if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+            // Silently ignore AbortError (caused by rapid song switching)
+            if (err.name !== "AbortError") {
+                console.warn("[Teaser] play failed:", err);
+            }
+        });
+    }
 
-    teaserPlayer.play().catch(() => {});
-
-    // Fade out near the end
     teaserPlayer.ontimeupdate = () => {
-        if (teaserPlayer.duration && teaserPlayer.currentTime >= teaserPlayer.duration - TEASER_FADE_DURATION/1000) {
+        if (teaserPlayer.duration && teaserPlayer.currentTime >= teaserPlayer.duration - TEASER_FADE_DURATION / 1000) {
             if (teaserFadeInterval) return;
 
             const fadeSteps = 20;
@@ -1294,15 +1410,6 @@ function playTeaserWithFade(song) {
             }, fadeStepTime);
         }
     };
-/*
-    // Replay after delay
-    teaserPlayer.onended = () => {
-        teaserReplayTimeout = setTimeout(() => {
-            playTeaserWithFade(song);
-        }, TEASER_REPLAY_DELAY);
-    };
-
- */
 }
 
 
