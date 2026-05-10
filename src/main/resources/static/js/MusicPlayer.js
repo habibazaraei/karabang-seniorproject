@@ -61,13 +61,38 @@ let transToggle = document.getElementById("transToggle");
 let swapLyrics = false;
 let swapToggle = document.getElementById("swapToggle");
 
-// ─── Audio Visualizer ─────────────────────────────────────────────────────────
+// ─── Audio ─────────────────────────────────────────────────────────
+let useFullSong = false;
+let currentSongData = null;
+const audioVersionToggle = document.getElementById("audioVersionToggle");
+const audioVersionLabel  = document.getElementById("audioVersionLabel");
 // ─── Audio Visualizer ─────────────────────────────────────────────────────────
 let vizAudioCtx = null;
 let vizAnalyser = null;
 let vizSource   = null;
 
+if (audioVersionToggle) {
+    audioVersionToggle.addEventListener("change", () => {
+        useFullSong = audioVersionToggle.checked;
 
+        if (!currentSongData) return;
+
+        const wasPlaying = !audio.paused;
+        const savedTime  = audio.currentTime;
+
+        audio.src = useFullSong
+            ? `/audio/full/${currentSongData.audioPath.split("/").pop()}`
+            : currentSongData.audioPath;
+
+        // Must wait for the new src to be ready before seeking
+        audio.addEventListener("loadedmetadata", () => {
+            audio.currentTime = savedTime;
+            if (wasPlaying) audio.play().catch(() => {});
+        }, { once: true });
+
+        savePreferences();
+    });
+}
 
 function initMusicPlayerVisualizer() {
     const canvas = document.getElementById("audioVisualizer");
@@ -220,7 +245,13 @@ onAuthStateChanged(auth, async (user) => {
             swapLyrics = prefs.swapLyrics;
             if (swapToggle) swapToggle.checked = swapLyrics;
         }
-    }
+
+        }
+        if (prefs.useFullSong !== undefined) {
+            useFullSong = prefs.useFullSong;
+            if (audioVersionToggle) audioVersionToggle.checked = useFullSong;
+            if (audioVersionLabel)  audioVersionLabel.textContent = useFullSong ? "Full Song" : "Karaoke";
+        }
 });
 
 async function savePreferences() {
@@ -233,7 +264,8 @@ async function savePreferences() {
         transSize: transSizeSlider ? Math.round(parseFloat(transSizeSlider.value)) : 3,
         showRomanization: showRomanization,
         showTranslation: showTranslation,
-        swapLyrics: swapLyrics
+        swapLyrics: swapLyrics,
+        useFullSong: useFullSong
     }, { merge: true });
 }
 // reset settings
@@ -487,7 +519,10 @@ fetch("/api/songs")
         const song = data.find(s => s.id === songId)
         if (song) {
 
-            audio.src = song.audioPath;
+            currentSongData = song;
+            audio.src = useFullSong
+                ? `/audio/full/${song.audioPath.split("/").pop()}`
+                : song.audioPath;
 
             isNonEnglishSong =
                 song.language &&
@@ -878,7 +913,9 @@ async function resetPreferences() {
 
     swapLyrics = false;
     if (swapToggle) swapToggle.checked = false;
-
+    useFullSong = false;
+    if (audioVersionToggle) audioVersionToggle.checked = false;
+    if (audioVersionLabel)  audioVersionLabel.textContent = "Karaoke";
     updateVolumeUI();
     refreshColorPickerUI();
     romSizeSlider.value = 2;
