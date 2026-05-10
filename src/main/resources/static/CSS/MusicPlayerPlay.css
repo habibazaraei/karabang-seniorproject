@@ -31,26 +31,7 @@ body {
     overflow: visible;
 }
 
-/* Lyrics */
-#subtitle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    text-align: center;
-    font-size: 5vw;
-    z-index: 2;
-    line-height: 1.2em;
-    will-change: transform;
-}
 
-
-#subtitle span {
-    font-family: "LTKaraoke", sans-serif;
-    -webkit-text-stroke: 1px black;
-    display: inline-block;
-}
 #lyricColorPicker {
     display: flex;
     flex-wrap: wrap;
@@ -93,7 +74,7 @@ body {
     width: clamp(24px, 4vh, 48px);
     height: clamp(24px, 4vh, 48px);
 }
-#dropdown Img, #heartImg, #scoreboardImg{
+#dropdown Img, #heartImg{
     width: clamp(21px, 3vh, 42px);
     height: clamp(21px, 3vh, 42px);
 }
@@ -105,6 +86,7 @@ body {
     width: clamp(21px, 3vh, 42px);
     height: clamp(21px, 3vh, 42px);
 }
+
 
 #volumeButton img,
 #volumeButton .volumeSVG {
@@ -490,14 +472,80 @@ button:active {
     opacity: 0.8;
     z-index: 2;
 }
-.micSelectOverlay {
+#micSelectOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex;
+    background: rgba(0,0,0,0.9);
+    display: none;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 99999;
+}
+#micSelectPanel {
+    background: rgba(123, 39, 245, 0.85);
+    border: 1px solid #7b27f5;
+    border-radius: 20px;
+    padding: 36px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    max-width: 500px;
+    width: 90%;
+}
+
+#micSelectPanel h2 {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 1.8rem;
+    color: white;
+    margin: 0;
+}
+
+.micRow {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.micRow label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+#micSelectSingleLabel {
+    background: rgba(75,167,255,0.25);
+    border: 1px solid #4BA7FF;
+    color: #4BA7FF;
+}
+
+
+.micRow select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #555;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 0.9rem;
+}
+
+#confirmMicsBtn {
+    padding: 12px 40px;
+    font-size: 1.1rem;
+    border-radius: 999px;
+    border: 1px solid #4BA7FF;
+    background: rgba(75,167,255,0.3);
+    color: white;
+    cursor: pointer;
+    font-family: "LTKaraoke", sans-serif;
+    transition: background 0.2s;
+}
+
+#confirmMicsBtn:hover {
+    background: rgba(75,167,255,0.6);
 }
 /* Settings modal */
 #settingsModal {
@@ -509,11 +557,11 @@ button:active {
     justify-content: center;
     align-items: center;
     width: clamp(320px, 45vw, 800px);
-    height: clamp(220px, 55vh, 600px);
+    height: clamp(220px, 60vh, 900px);
 
     background-image: url("../images/textureCirclesDropDown.png");
-    background-size: contain;
-    background-repeat: repeat;
+    background-size: cover;
+
     background-color: rgba(53, 52, 52, 0.8);
 
     z-index: 1000;
@@ -580,7 +628,6 @@ button:active {
     border-radius: 8px;
     line-height: 1;
 }
-
 
 
 .settingsRow {
@@ -652,4 +699,192 @@ button:active {
 
 .colorOption.active {
     border: 2px solid white;
+}
+@keyframes exRainbowShift {
+    0% {
+        filter: hue-rotate(0deg);
+        background-position: 0% 50%;
+    }
+    100% {
+        filter: hue-rotate(360deg);
+        background-position: 200% 50%;
+    }
+}
+@keyframes barberSpin {
+    0%   { background-position: 0 0, 0 0,   0 0; }
+    100% { background-position: 0 0, 40px 0, 0 0; }
+}
+
+#scoreDisplay.shaking {
+    animation: scoreShake 0.15s linear infinite;
+}
+@keyframes scoreShakeSm {
+    0%,100% { transform: translate(0,0) rotate(0deg); }
+    25%     { transform: translate(-2px, 1px) rotate(-0.5deg); }
+    75%     { transform: translate(2px, -1px) rotate(0.5deg); }
+}
+@keyframes scoreShakeMd {
+    0%,100% { transform: translate(0,0) rotate(0deg); }
+    25%     { transform: translate(-5px, 2px) rotate(-1deg); }
+    75%     { transform: translate(5px, -2px) rotate(1deg); }
+}
+@keyframes scoreShakeLg {
+    0%,100% { transform: translate(0,0) rotate(0deg); }
+    25%     { transform: translate(-10px, 4px) rotate(-2deg); }
+    75%     { transform: translate(10px, -4px) rotate(2deg); }
+}
+#startKaraokeBtn:disabled {
+    pointer-events: none;
+}
+/* Lyrics */
+:root {
+    --main-size: 5vw;
+    --rom-size: 2vw;
+    --trans-size: 3vw;
+}
+
+#subtitle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 80%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-size: 1rem;
+    z-index: 2;
+    line-height: 1.2em;
+    overflow: visible;
+    padding: 0.5em 0 2em 0;
+}
+
+#subtitle span {
+    font-family: "LTKaraoke", sans-serif;
+}
+/* Multi-language karaoke */
+
+.karaokeLine {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.6vw;
+    flex-wrap: wrap;
+    row-gap: 1.2vw;
+}
+.karaokeWord{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+}
+
+.mainLyric {
+    display: inline-block;
+    font-family: "LTKaraoke", sans-serif;
+    font-size: var(--main-size);
+    font-weight: bold;
+    line-height: 1.15;
+    position: relative;
+    padding-top: 0.15em;
+    box-sizing: content-box;
+}
+/* Outline */
+.lyricStroke {
+    position: absolute;
+    inset: 0;
+
+    color: transparent;
+    -webkit-text-stroke: 0.5px black;
+
+    pointer-events: none;
+    white-space: nowrap;
+
+    line-height: inherit;
+    font: inherit;
+
+    z-index: 1;
+}
+
+/* Actual lyric fill */
+.lyricFill {
+    position: relative;
+    display: inline-block;
+
+    white-space: nowrap;
+
+    line-height: inherit;
+    font: inherit;
+
+    z-index: 2;
+
+    padding-top: 0.08em;
+}
+
+.translationLine {
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    width: 100%;
+    margin-top: 5vh;
+
+    font-family: "LTKaraoke", sans-serif;
+    font-size: var(--trans-size);
+    line-height: 1.6;
+}
+.translationWord {
+    display: inline-block;
+    margin: 0 0.15em;
+}
+.romanizedLyric {
+    display: inline-block;
+    font-family: "LTKaraoke", sans-serif;
+    font-size: var(--rom-size);
+    color: #d8d8d8;
+    margin-top: 0.15em;
+    line-height: 1;
+    opacity: 0.95;
+    white-space: nowrap;
+    -webkit-text-stroke: 0.2px black;
+}
+.textOutline {
+    position: relative;
+    display: inline-block;
+    color: white;
+}
+
+.textOutline::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    color: transparent;
+    -webkit-text-stroke: 2px black;
+
+    z-index: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.textOutline span {
+    position: relative;
+    z-index: 1;
+}
+/* background audio vis*/
+#audioVisualizer {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 200px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.35;
 }

@@ -36,6 +36,11 @@ let subtitle = document.getElementById("subtitle");
 let saveTimeout;
 const resetPrefsBtn = document.getElementById("resetPrefsBtn");
 
+let romSizeSlider = document.getElementById("romSizeSlider");
+let transSizeSlider = document.getElementById("transSizeSlider");
+let romSizeLabel = document.getElementById("romSizeLabel");
+let transSizeLabel = document.getElementById("transSizeLabel");
+let nonEnglishSettings = document.getElementById("nonEnglishSettings");
 
 let lyricColor = "#FFD700";
 audio.volume = 0.5
@@ -44,6 +49,134 @@ updateVolumeUI();
 let fontSize = "5";
 
 let currentUser = null;
+
+// translated lyrics
+let showRomanization = true;
+let showTranslation = true;
+let isNonEnglishSong = false;
+
+// toggle for rom and lyrics
+let romToggle = document.getElementById("romToggle");
+let transToggle = document.getElementById("transToggle");
+let swapLyrics = false;
+let swapToggle = document.getElementById("swapToggle");
+
+// ─── Audio ─────────────────────────────────────────────────────────
+let useFullSong = false;
+let currentSongData = null;
+const audioVersionToggle = document.getElementById("audioVersionToggle");
+const audioVersionLabel  = document.getElementById("audioVersionLabel");
+// ─── Audio Visualizer ─────────────────────────────────────────────────────────
+let vizAudioCtx = null;
+let vizAnalyser = null;
+let vizSource   = null;
+
+if (audioVersionToggle) {
+    audioVersionToggle.addEventListener("change", () => {
+        useFullSong = audioVersionToggle.checked;
+
+        if (!currentSongData) return;
+
+        const wasPlaying = !audio.paused;
+        const savedTime  = audio.currentTime;
+
+        audio.src = useFullSong
+            ? `/audio/full/${currentSongData.audioPath.split("/").pop()}`
+            : currentSongData.audioPath;
+
+        // Must wait for the new src to be ready before seeking
+        audio.addEventListener("loadedmetadata", () => {
+            audio.currentTime = savedTime;
+            if (wasPlaying) audio.play().catch(() => {});
+        }, { once: true });
+
+        savePreferences();
+    });
+}
+
+function initMusicPlayerVisualizer() {
+    const canvas = document.getElementById("audioVisualizer");
+    if (!canvas) return;
+
+    if (vizAudioCtx) {
+        if (vizAudioCtx.state === "suspended") vizAudioCtx.resume();
+        return;
+    }
+
+    const ctx = canvas.getContext("2d");
+
+    vizAudioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+    vizAnalyser  = vizAudioCtx.createAnalyser();
+    vizAnalyser.fftSize = 512;
+    vizAnalyser.smoothingTimeConstant = 0.85;
+
+    vizSource = vizAudioCtx.createMediaElementSource(audio);
+    vizSource.connect(vizAnalyser);
+    vizSource.connect(vizAudioCtx.destination);
+
+    function sizeCanvas() {
+        canvas.width  = window.innerWidth;
+        canvas.height = 200;
+    }
+
+    requestAnimationFrame(() => {
+        sizeCanvas();
+        window.addEventListener("resize", sizeCanvas);
+        drawSongBars();
+    });
+
+    function drawSongBars() {
+        requestAnimationFrame(drawSongBars);
+        const W = canvas.width;
+        const H = canvas.height;
+        if (!W || !H) return;
+
+        const bufferLength = vizAnalyser.frequencyBinCount;
+        const dataArray    = new Uint8Array(bufferLength);
+        vizAnalyser.getByteFrequencyData(dataArray);
+
+        ctx.clearRect(0, 0, W, H);
+
+        const useLength  = Math.floor(bufferLength * 0.6);
+        const barCount   = 160;
+        const gap        = 1;
+        const barWidth   = (W - gap * (barCount - 1)) / barCount;
+        const centerY    = H / 2;
+        const maxHalf    = H * 0.45;
+
+        for (let i = 0; i < barCount; i++) {
+            const mirrorI    = i < barCount / 2 ? i : barCount - 1 - i;
+            const dataIndex  = Math.floor((mirrorI / (barCount / 2)) * useLength);
+            const raw        = dataArray[dataIndex] / 255;
+            const boosted    = Math.pow(raw, 0.6);
+            const halfHeight = boosted * maxHalf;
+
+            const x     = i * (barWidth + gap);
+            const alpha = 0.4 + boosted * 0.5;
+
+            const grad = ctx.createLinearGradient(0, centerY - halfHeight, 0, centerY + halfHeight);
+            grad.addColorStop(0,   `hsla(207, 100%, 65%, ${alpha})`);
+            grad.addColorStop(0.5, `hsla(207, 100%, 60%, ${alpha})`);
+            grad.addColorStop(1,   `hsla(290, 100%, 60%, ${alpha})`);
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, centerY - halfHeight, barWidth, halfHeight * 2);
+
+            // Top cap
+            ctx.fillStyle = `hsla(207, 100%, 90%, ${Math.min(alpha + 0.2, 1)})`;
+            ctx.fillRect(x, centerY - halfHeight, barWidth, 2);
+
+            // Bottom cap
+            ctx.fillStyle = `hsla(310, 100%, 80%, ${Math.min(alpha + 0.2, 1)})`;
+            ctx.fillRect(x, centerY + halfHeight - 2, barWidth, 2);
+        }
+    }
+}
+
+
+
+audio.addEventListener("play",    initMusicPlayerVisualizer);
+audio.addEventListener("playing", initMusicPlayerVisualizer);
 
 
 onAuthStateChanged(auth, (user) => {
@@ -63,11 +196,9 @@ onAuthStateChanged(auth, async (user) => {
             volume.value = prefs.volume * 100;
             updateVolumeUI();
         }
-
         if (prefs.fontSize !== undefined) {
             fontSize = Math.round(Number(prefs.fontSize));
-            subtitle.style.fontSize = fontSize + "vw";
-
+            document.documentElement.style.setProperty("--main-size", fontSize + "vw");
             fontSizeSlider.value = fontSize;
             fontSizeLabel.textContent = fontSize;
         }
@@ -75,16 +206,66 @@ onAuthStateChanged(auth, async (user) => {
             lyricColor = prefs.lyricColor;
             refreshColorPickerUI();
         }
+        if (prefs.romSize !== undefined && romSizeSlider) {
+            romSizeLabel.textContent = Math.round(prefs.romSize);
+            document.documentElement.style.setProperty("--rom-size", prefs.romSize + "vw");
+        }
+        if (prefs.transSize !== undefined && transSizeSlider) {
+            transSizeLabel.textContent = Math.round(prefs.transSize);
+            document.documentElement.style.setProperty("--trans-size", prefs.transSize + "vw");
+        }
+        if (romToggle) {
+            romToggle.addEventListener("change", () => {
+                showRomanization = romToggle.checked;
+                savePreferences();
+            });
+        }
+
+        if (transToggle) {
+            transToggle.addEventListener("change", () => {
+                showTranslation = transToggle.checked;
+                savePreferences();
+            });
+        }
+        if (prefs.showRomanization !== undefined) {
+            showRomanization = prefs.showRomanization;
+            if (romToggle) romToggle.checked = showRomanization;
+        }
+        if (prefs.showTranslation !== undefined) {
+            showTranslation = prefs.showTranslation;
+            if (transToggle) transToggle.checked = showTranslation;
+        }
+        if (swapToggle) {
+            swapToggle.addEventListener("change", () => {
+                swapLyrics = swapToggle.checked;  // was swapLyricsBtn.checked
+                savePreferences();
+            });
+        }
+        if (prefs.swapLyrics !== undefined) {
+            swapLyrics = prefs.swapLyrics;
+            if (swapToggle) swapToggle.checked = swapLyrics;
+        }
+
+    }
+    if (prefs.useFullSong !== undefined) {
+        useFullSong = prefs.useFullSong;
+        if (audioVersionToggle) audioVersionToggle.checked = useFullSong;
+        if (audioVersionLabel)  audioVersionLabel.textContent = useFullSong ? "Full Song" : "Karaoke";
     }
 });
 
 async function savePreferences() {
     if (!currentUser) return;
-
     await setDoc(doc(db, "users", currentUser.uid, "preferences", "settings"), {
         volume: audio.volume,
         fontSize: fontSize,
-        lyricColor: lyricColor
+        lyricColor: lyricColor,
+        romSize: romSizeSlider ? Math.round(parseFloat(romSizeSlider.value)) : 2,
+        transSize: transSizeSlider ? Math.round(parseFloat(transSizeSlider.value)) : 3,
+        showRomanization: showRomanization,
+        showTranslation: showTranslation,
+        swapLyrics: swapLyrics,
+        useFullSong: useFullSong
     }, { merge: true });
 }
 // reset settings
@@ -116,12 +297,39 @@ if (settingsButton && settingsModal && closeSettingsBtn && fontSizeSlider && sub
     fontSizeSlider.addEventListener("input", () => {
         fontSize = Math.round(Number(fontSizeSlider.value));
 
-        subtitle.style.fontSize = fontSize + "vw";
+        // Set on mainLyric directly, not subtitle
+        document.documentElement.style.setProperty("--main-size", fontSize + "vw");
         fontSizeLabel.textContent = fontSize;
 
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(savePreferences, 200);
     });
+    if (romSizeSlider) {
+        romSizeSlider.addEventListener("input", () => {
+            const val = Math.round(Number(romSizeSlider.value));
+            romSizeLabel.textContent = val;
+            document.querySelectorAll(".romanizedLyric").forEach(el => {
+                el.style.fontSize = val + "em";
+            });
+            // also update CSS variable for future renders
+            document.documentElement.style.setProperty("--rom-size", val + "em");
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(savePreferences, 200);
+        });
+    }
+
+    if (transSizeSlider) {
+        transSizeSlider.addEventListener("input", () => {
+            const val = Math.round(Number(transSizeSlider.value));
+            transSizeLabel.textContent = val;
+            document.querySelectorAll(".translationLine").forEach(el => {
+                el.style.fontSize = val + "em";
+            });
+            document.documentElement.style.setProperty("--trans-size", val + "em");
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(savePreferences, 200);
+        });
+    }
 
 } else {
     console.warn("[Settings] Missing DOM elements. Check HTML IDs.");
@@ -262,7 +470,9 @@ document.getElementById("restart").addEventListener("click", () => {
     if (!audio.paused) {
         audio.play();
     }
-
+    if (audio.currentTime === 100){
+        audio.play();
+    }
     subtitle.innerHTML = "";
 });
 
@@ -287,7 +497,7 @@ function updateLyrics() {
     }
 
     if (activeLine) {
-        renderKaraoke(activeLine.words, t);
+        renderKaraoke(activeLine.words, t, activeLine);
     } else {
         subtitle.innerHTML = "";
     }
@@ -314,65 +524,123 @@ fetch("/api/songs")
     .then(r => r.json())
     .then(data => {
         const song = data.find(s => s.id === songId)
-        if(song){
-            audio.src = song.audioPath
+        if (song) {
 
+            currentSongData = song;
+            audio.src = useFullSong
+                ? `/audio/full/${song.audioPath.split("/").pop()}`
+                : song.audioPath;
+
+            isNonEnglishSong =
+                song.language &&
+                song.language.toLowerCase() !== "english";
+
+            if (nonEnglishSettings) {
+                if (isNonEnglishSong) {
+                    nonEnglishSettings.style.display = "block";
+                    document.getElementById("settingsModal").style.height = "clamp(320px, 60vh, 700px)";
+                } else {
+                    nonEnglishSettings.style.display = "none";
+                    document.getElementById("settingsModal").style.height = "clamp(220px, 55vh, 600px)";
+                }
+            }
             applyGenreTheme(song.genre);
 
-            fetch(song.lyricsPath)
-                .then(r => r.text())
-                .then(parseLyrics)
+            Promise.all([
+                fetch(song.lyricsPath).then(r => r.text()),
+
+                isNonEnglishSong
+                    ? fetch(`/translations/${song.title.toLowerCase()}.json`)
+                        .then(r => r.json())
+                        .catch(() => ({}))
+                    : Promise.resolve({})
+            ])
+                .then(([lyricsText, translationData]) => {
+                    parseLyrics(lyricsText, translationData);
+
+                    // After parsing, check what data actually exists
+                    const hasRomanization = lyrics.some(line =>
+                        line.words.some(w => w.romanized && w.romanized.trim() !== "")
+                    );
+                    const hasTranslation = lyrics.some(line =>
+                        line.lineTranslation && line.lineTranslation.trim() !== ""
+                    );
+
+                    // Hide rom settings if no romanization data
+                    const romSection = document.getElementById("romSection");
+                    const transSection = document.getElementById("transSection");
+                    const swapSection = document.getElementById("swapSection");
+
+                    if (romSection)   romSection.style.display   = hasRomanization ? "flex" : "none";
+                    if (transSection) transSection.style.display = hasTranslation  ? "flex" : "none";
+                    // Only show swap if BOTH exist (swapping requires both to be present)
+                    if (swapSection)  swapSection.style.display  = (hasRomanization && hasTranslation) ? "flex" : "none";
+                });
         }
     })
 
 
 
 // Parse Enhanced LRC
-function parseLyrics(text){
+function parseLyrics(text, translationData = {}) {
     lyrics = []
+    const wordData = translationData.words || translationData; // backward compat
+    const lineData = translationData.lines || {};
     const lines = text.split("\n")
 
-    for(let l of lines){
-        if(!l.trim()) continue
+    for (let l of lines) {
+        if (!l.trim()) continue
 
-        // Line timestamp [mm:ss.xxx]
         const lineMatch = l.match(/\[(\d+):(\d+\.\d+)\]/)
-        const lineTime = lineMatch ? parseInt(lineMatch[1])*60 + parseFloat(lineMatch[2]) : 0
+        const lineTime = lineMatch ? parseInt(lineMatch[1]) * 60 + parseFloat(lineMatch[2]) : 0
 
-        // Word timestamps <mm:ss.xxx>word
+        // Get the line timestamp string to look up line translation
+        const lineKey = lineMatch
+            ? `${lineMatch[1].padStart(2, "0")}:${lineMatch[2].padStart(5, "0")}`
+            : null;
+        console.log("LOOKUP:", lineKey, lineData[lineKey]);
+        const lineTranslation = lineKey ? (lineData[lineKey] || "") : "";
+
         const wordPattern = /<(\d+):(\d+\.\d+)>([^<\[]+)/g
         let words = []
         let match
-        while((match = wordPattern.exec(l)) !== null){
-            const time = parseInt(match[1])*60 + parseFloat(match[2])
-            const word = match[3].trim()
-            if(word) words.push({time, text: word})
+        while ((match = wordPattern.exec(l)) !== null) {
+            const time = parseInt(match[1]) * 60 + parseFloat(match[2])
+            const rawWord = match[3].trim();
+            const word = rawWord.replace(/[^\w가-힣]/g, "");
+            if (word) {
+                const wordEntry = wordData[word] || wordData[rawWord] || {};
+                words.push({
+                    time,
+                    text: word,
+                    romanized: wordEntry.romanized || "",
+                    translation: ""  // no longer per-word
+                });
+            }
         }
 
-        // If no word timestamps, split line into words and distribute evenly
-        if(words.length === 0){
+        if (words.length === 0) {
+            // fallback distribution unchanged
             const lineTextAfterBracket = l.replace(/\[[\d:\.]+\]/, "").trim()
-            if(lineTextAfterBracket){
+            if (lineTextAfterBracket) {
                 const splitWords = lineTextAfterBracket.split(/\s+/)
                 const nextLineMatch = lines[lines.indexOf(l) + 1]?.match(/\[(\d+):(\d+\.\d+)\]/)
                 const nextTime = nextLineMatch
-                    ? parseInt(nextLineMatch[1])*60 + parseFloat(nextLineMatch[2])
+                    ? parseInt(nextLineMatch[1]) * 60 + parseFloat(nextLineMatch[2])
                     : lineTime + 5
                 const duration = Math.min(nextTime - lineTime, 10) * 0.9
                 const totalChars = splitWords.reduce((sum, w) => sum + w.length, 0)
                 let elapsed = 0
-                for(let j = 0; j < splitWords.length; j++){
-                    words.push({time: lineTime + elapsed, text: splitWords[j]})
-                    const weight = splitWords[j].length / totalChars
-                    elapsed += weight * duration
+                for (let j = 0; j < splitWords.length; j++) {
+                    words.push({ time: lineTime + elapsed, text: splitWords[j] })
+                    elapsed += (splitWords[j].length / totalChars) * duration
                 }
             }
         }
 
         if (words.length > 0) {
-            lyrics.push({ startTime: lineTime, words });
+            lyrics.push({ startTime: lineTime, words, lineTranslation });
         }
-
     }
     finalizeLyrics();
 }
@@ -383,47 +651,110 @@ function finalizeLyrics() {
 
         const naturalEnd = next ? next.startTime : line.startTime + 5;
 
-        line.endTime = naturalEnd; // IMPORTANT: no lingering logic
+        line.endTime = naturalEnd;
     }
 }
 // Renders word highlighting
-function renderKaraoke(words, currentTime) {
-    let html = "";
+function renderKaraoke(words, currentTime, activeLine = null) {
+    let html = `<div class="karaokeLine">`;
 
     for (let i = 0; i < words.length; i++) {
         const w = words[i];
         const next = words[i + 1];
-
         const start = w.time;
         const end = next ? next.time : start + 0.4;
 
-        // CURRENT word (gradient fill)
+        // Swap main and romanized text if swapLyrics is on
+        const mainText = swapLyrics && w.romanized ? w.romanized : w.text;
+        const subText  = swapLyrics && w.romanized ? w.text : w.romanized;
+
+        let fillStyle = "color: #d8d8d8;";
+        let romStyle = "color: #d8d8d8;";
+
+        // When swapped, Non-english text drops to sub position — use mainLyric class so font metrics match
+        const subClass = swapLyrics && w.romanized ? "mainLyric" : "romanizedLyric";
+        const subFilter = swapLyrics && w.romanized
+            ? "filter: drop-shadow(-1px -1px 0 black) drop-shadow(1px 1px 0 black);"
+            : "filter: drop-shadow(-0.5px -0.5px 0 black) drop-shadow(0.5px 0.5px 0 black);";
+
+        // Scale down the sub when it's Korean in sub position
+        const subScale = swapLyrics && w.romanized ? "transform: scale(0.55); transform-origin: top center;" : "";
+
         if (currentTime >= start && currentTime < end) {
             const pct = (currentTime - start) / (end - start);
+            fillStyle = `
+            background: linear-gradient(to right, ${lyricColor} ${pct * 100}%, white ${pct * 100}%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        `;
+            romStyle = `
+            background: linear-gradient(to right, ${lyricColor} ${pct * 100}%, white ${pct * 100}%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        `;
+        } else if (currentTime >= end) {
+            fillStyle = `color: ${lyricColor}; -webkit-text-stroke: 0px transparent;`;
+            romStyle  = `color: ${lyricColor}; -webkit-text-stroke: 0px transparent;`;
+        }
+
+
+        html += `
+            <div class="karaokeWord">
+                <div style="filter: drop-shadow(-1px -1px 0 black) drop-shadow(1px 1px 0 black);">
+                    <span class="mainLyric" style="${fillStyle}">${mainText}</span>
+                </div>
+                ${isNonEnglishSong && showRomanization && subText
+            ? `<div style="${subFilter}">
+                           <span class="${subClass}" style="${romStyle} ${subScale}">${subText}</span>
+                       </div>`
+            : ""}
+            </div>
+        `;
+
+    }
+
+    html += `</div>`;
+
+    // Single line translation
+    if (isNonEnglishSong && showTranslation && activeLine?.lineTranslation) {
+
+        const words = activeLine.lineTranslation.split(" ");
+
+        const lineStart = activeLine.startTime;
+        const lineEnd = activeLine.endTime;
+        const duration = lineEnd - lineStart;
+
+        const progress = (currentTime - lineStart) / duration;
+
+        html += `<div class="translationLine">`;
+
+        words.forEach((word, i) => {
+            const wordStart = i / words.length;
+            const wordEnd = (i + 1) / words.length;
+
+            let style = "color: #d8d8d8;";
+
+            if (progress >= wordStart && progress < wordEnd) {
+                const pct = (progress - wordStart) / (wordEnd - wordStart);
+
+                style = `
+                background: linear-gradient(to right, ${lyricColor} ${pct * 100}%, white ${pct * 100}%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            `;
+            }
+            else if (progress >= wordEnd) {
+                style = `color: ${lyricColor};`;
+            }
 
             html += `
-                <span style="
-                    background: linear-gradient(
-                        to right,
-                        ${lyricColor} ${pct * 100}%,
-                        white ${pct * 100}%
-                    );
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                ">
-                    ${w.text}
-                </span> `;
-        }
+              <span class="translationWord textOutline" data-text="${word}">
+                  <span style="${style}">${word}</span>
+              </span>
+            `;
+        });
 
-        // PAST words (same color as selected lyricColor)
-        else if (currentTime >= end) {
-            html += `<span style="color:${lyricColor}">${w.text}</span> `;
-        }
-
-        // FUTURE words
-        else {
-            html += `<span style="color:white">${w.text}</span> `;
-        }
+        html += `</div>`;
     }
 
     subtitle.innerHTML = html;
@@ -443,27 +774,25 @@ function updateVolumeUI() {
 
 
 // Gets song title from url
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const songTitle = document.getElementById("songTitle");
 
-    // Get the song ID from the URL
     const params = new URLSearchParams(window.location.search);
     const songId = parseInt(params.get("song"));
 
-    if (!songTitle || !songId) return;
+    console.log("Song ID:", songId);
 
-    // Fetch the song list
-    fetch("/api/songs")
-        .then(r => r.json())
-        .then(data => {
-            const song = data.find(s => s.id === songId);
-            if (song) {
-                songTitle.textContent = song.title + " - " + song.artist;
-            }
-        })
-        .catch(err => console.error("Failed to load song:", err));
+    const response = await fetch("/api/songs");
+    const songs = await response.json();
+
+    const song = songs.find(s => String(s.id) === String(songId));
+
+    console.log("Found Song:", song);
+
+    if (song && songTitle) {
+        songTitle.textContent = song.title;
+    }
 });
-
 // Favorite Button Logic
 heartButton.onclick = async () => {
     const user = auth.currentUser;
@@ -528,12 +857,8 @@ onAuthStateChanged(auth, async (user) => {
 
         if (docSnap.exists()) {
             heartButton.classList.add("active");
-
-            // Fix the image on load
             const heartImg = document.getElementById("heartImg");
-            if (heartImg) {
-                heartImg.src = "/images/heart_icon.svg";
-            }
+            if (heartImg) heartImg.src = "/images/heart_icon.svg";
         }
     }
 });
@@ -581,15 +906,32 @@ async function resetPreferences() {
     volume.value = 50;
 
     fontSize = 5;
-    subtitle.style.fontSize = fontSize + "vw";
+    document.documentElement.style.setProperty("--main-size", "5vw");
     fontSizeSlider.value = fontSize;
     fontSizeLabel.textContent = fontSize;
 
     lyricColor = "#FFD700";
 
+    showRomanization = true;
+    showTranslation = true;
+
+    if (romToggle) romToggle.checked = true;
+    if (transToggle) transToggle.checked = true;
+
+    swapLyrics = false;
+    if (swapToggle) swapToggle.checked = false;
+    useFullSong = false;
+    if (audioVersionToggle) audioVersionToggle.checked = false;
+    if (audioVersionLabel)  audioVersionLabel.textContent = "Karaoke";
     updateVolumeUI();
     refreshColorPickerUI();
+    romSizeSlider.value = 2;
+    romSizeLabel.textContent = "2";
+    document.documentElement.style.setProperty("--rom-size", "2vw");
 
+    transSizeSlider.value = 3;
+    transSizeLabel.textContent = "3";
+    document.documentElement.style.setProperty("--trans-size", "3vw");
     // clear Firebase saved settings
     await setDoc(doc(db, "users", currentUser.uid, "preferences", "settings"), {
         volume: 0.5,
