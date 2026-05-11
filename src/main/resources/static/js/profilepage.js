@@ -2,6 +2,7 @@
 import { auth, db, doc, getDoc, getDocs, collection, onAuthStateChanged, signOut } from "./firebase.js";
 import { updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { updateProfile } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { collectionGroup, query, where } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const usernameDisplay  = document.getElementById("usernameDisplay");
@@ -75,51 +76,41 @@ async function loadTopScores(user) {
     topScoresList.innerHTML = `<p style="color:#dcd7ff;font-size:0.95rem;">Loading scores...</p>`;
 
     try {
-        // Get all song IDs from the scores collection
-        const scoresCollSnap = await getDocs(collection(db, "scores"));
-        console.log("Song docs in scores collection:", scoresCollSnap.docs.map(d => d.id));
-
-        if (scoresCollSnap.empty) {
-            topScoresList.innerHTML = `<p style="color:#dcd7ff;font-size:0.95rem;">No songs sung yet.</p>`;
-            return;
-        }
-
-        const songIds = scoresCollSnap.docs.map(d => d.id);
-
-        // Direct lookup: scores/{songId}/entries/{uid}
-        const entryResults = await Promise.all(
-            songIds.map(async (songId) => {
-                const entryRef  = doc(db, "scores", songId, "entries", user.uid);
-                const entrySnap = await getDoc(entryRef);
-                console.log(`scores/${songId}/entries/${user.uid} exists:`, entrySnap.exists());
-                if (!entrySnap.exists()) return null;
-                return { songId, ...entrySnap.data() };
-            })
+        // Search ALL 'entries' subcollections across every song for this user's UID
+        const q = query(
+            collectionGroup(db, "entries"),
+            where("userId", "==", user.uid)  // ← adjust field name if different
         );
+        const snap = await getDocs(q);
 
-        const played = entryResults.filter(Boolean);
-        console.log("Played entries found:", played);
+        console.log("Total entries found:", snap.size);
+                console.log("Raw docs:", snap.docs.map(d => ({ id: d.id, path: d.ref.path, data: d.data() })));
 
-        if (played.length === 0) {
+        if (snap.empty) {
             topScoresList.innerHTML = `<p style="color:#dcd7ff;font-size:0.95rem;">No songs sung yet.</p>`;
             return;
         }
+
+        const played = snap.docs.map(d => {
+            // parent of entries/{uid} is scores/{songId}
+            const songId = d.ref.parent.parent.id;
+            return { songId, ...d.data() };
+        });
 
         const top5 = played
             .sort((a, b) => Number(b.score) - Number(a.score))
             .slice(0, 5);
 
         // Look up song titles
-        const titlesMap = await Promise.all(
-            top5.map(async (entry) => {
-                try {
-                    const songSnap = await getDoc(doc(db, "songs", String(entry.songId)));
-                    return songSnap.exists() ? (songSnap.data().title || `Song ${entry.songId}`) : `Song ${entry.songId}`;
-                } catch {
-                    return `Song ${entry.songId}`;
-                }
-            })
-        );
+    const songsRes = await fetch("/api/songs");
+    const songsData = await songsRes.json();
+
+    const titlesMap = top5.map((entry) => {
+        const song = songsData.find(s => s.id === Number(entry.songId));
+        return song ? song.title : `Song ${entry.songId}`;
+    });;
+
+
 
         const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
 

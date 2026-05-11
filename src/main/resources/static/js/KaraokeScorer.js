@@ -296,10 +296,12 @@ function scoringTick() {
         // AGGRESSIVE COMBO REWARDS
         // Since there is no 'max', these multipliers make the score explode!
         let multiplier = 1;
-        if (currentCombo >= 50) multiplier = 10;     // Huge reward for 50+
-        else if (currentCombo >= 25) multiplier = 5;
-        else if (currentCombo >= 10) multiplier = 3;
-        else if (currentCombo >= 2)  multiplier = 500;
+        if (currentCombo >= 50) multiplier = 20;     // Huge reward for 50+
+        else if (currentCombo >= 25) multiplier = 10;
+        else if (currentCombo >= 10) multiplier = 7;
+        else if (currentCombo >= 5) Multiplier = 4;
+        else if (currentCombo >= 2) Multiplier = 2;
+        //else if (currentCombo >= 2)  multiplier = 500; //COMBO FOR TESTING
 
         let pointsEarned = tier.points;
         // Make 'PERFECT' significantly better than others to reward accuracy
@@ -969,16 +971,16 @@ function updateScorerUI(userHz, expectedHz) {
             scoreRollInterval = null;
         }
 
-        const start     = displayedScore;
-        const end       = totalScore;
-        const diff      = end - start;
-        const duration  = 300; // ms — fast enough to feel responsive
+        const start = displayedScore;
+        const end = totalScore;
+        const diff = end - start;
+        const duration = 300; // ms — fast enough to feel responsive
         const startTime = performance.now();
 
         scoreRollInterval = setInterval(() => {
-            const elapsed  = performance.now() - startTime;
+            const elapsed = performance.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const eased    = 1 - Math.pow(1 - progress, 2); // ease-out quad
+            const eased = 1 - Math.pow(1 - progress, 2);
 
             displayedScore = Math.round(start + diff * eased);
             scoreTextEl.textContent = displayedScore.toLocaleString();
@@ -1013,12 +1015,12 @@ function showFinalScore() {
     const pct = Math.round((totalScore / targetScore) * 100);
 
     let grade;
-    if (pct >= 95)      grade = "EX+";
+    if (pct >= 95) grade = "EX+";
     else if (pct >= 88) grade = "A";
     else if (pct >= 80) grade = "B";
     else if (pct >= 70) grade = "C";
     else if (pct >= 60) grade = "D";
-    else                grade = "F";
+    else grade = "F";
 
     // Hide game UI
     const topBar    = document.querySelector(".top-bar") || document.getElementById("topBar");
@@ -1030,11 +1032,11 @@ function showFinalScore() {
 
     const gradeImgMap = {
         "EX+": "/images/TierEX.png",
-        "A":   "/images/TierA.png",
-        "B":   "/images/TierB.png",
-        "C":   "/images/TierC.png",
-        "D":   "/images/TierD.png",
-        "F":   "/images/TierF.png",
+        "A": "/images/TierA.png",
+        "B": "/images/TierB.png",
+        "C": "/images/TierC.png",
+        "D": "/images/TierD.png",
+        "F": "/images/TierF.png",
     };
 
     const sub = document.getElementById("subtitle");
@@ -1051,11 +1053,11 @@ function showFinalScore() {
             <div class="final-rank-bar-wrapper">
                 <!-- Rank zone labels -->
             <div class="final-rank-labels">
-                <img src="/images/TierF.png"  class="rbl-img rbl-img-f" style="left:0%">
-                <img src="/images/TierD.png"  class="rbl-img rbl-img-d" style="left:60%">
-                <img src="/images/TierC.png"  class="rbl-img" style="left:70%">
-                <img src="/images/TierB.png"  class="rbl-img" style="left:80%">
-                <img src="/images/TierA.png"  class="rbl-img" style="left:88%">
+                <img src="/images/TierF.png" class="rbl-img rbl-img-f" style="left:0%">
+                <img src="/images/TierD.png" class="rbl-img rbl-img-d" style="left:60%">
+                <img src="/images/TierC.png" class="rbl-img" style="left:70%">
+                <img src="/images/TierB.png" class="rbl-img" style="left:80%">
+                <img src="/images/TierA.png" class="rbl-img" style="left:88%">
                 <img src="/images/TierEX.png" class="rbl-img rbl-img-ex" style="left:95%">
             </div>
 
