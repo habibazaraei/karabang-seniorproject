@@ -72,12 +72,13 @@ body {
 .login-wrapper {
     min-height: calc(100vh - 70px);
     padding: 45px;
-    display: grid;
-    grid-template-columns: 0.9fr 1fr;
-    gap: 35px;
+
+    display: flex;
+    justify-content: center;
     align-items: center;
-    max-width: 1150px;
-    margin: 0 auto;
+
+    max-width: none;
+    margin: 0;
 }
 
 .welcome-card,
@@ -87,6 +88,8 @@ body {
     border-radius: 28px;
     padding: 38px;
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-items: center;
 }
 
 .welcome-card {

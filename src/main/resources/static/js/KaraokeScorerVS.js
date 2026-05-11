@@ -276,6 +276,7 @@ function resetScoreBar(fillId = "p1ScoreBarFill", barId = "p1ScoreBar") {
 }
 
 // ─── Tier / Combo Floats ───────────────────────────────────────────────────────
+
 function spawnTierPopup(tier, side) {
     const layer = document.getElementById("tierFloatLayer");
     if (!layer) return;
@@ -283,11 +284,17 @@ function spawnTierPopup(tier, side) {
     el.className   = "tierFloat";
     el.textContent = tier.label;
     el.style.color = tier.color;
-    el.style.left  = side === "left" ? `${10 + Math.random() * 20}%` : `${70 + Math.random() * 20}%`;
-    // P1 tier floats in top half; P2 tier floats in bottom half near their bar
-    el.style.top   = side === "left"
-        ? `${20 + Math.random() * 25}%`
-        : `${55 + Math.random() * 25}%`;
+
+    if (side === "left") {
+        // P1 — top of screen, right half
+        el.style.left = `${50 + Math.random() * 30}%`;
+        el.style.top  = `${18 + Math.random() * 15}%`;
+    } else {
+        // P2 — bottom of screen, right half
+        el.style.left = `${50 + Math.random() * 30}%`;
+        el.style.top  = `${75 + Math.random() * 15}%`;
+    }
+
     layer.appendChild(el);
     setTimeout(() => el.remove(), 1200);
 }
@@ -298,14 +305,23 @@ function spawnComboPopup(combo, side) {
     const el = document.createElement("div");
     el.className   = "tierFloat";
     el.textContent = `${combo}x COMBO`;
+
     if      (combo >= 50) el.style.color = "#FFD700";
     else if (combo >= 20) el.style.color = "#9d3bf8";
     else if (combo >= 10) el.style.color = "#215fe5";
     else if (combo >= 5)  el.style.color = "#4BA7FF";
     else                  el.style.color = "#6bff8e";
-    el.style.left = side === "left" ? "12%" : "82%";
-    // P1 combo floats in top half; P2 combo floats in bottom half (near their bar)
-    el.style.top  = side === "left" ? "15%" : "65%";
+
+    if (side === "left") {
+        // P1 — top of screen, right side
+        el.style.left = `${90 + Math.random() * 15}%`;
+        el.style.top  = `${18}%`;
+    } else {
+        // P2 — bottom of screen, right side
+        el.style.left = `${90 + Math.random() * 15}%`;
+        el.style.top  = `${82}%`;
+    }
+
     layer.appendChild(el);
     setTimeout(() => el.remove(), 1000);
 }
@@ -483,32 +499,243 @@ function closeScoreboard() {
 function showWinner() {
     const p1 = players[0], p2 = players[1];
 
-    document.getElementById("wP1Score").textContent = p1.score.toLocaleString();
-    document.getElementById("wP2Score").textContent = p2.score.toLocaleString();
-
-    let winnerName, winnerColor;
+    // Determine winner
+    let winnerName, winnerColor, winnerScore, winnerGrade;
     if (p1.score === p2.score) {
         winnerName  = "TIE!";
         winnerColor = "#FFD700";
+        winnerScore = p1.score;
     } else if (p1.score > p2.score) {
         winnerName  = "PLAYER 1 WINS!";
         winnerColor = "#4BA7FF";
+        winnerScore = p1.score;
         const c = document.getElementById("p1ScoreCard");
         if (c) c.style.border = "2px solid #4BA7FF";
     } else {
         winnerName  = "PLAYER 2 WINS!";
         winnerColor = "#ff6b6b";
+        winnerScore = p2.score;
         const c = document.getElementById("p2ScoreCard");
         if (c) c.style.border = "2px solid #ff6b6b";
     }
 
-    document.getElementById("winnerName").textContent = winnerName;
+    const pct = Math.min(Math.round((winnerScore / TARGET_SCORE) * 100), 100);
+    let grade;
+    if      (pct >= 95) grade = "EX+";
+    else if (pct >= 88) grade = "A";
+    else if (pct >= 80) grade = "B";
+    else if (pct >= 70) grade = "C";
+    else if (pct >= 60) grade = "D";
+    else                grade = "F";
+
+    const gradeImgMap = {
+        "EX+": "/images/TierEX.png",
+        "A":   "/images/TierA.png",
+        "B":   "/images/TierB.png",
+        "C":   "/images/TierC.png",
+        "D":   "/images/TierD.png",
+        "F":   "/images/TierF.png",
+    };
+
+    document.getElementById("winnerName").textContent  = winnerName;
     document.getElementById("winnerName").style.color  = winnerColor;
+    document.getElementById("winnerGradeImg").src       = gradeImgMap[grade];
+    document.getElementById("winnerGradeImg").className =
+        `winner-grade-img${grade === "EX+" ? " ex-grade" : ""}`;
+
+    // Animate scores counting up
+    if (p1.score >= p2.score) {
+
+        animateWinnerScore("wP2Score", p2.score);
+
+        setTimeout(() => {
+            animateWinnerScore("wP1Score", p1.score);
+        }, 250);
+
+    } else {
+
+        animateWinnerScore("wP1Score", p1.score);
+
+        setTimeout(() => {
+            animateWinnerScore("wP2Score", p2.score);
+        }, 250);
+    }
+
     document.getElementById("winnerOverlay").style.display = "flex";
+
+    // After scores count up, animate the bar
+    const p1Pct = Math.min((p1.score / TARGET_SCORE) * 100, 100);
+    const p2Pct = Math.min((p2.score / TARGET_SCORE) * 100, 100);
+
+    const winnerPct = Math.max(p1Pct, p2Pct);
+    const loserPct  = Math.min(p1Pct, p2Pct);
+
+    setTimeout(() => {
+        animateWinnerRankBar(winnerPct, loserPct);
+    }, 1300);
 
     saveP1Score(p1.score);
 }
 
+function animateWinnerScore(elId, target) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const duration = 1200, startTime = performance.now();
+    function update(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased    = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(target * eased).toLocaleString();
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = target.toLocaleString();
+    }
+    requestAnimationFrame(update);
+}
+
+// ─── Replace the existing animateWinnerRankBar function in KaraokeScorerVS.js ──
+// ─── Drop-in replacement for animateWinnerRankBar in KaraokeScorerVS.js ────────
+//
+// VISUAL RESULT:
+//   Loser bar sits ON TOP (higher z-index, full border-radius).
+//   Winner bar grows from 0 → winnerPct underneath, so it appears to
+//   slide out from behind the loser's right edge — fully rounded on both ends.
+//
+//   [ LOSER ████████████████ ]
+//   [ WINNER ████████████████████████████ ]  ← slides out from under
+
+function animateWinnerRankBar(winnerPct, loserPct) {
+
+    const fill      = document.getElementById("winnerRankFill");
+    const loserFill = document.getElementById("winnerLoserFill");
+    const marker    = document.getElementById("winnerRankMarker");
+    const badge     = document.getElementById("winnerGradeBadge");
+    const edge      = document.getElementById("winnerEdgeGlow");
+
+    if (!fill || !loserFill || !marker || !badge) return;
+
+    // Remove overlap zone if it exists from a previous run
+    const old = document.getElementById("winnerOverlapZone");
+    if (old) old.remove();
+
+    const p1Won       = players[0].score >= players[1].score;
+    const winnerColor = p1Won ? "#3b82ff" : "#ff3b3b";
+    const loserColor  = p1Won ? "#ff3b3b" : "#3b82ff";
+
+    const safeWinnerPct = Math.min(winnerPct, 100);
+    const safeLoserPct  = Math.min(loserPct,  100);
+
+    // ── Immediately zero both fills — no flash ─────────────────────────────
+    fill.style.transition      = "none";
+    loserFill.style.transition = "none";
+    fill.style.width      = "0%";
+    loserFill.style.width = "0%";
+    fill.style.left       = "0%";
+    fill.style.opacity      = "1";
+    loserFill.style.opacity = "1";
+    void fill.offsetWidth;
+    void loserFill.offsetWidth;
+
+    marker.style.left    = "0%";
+    marker.style.opacity = "0";
+    if (edge) edge.style.opacity = "0";
+    badge.style.transform = "scale(0.5)";
+    badge.style.opacity   = "0";
+
+    // ── Shared decorative overlays ─────────────────────────────────────────
+    const glassShine = `linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.28) 0%,
+        rgba(255,255,255,0)    50%,
+        rgba(0,0,0,0.15)       100%
+    )`;
+    const stripes = `repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.15) 0px,
+        rgba(255,255,255,0.15) 10px,
+        transparent            10px,
+        transparent            20px
+    )`;
+
+    // ── Loser fill — z-index 2 (on top), full border-radius ───────────────
+    loserFill.style.left           = "0%";
+    loserFill.style.backgroundImage = `${glassShine}, ${stripes},
+        linear-gradient(to right, ${loserColor}, ${loserColor})`;
+    loserFill.style.backgroundSize  = "100% 100%, 20px 20px, 100% 100%";
+    loserFill.style.animation       = "barberSpin 1.6s linear infinite";
+    loserFill.style.zIndex          = "2";
+    loserFill.style.borderRadius    = "7px";
+    loserFill.style.opacity         = "1";
+
+    // ── Winner fill — z-index 1 (behind loser), full border-radius ────────
+
+    fill.style.left            = "0%";
+    fill.style.backgroundImage = `${glassShine}, ${stripes},
+        linear-gradient(to right, ${winnerColor}, ${winnerColor})`;
+    fill.style.backgroundSize  = "100% 100%, 20px 20px, 100% 100%";
+    fill.style.animation       = "barberSpin 1.6s linear infinite";
+    fill.style.zIndex          = "1";
+    fill.style.borderRadius    = "7px";
+    fill.style.opacity         = "1";
+
+    // ── PHASE 1 — loser bar grows 0 → loserPct ────────────────────────────
+    const loserDuration = 900;
+    const loserStart    = performance.now();
+
+    function loserStep(now) {
+        const progress = Math.min((now - loserStart) / loserDuration, 1);
+        const eased    = 1 - Math.pow(1 - progress, 2.5);
+        loserFill.style.width = (eased * safeLoserPct) + "%";
+
+        if (progress < 1) {
+            requestAnimationFrame(loserStep);
+        } else {
+            loserFill.style.width = safeLoserPct + "%";
+
+            // Brief pause before winner slides out
+            setTimeout(() => {
+
+                // ── PHASE 2 — winner bar grows 0 → winnerPct underneath ───
+                const winnerDuration = 1100;
+                const winnerStart    = performance.now();
+
+                function winnerStep(now2) {
+                    const progress2 = Math.min((now2 - winnerStart) / winnerDuration, 1);
+                    const eased2    = 1 - Math.pow(1 - progress2, 2.5);
+                    const current   = eased2 * safeWinnerPct;
+
+                    fill.style.width = current + "%";
+
+                    // Edge glow + marker only track the visible tip (beyond loser)
+                    if (current >= safeLoserPct) {
+                        if (edge) {
+                            edge.style.left    = current + "%";
+                            edge.style.opacity = "1";
+                        }
+                        marker.style.left    = current + "%";
+                        marker.style.opacity = "1";
+                    }
+
+                    if (progress2 < 1) {
+                        requestAnimationFrame(winnerStep);
+                    } else {
+                        fill.style.width = safeWinnerPct + "%";
+                        marker.classList.add("winner-marker-bounce");
+
+                        setTimeout(() => {
+                            badge.style.transition =
+                                "opacity 0.3s ease, transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)";
+                            badge.style.opacity   = "1";
+                            badge.style.transform = "scale(1)";
+                        }, 400);
+                    }
+                }
+                requestAnimationFrame(winnerStep);
+
+            }, 250);
+        }
+    }
+
+    requestAnimationFrame(loserStep);
+}
 // ─── restartSong ───────────────────────────────────────────────────────────────
 export async function restartSong() {
     isRestarting = true;
@@ -516,10 +743,10 @@ export async function restartSong() {
     clearInterval(scoringInterval);
     stopAllMics();
 
-    const audio     = document.getElementById("audio");
-    const subtitle  = document.getElementById("subtitle");
-    const progress  = document.getElementById("progress");
-    const bottomBar = document.getElementById("bottomBar");
+    const audio      = document.getElementById("audio");
+    const subtitle   = document.getElementById("subtitle");
+    const progress   = document.getElementById("progress");
+    const bottomBar  = document.getElementById("bottomBar");
     const micOverlay = document.getElementById("micSelectOverlay");
 
     if (audio)    { audio.pause(); audio.currentTime = 0; }
@@ -527,6 +754,34 @@ export async function restartSong() {
     if (progress) progress.style.width = "0%";
 
     resetAll();
+
+    // ── Reset winner overlay bar ───────────────────────────────────────────
+    const winnerFill = document.getElementById("winnerRankFill");
+    const loserFill  = document.getElementById("winnerLoserFill");
+    const marker     = document.getElementById("winnerRankMarker");
+    const badge      = document.getElementById("winnerGradeBadge");
+    const edge       = document.getElementById("winnerEdgeGlow");
+    const overlap    = document.getElementById("winnerOverlapZone");
+
+    if (winnerFill) { winnerFill.style.transition = "none"; winnerFill.style.width = "0%"; }
+    if (loserFill)  { loserFill.style.transition  = "none"; loserFill.style.width  = "0%"; }
+    if (marker)     { marker.style.left = "0%"; marker.style.opacity = "0"; marker.classList.remove("winner-marker-bounce"); }
+    if (badge)      { badge.style.opacity = "0"; badge.style.transform = "scale(0.5)"; badge.style.transition = "none"; }
+    if (edge)       { edge.style.opacity = "0"; edge.style.left = "0%"; }
+    if (overlap)    overlap.remove();
+
+    // Reset score cards border
+    const p1c = document.getElementById("p1ScoreCard");
+    const p2c = document.getElementById("p2ScoreCard");
+    if (p1c) p1c.style.border = "none";
+    if (p2c) p2c.style.border = "none";
+
+    // Reset winner overlay score displays
+    const wP1 = document.getElementById("wP1Score");
+    const wP2 = document.getElementById("wP2Score");
+    if (wP1) wP1.textContent = "0";
+    if (wP2) wP2.textContent = "0";
+    // ──────────────────────────────────────────────────────────────────────
 
     // Reset mic overlay UI
     const micTitle   = document.getElementById("micPanelTitle");
@@ -547,7 +802,6 @@ export async function restartSong() {
 
     isRestarting = false;
 }
-
 window.addEventListener("DOMContentLoaded", () => {
     window.KaraokeScorer = window.KaraokeScorer || {};
     window.KaraokeScorer.restartSong = restartSong;
@@ -649,8 +903,11 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // ── Go back ─────────────────────────────────────────────────────────
     const goBackBtn = document.getElementById("goBack");
-    if (goBackBtn) goBackBtn.onclick = () => { window.location.href = "/songselection"; };
-
+    if (goBackBtn) goBackBtn.onclick = () => {
+        const params = new URLSearchParams(window.location.search);
+        const songId = params.get("song");
+        window.location.href = `/songselection?song=${songId}`;
+    };
     // ── Retry ────────────────────────────────────────────────────────────
     const retryBtn = document.getElementById("retryBattleBtn");
     if (retryBtn) {
@@ -666,7 +923,11 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // ── Back to songs ────────────────────────────────────────────────────
     const backBtn = document.getElementById("backFromBattleBtn");
-    if (backBtn) backBtn.onclick = () => { window.location.href = "/songselection"; };
+    if (backBtn) backBtn.onclick = () => {
+        const params = new URLSearchParams(window.location.search);
+        const songId = params.get("song");
+        window.location.href = `/songselection?song=${songId}`;
+    };
 });
 
 // ─── Styles ────────────────────────────────────────────────────────────────────

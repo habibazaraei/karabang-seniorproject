@@ -1458,6 +1458,7 @@ onAuthStateChanged(auth, user => {
         document.getElementById("loggedOut").style.display = "none";
         loadFavoriteStates();
         loadUserPreferences(user);
+        loadNavAvatar(user);
     } else {
         document.getElementById("loggedIn").style.display = "none";
         document.getElementById("loggedOut").style.display = "block";
@@ -1465,12 +1466,33 @@ onAuthStateChanged(auth, user => {
 });
 
 
-
 document.getElementById("logoutBtn").onclick = async () => {
     await signOut(auth);
     location.reload();
 };
 
+async function loadNavAvatar(user) {
+    try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (!snap.exists()) {
+            console.warn("loadNavAvatar: no user doc found");
+            return;
+        }
+        const data = snap.data();
+        console.log("loadNavAvatar colors:", data.avatarBgColor, data.avatarBodyColor, data.avatarHeadColor);
+
+        const bgHex   = data.avatarBgColor   || "#000000";
+        const bodyHex = data.avatarBodyColor  || "#787878";
+        const headHex = data.avatarHeadColor  || "#9E9E9E";
+
+        document.getElementById("navAvatarBg")?.setAttribute("fill", bgHex);
+        document.getElementById("navAvatarBody")?.setAttribute("fill", bodyHex);
+        document.getElementById("navAvatarHead")?.setAttribute("fill", headHex);
+        document.getElementById("navAvatarShoulders")?.setAttribute("fill", headHex);
+    } catch (err) {
+        console.error("loadNavAvatar error:", err);
+    }
+}
 
 //So we can save settings preferences to a users account.
 async function saveUserPreferences() {
