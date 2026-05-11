@@ -299,8 +299,8 @@ function scoringTick() {
         if (currentCombo >= 50) multiplier = 20;     // Huge reward for 50+
         else if (currentCombo >= 25) multiplier = 10;
         else if (currentCombo >= 10) multiplier = 7;
-        else if (currentCombo >= 5) Multiplier = 4;
-        else if (currentCombo >= 2) Multiplier = 2;
+        else if (currentCombo >= 5) multiplier = 4;
+        else if (currentCombo >= 2) multiplier = 2;
         //else if (currentCombo >= 2)  multiplier = 500; //COMBO FOR TESTING
 
         let pointsEarned = tier.points;
