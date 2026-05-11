@@ -25,16 +25,14 @@
 
 #p1Panel {
     border-bottom: 2px solid rgba(255,255,255,0.15);
+    justify-content: flex-start;
 }
 
-/* ── Player Header (name + score) ──────────────────── */
-.playerHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+#p2Panel {
+    justify-content: flex-end;
 }
 
+/* ── Player Label (above P1, below P2) ─────────────── */
 .playerLabel {
     font-family: "LTKaraoke", sans-serif;
     font-size: 1rem;
@@ -42,6 +40,9 @@
     padding: 2px 10px;
     border-radius: 20px;
     white-space: nowrap;
+    display: inline-block;
+    align-self: center;
+    text-align: center;
 }
 
 #p1Label {
@@ -56,6 +57,23 @@
     color: #ff6b6b;
 }
 
+/* ── Score + Bar Row ───────────────────────────────── */
+/* Score and bar sit side-by-side on the same line */
+.scoreBarRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Bar takes all remaining width */
+.scoreBarRow .battleScoreBar {
+    flex: 1;
+}
+#p2Panel .scoreBarRow {
+    flex-direction: row;
+}
+/* ── Score Display ─────────────────────────────────── */
 .playerScore {
     font-family: "LTKaraoke", monospace;
     font-size: 1.6rem;
@@ -68,13 +86,7 @@
     border-radius: 8px;
     min-width: 100px;
     text-align: center;
-}
-
-.playerPitch {
-    font-size: 0.75rem;
-    color: #aaa;
-    flex: 1;
-    text-align: center;
+    flex-shrink: 0;
 }
 
 /* ── Score Bar ─────────────────────────────────────── */
@@ -89,36 +101,45 @@
 
 .battleScoreBarFill {
     position: absolute;
-    left: 0; top: 0;
+    top: 0;
     height: 100%;
     width: 0%;
     border-radius: 8px;
     transition: width 0.1s linear;
 }
 
-#p1BarFill {
-    background: linear-gradient(to right, #1a6bbf, #4BA7FF, #7dd4ff);
+/* P1 fill: left → right */
+#p1ScoreBarFill {
+    left: 0;
+    right: auto;
 }
 
-#p2BarFill {
-    background: linear-gradient(to right, #8b0000, #ff6b6b, #ffaaaa);
+/* P2 fill same as P1 */
+#p2ScoreBarFill {
+    left: 0;
+    right: auto;
 }
 
-/* Rank markers on bar */
+/* ── Rank Markers ──────────────────────────────────── */
 .battleRankMarker {
     position: absolute;
-    top: -8px;
     width: 3px;
-    height: 30px;
+    height: 22px;
     background: #808080;
     z-index: 5;
     transform: translateX(-50%);
     overflow: visible;
 }
 
-.battleRankImg {
+/* P1 markers: tick sits above bar, image hangs BELOW */
+.p1marker {
+    top: 0;
+}
+
+.p1marker .battleRankImg {
     position: absolute;
-    top: 18px;
+    top: 100%;
+    margin-top: 4px;
     left: 50%;
     transform: translateX(-50%);
     width: 24px;
@@ -126,11 +147,40 @@
     display: block;
 }
 
-.battleRankMarker.rank-ex .battleRankImg {
+.p1marker.rank-ex .battleRankImg {
     width: 50px;
     transform: translateX(-40%);
 }
 
+/* P2 markers: tick sits at top, image floats ABOVE */
+.p2marker {
+    bottom: 0;
+}
+
+.p2marker .battleRankImg {
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: auto;
+    display: block;
+}
+
+.p2marker.rank-ex .battleRankImg {
+    width: 50px;
+    transform: translateX(-40%);
+}
+
+/* Extra top/bottom padding on bars to give rank images room */
+#p1ScoreBar {
+    margin-bottom: 28px;
+}
+
+#p2ScoreBar {
+    margin-top: 28px;
+}
 
 /* ── Divider / VS Label ────────────────────────────── */
 #vsDivider {
