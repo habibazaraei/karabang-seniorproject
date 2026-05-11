@@ -165,11 +165,13 @@
     </div>
 </div>
 
+
 <!-- Winner Overlay — display:none until song ends -->
 <div id="winnerOverlay" style="display:none;">
     <div id="winnerPanel">
         <div id="winnerTitle">WINNER</div>
         <div id="winnerName"></div>
+
         <div class="winnerScoreRow">
             <div class="winnerScoreCard" id="p1ScoreCard">
                 <span class="wLabel">PLAYER 1</span>
@@ -180,6 +182,34 @@
                 <span class="wScore" id="wP2Score">0</span>
             </div>
         </div>
+
+        <div class="winner-rank-bar-wrapper">
+            <div class="winner-rank-labels">
+                <img src="/images/TierF.png"  class="wrbl-img wrbl-f">
+                <img src="/images/TierD.png"  class="wrbl-img wrbl-d" style="left:60%">
+                <img src="/images/TierC.png"  class="wrbl-img" style="left:70%">
+                <img src="/images/TierB.png"  class="wrbl-img" style="left:80%">
+                <img src="/images/TierA.png"  class="wrbl-img" style="left:88%">
+                <img src="/images/TierEX.png" class="wrbl-img wrbl-ex" style="left:95%">
+            </div>
+            <div id="winnerEdgeGlow"></div>
+            <div class="winner-rank-track">
+                <div id="winnerLoserFill" class="winner-loser-fill"></div>
+                <div id="winnerRankFill" class="winner-rank-fill"></div>
+                <div class="wfrb-divider" style="left:1%"></div>
+                <div class="wfrb-divider" style="left:60%"></div>
+                <div class="wfrb-divider" style="left:70%"></div>
+                <div class="wfrb-divider" style="left:80%"></div>
+                <div class="wfrb-divider" style="left:88%"></div>
+                <div class="wfrb-divider" style="left:95%"></div>
+
+                <div id="winnerRankMarker" class="winner-rank-marker"></div>
+            </div>
+        </div>
+        <div id="winnerGradeBadge" class="winner-grade-badge" style="opacity:0;">
+            <img id="winnerGradeImg" class="winner-grade-img">
+        </div>
+
         <div class="winnerBtns">
             <button class="winnerBtn primary" id="retryBattleBtn">Play Again</button>
             <button class="winnerBtn secondary" id="backFromBattleBtn">Back to Songs</button>
