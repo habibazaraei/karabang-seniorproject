@@ -412,6 +412,25 @@ body {
   height: 100%;
   object-fit: contain;
 }
+#profile {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  overflow: visible;
+}
+
+#navAvatar {
+  display: block;
+  width: 52px;
+  height: 52px;
+  overflow: visible;
+}
 /*spinning settings button*/
 
 @keyframes spin {
