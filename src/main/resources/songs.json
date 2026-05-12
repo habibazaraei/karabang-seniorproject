@@ -621,6 +621,6 @@
     "lyricsPath": "/lyrics/SnakeEater.lrc",
     "artCoverPath": "/artCover/SnakeEaterCover.jpg",
     "songTeaserPath": "/teaser/SnakeEater.mp3",
-    "pitchesPath": "/audio/SnakeEater_pitches.json"
+    "pitchesPath": "/audio/.json"
   }
 ]
