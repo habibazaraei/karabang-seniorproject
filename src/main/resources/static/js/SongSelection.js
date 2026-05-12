@@ -844,8 +844,8 @@ function addSongCard(listToRender){
             songBottomClass += " rock";
             songCardClass += " rock";
         }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("r&b/soul")) {
-            songBottomClass += " r&b/soul";
-            songCardClass += " r&b/soul";
+            songBottomClass += " rnbsoul";
+            songCardClass += " rnbsoul";
         } else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("r&b")) {
             songBottomClass += " rnb";
             songCardClass += " rnb";
@@ -853,8 +853,8 @@ function addSongCard(listToRender){
             songBottomClass += " alternative";
             songCardClass += " alternative";
         }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("hip-hop/rap")) {
-            songBottomClass += " hip-hop/rap";
-            songCardClass += " hip-hop/rap";
+            songBottomClass += " hip-hop-rap";
+            songCardClass += " hip-hop-rap";
         }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("game")) {
             songBottomClass += " game";
             songCardClass += " game";

@@ -296,10 +296,10 @@ function scoringTick() {
         // AGGRESSIVE COMBO REWARDS
         // Since there is no 'max', these multipliers make the score explode!
         let multiplier = 0;
-            if (currentCombo >= 50) multiplier = 10;
-            else if (currentCombo >= 25) multiplier = 4;
-            else if (currentCombo >= 10) multiplier = 2;
-            else if (currentCombo >= 5) multiplier = 1.5;
+            if (currentCombo >= 50) multiplier = 30;
+            else if (currentCombo >= 25) multiplier = 10;
+            else if (currentCombo >= 10) multiplier = 6;
+            else if (currentCombo >= 5) multiplier = 3;
             else if (currentCombo >= 2) multiplier = 0.75;
 
 
