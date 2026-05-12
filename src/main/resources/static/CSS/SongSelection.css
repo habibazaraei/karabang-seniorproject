@@ -144,6 +144,7 @@ body {
   border-color: transparent;
   transition-duration: 0.4s;
 }
+
 .songCard.pop {
   border: 0.2em solid #FF5252;
 }
@@ -152,13 +153,50 @@ body {
   box-shadow: none;
   border-color: #fcdbdb;
 }
+
 .songCard.rock {
   border: 0.2em solid #920A65;
 }
+
 .songCard.rock:hover {
   transform: none;
   box-shadow: none;
   border-color: #ffbae7;
+}
+
+.songCard.game {
+  border: 0.2em solid #00BD29;
+}
+.songCard.game:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #8bf6a2;
+}
+
+.songCard.rnb {
+  border: 0.2em solid #6B16FE;
+}
+.songCard.rnb:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #a76cff;
+}
+
+.songBottom.pop {
+  background: url('../images/red_background_2.svg');
+  background-size: cover;
+}
+.songBottom.rock {
+  background: url('../images/purple_background.svg');
+  background-size: cover;
+}
+.songBottom.game {
+  background: url('../images/game_background.svg');
+  background-size: cover;
+}
+.songBottom.rnb {
+  background: url('../images/r&b_background.svg');
+  background-size: cover;
 }
 /* track selection like cards */
 
@@ -322,15 +360,7 @@ body {
   min-width: 20px;
   vertical-align: middle;
 }
-.songBottom.pop {
-  background: url('../images/red_background_2.svg');
-  background-size: cover;
 
-}
-.songBottom.rock {
-  background: url('../images/purple_background.svg');
-  background-size: cover;
-}
 /* invisible hover zones for scrolling */
 .scrollZone {
   position: absolute;
@@ -645,19 +675,55 @@ body {
 }
 /* song Art cover on the right side of screen */
 
-
-#songImage {
+#songImageWrapper {
   position: relative;
   width: 100%;
   max-width: 600px;
+  display: block;
+}
+
+#songImage {
+  display: block;
+  width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: clamp(16px, 1vw, 24px);
-
   box-shadow:
           0 6px 0 rgba(0, 0, 0, 0.9),
           0 10px 20px rgba(0, 0, 0, 0.6);
 }
+
+#songRankBadge {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  width: clamp(44px, 12%, 128px);
+  height: auto;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+  z-index: 10;
+  pointer-events: none;
+  animation: rankBadgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes rankBadgePop {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+#songRankBadge.ex-badge {
+  right: 0px;
+  width: clamp(100px, 22%, 240px);
+  filter: drop-shadow(0 0 10px gold);
+  animation: rankBadgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+  exPulse 1.2s ease-in-out 0.35s infinite;
+}
+
+@keyframes exPulse {
+  0%, 100% { filter: drop-shadow(0 0 10px gold); }
+  50%       { filter: drop-shadow(0 0 22px gold) brightness(1.25); }
+}
+
+
 /* information of the song under image */
 #songInfo {
   width: 100%;
