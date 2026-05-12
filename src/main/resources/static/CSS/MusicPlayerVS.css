@@ -1,0 +1,640 @@
+/* ── Battle Layout ─────────────────────────────────── */
+#battleUI {
+    position: absolute;
+    top: 6%;
+    left: 0;
+    width: 100%;
+    height: 88%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 5;
+    pointer-events: none;
+    overflow: hidden;
+}
+/* ── Player Panels ─────────────────────────────────── */
+.playerPanel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 6px 16px;
+    box-sizing: border-box;
+    gap: 4px;
+}
+
+#p1Panel {
+    justify-content: flex-start;
+}
+
+#p2Panel {
+    justify-content: flex-end;
+    flex-direction: column-reverse;
+}
+/* ── Player Label (above P1, below P2) ─────────────── */
+.playerLabel {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    display: inline-block;
+    align-self: flex-end;
+    text-align: center;
+    width: 90px;
+    margin-right: 0;
+}
+
+#p1Label {
+    background: rgba(75, 167, 255, 0.25);
+    border: 1px solid #4BA7FF;
+    color: #4BA7FF;
+
+}
+
+#p2Label {
+    background: rgba(255, 107, 107, 0.25);
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+
+}
+
+/* ── Score + Bar Row ───────────────────────────────── */
+/* Score and bar sit side-by-side on the same line */
+.scoreBarRow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    width: 100%;
+    padding: 6px 16px;
+    box-sizing: border-box;
+}
+
+#p2Panel {
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+}
+
+/* Tighten rank image spacing — was 28px, too tall */
+#p1ScoreBar {
+    margin-bottom: 20px;
+}
+
+#p2ScoreBar {
+    margin-top: 20px;
+}
+
+/* Shrink rank images to match single-player size */
+.p1marker .battleRankImg,
+.p2marker .battleRankImg {
+    width: 20px;
+}
+
+.p1marker.rank-ex .battleRankImg,
+.p2marker.rank-ex .battleRankImg {
+    width: 40px;
+}
+/* ── Score Display ─────────────────────────────────── */
+
+.scoreBarRow .barAndScore {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.scoreBarRow .battleScoreBar {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 16px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid #333;
+    overflow: visible;
+    position: relative;
+}
+
+.playerScore {
+    font-family: "LTKaraoke", monospace;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 8px;
+    text-align: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 90px;
+}
+
+/* ── Score Bar ─────────────────────────────────────── */
+.battleScoreBar {
+    position: relative;
+    width: 100%;
+    height: 16px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid #333;
+    overflow: visible;
+}
+
+.battleScoreBarFill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    transition: width 0.1s linear;
+}
+
+/* P1 fill: left → right */
+#p1ScoreBarFill {
+    left: 0;
+    right: auto;
+}
+
+/* P2 fill same as P1 */
+#p2ScoreBarFill {
+    left: 0;
+    right: auto;
+}
+
+/* ── Rank Markers ──────────────────────────────────── */
+.battleRankMarker {
+    position: absolute;
+    width: 3px;
+    height: 22px;
+    background: #808080;
+    z-index: 5;
+    transform: translateX(-50%);
+    overflow: visible;
+}
+
+/* P1 markers: tick sits above bar, image hangs BELOW */
+.p1marker {
+    top: 0;
+}
+
+.p1marker .battleRankImg {
+    position: absolute;
+    top: 100%;
+    margin-top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: auto;
+    display: block;
+}
+
+.p1marker.rank-ex .battleRankImg {
+    width: 50px;
+    transform: translateX(-40%);
+}
+
+/* P2 markers: tick sits at top, image floats ABOVE */
+.p2marker {
+    bottom: 0;
+}
+
+.p2marker .battleRankImg {
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: auto;
+    display: block;
+}
+
+.p2marker.rank-ex .battleRankImg {
+    width: 50px;
+    transform: translateX(-40%);
+}
+
+/* Extra top/bottom padding on bars to give rank images room */
+#p1ScoreBar {
+    margin-bottom: 28px;
+}
+
+#p2ScoreBar {
+    margin-top: 28px;
+}
+
+/* ── Divider / VS Label ────────────────────────────── */
+#vsDivider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#vsLabel {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background: rgba(123, 39, 245, 0.7);
+    border: 1px solid #7b27f5;
+    padding: 2px 16px;
+    border-radius: 20px;
+    z-index: 2;
+}
+
+/* ── Lyrics center zone ────────────────────────────── */
+#subtitle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    text-align: center;
+    font-size: 4vw;
+    z-index: 10;
+    line-height: 1.2em;
+    pointer-events: none;
+}
+
+/* ── Mic selector overlay ──────────────────────────── */
+#micSelectOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+#micSelectPanel {
+    background: rgba(123, 39, 245, 0.85);
+    border: 1px solid #7b27f5;
+    border-radius: 20px;
+    padding: 36px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    max-width: 500px;
+    width: 90%;
+}
+
+#micSelectPanel h2 {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 1.8rem;
+    color: white;
+    margin: 0;
+}
+
+.micRow {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.micRow label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+#p1MicLabel {
+    background: rgba(75,167,255,0.25);
+    border: 1px solid #4BA7FF;
+    color: #4BA7FF;
+}
+
+#p2MicLabel {
+    background: rgba(255,107,107,0.25);
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+}
+
+.micRow select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #555;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 0.9rem;
+}
+
+#confirmMicsBtn {
+    padding: 12px 40px;
+    font-size: 1.1rem;
+    border-radius: 999px;
+    border: 1px solid #4BA7FF;
+    background: rgba(75,167,255,0.3);
+    color: white;
+    cursor: pointer;
+    font-family: "LTKaraoke", sans-serif;
+    transition: background 0.2s;
+}
+
+#confirmMicsBtn:hover {
+    background: rgba(75,167,255,0.6);
+}
+
+/* ── Winner Screen ─────────────────────────────────── */
+/* ── Winner overlay backdrop ───────────────────────────────────── */
+#winnerOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    z-index: 99998;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* ── Main panel — matches .scoreboard-style-final ──────────────── */
+#winnerPanel {
+    background: rgba(123, 39, 245, 0.85);
+    border: 1px solid #7b27f5;
+    border-radius: 24px;
+
+    padding: 40px 60px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 16px;
+
+    min-width: 320px;
+    max-width: 560px;
+    width: 90%;
+
+    backdrop-filter: blur(10px);
+    animation: fadeInScale 0.35s ease forwards;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── "WINNER" header — matches .final-header ───────────────────── */
+#winnerTitle {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 2rem;
+    color: white;
+    user-select: none;
+}
+
+/* ── Winner name — matches .final-score size/color ─────────────── */
+#winnerName {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.45);
+    user-select: none;
+    animation: scorePop 0.4s ease;
+}
+
+@keyframes scorePop {
+    0%   { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+/* ── Score cards row ────────────────────────────────────────────── */
+.winnerScoreRow {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    width: 100%;
+}
+
+.winnerScoreCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 24px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex: 1;
+}
+
+/* Player labels colored per player */
+#p1ScoreCard .wLabel {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #4BA7FF;
+    user-select: none;
+}
+
+#p2ScoreCard .wLabel {
+    font-family: "LTKaraoke", sans-serif;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #ff6b6b;
+    user-select: none;
+}
+
+/* Score numbers — matches .final-score feel but smaller */
+.wScore {
+    font-family: "LTKaraoke", monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    user-select: none;
+}
+
+/* ── Rank bar wrapper — matches .final-rank-bar-wrapper ─────────── */
+.winner-rank-bar-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* ── Rank labels row — matches .final-rank-labels ───────────────── */
+.winner-rank-labels {
+    position: relative;
+    width: 100%;
+    height: 36px;
+}
+
+.wrbl-img {
+    position: absolute;
+    width: 20px;
+    height: auto;
+    transform: translateX(-50%);
+    user-select: none;
+    bottom: 0;
+}
+.wrbl-f  { left: 0%;   transform: translateX(0%);   }
+.wrbl-d  {             transform: translateX(-40%);  }
+.wrbl-ex { width: 45px; transform: translateX(-40%); }
+
+/* ── Rank track — matches .final-rank-track ─────────────────────── */
+.winner-rank-track {
+    position: relative;
+    width: 100%;
+    height: 14px;
+    background: #1a1a1a;
+    border-radius: 7px;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+
+/* ── Fills — z-index: loser on top, winner behind ───────────────── */
+.winner-loser-fill {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 0%;
+    border-radius: 7px;
+    z-index: 2;
+    opacity: 1;
+}
+
+.winner-rank-fill {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 0%;
+    border-radius: 7px;
+    z-index: 1;
+}
+
+/* ── Dividers — matches .frb-divider ────────────────────────────── */
+.wfrb-divider {
+    position: absolute;
+    top: -8px;
+    width: 3px;
+    height: 30px;
+    background: #808080;
+    transform: translateX(-50%);
+    z-index: 5;
+}
+
+/* ── Sliding marker — matches .final-rank-marker ────────────────── */
+.winner-rank-marker {
+    position: absolute;
+    top: 50%;
+    width: 3px;
+    height: 30px;
+    background: white;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.5);
+    z-index: 10;
+    opacity: 0;
+    border-radius: 2px;
+}
+
+.winner-marker-bounce {
+    animation: markerBounce 0.45s ease forwards;
+}
+
+@keyframes markerBounce {
+    0%   { transform: translate(-50%, -50%) scaleY(1);   }
+    30%  { transform: translate(-50%, -50%) scaleY(1.6); }
+    65%  { transform: translate(-50%, -50%) scaleY(0.8); }
+    100% { transform: translate(-50%, -50%) scaleY(1);   }
+}
+
+/* ── Grade badge — matches .final-grade-badge ───────────────────── */
+.winner-grade-badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4px;
+    transform: scale(0.5);
+}
+
+.winner-grade-img {
+    width: 110px;
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.5));
+    user-select: none;
+}
+
+.winner-grade-img.ex-grade {
+    width: 200px;
+    filter: drop-shadow(0 0 20px gold);
+    animation: exPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes exPulse {
+    0%, 100% { filter: drop-shadow(0 0 16px gold) brightness(1);   }
+    50%       { filter: drop-shadow(0 0 32px gold) brightness(1.2); }
+}
+
+/* ── Edge glow on winner bar tip ────────────────────────────────── */
+
+/* ── Action buttons — matches .scoreboard-btn ───────────────────── */
+.winnerBtns {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.winnerBtn {
+    font-family: "LTKaraoke", sans-serif;
+
+    min-width: 160px;
+    padding: 14px 28px;
+
+    font-size: 1.2rem;
+    font-weight: bold;
+
+    color: white;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    user-select: none;
+
+    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+}
+
+.winnerBtn:hover  { filter: brightness(1.1); transform: translateY(-2px); }
+.winnerBtn:active { transform: translateY(4px); }
+
+.winnerBtn.primary {
+    background: linear-gradient(to bottom, #a855ff 0%, #7b27f5 45%, #5d12cc 100%);
+    box-shadow: 0 6px 0 #3e007d, 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+.winnerBtn.secondary {
+    background: linear-gradient(to bottom, #555 0%, #3a3a3a 45%, #222 100%);
+    box-shadow: 0 6px 0 #111, 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Tier float layer ──────────────────────────────── */
+#tierFloatLayer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20000;
+}
+
+/* ── Per-player lyric subtitles ────────────────────────────── */
+.battleSubtitle {
+    width: 100%;
+    text-align: center;
+    font-size: 2.5vw;
+    line-height: 1.2em;
+    pointer-events: none;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.2em;
+    padding: 4px 0;
+}

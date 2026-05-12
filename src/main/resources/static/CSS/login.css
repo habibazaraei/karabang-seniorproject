@@ -1,0 +1,245 @@
+@font-face {
+    font-family: "VarelaRound";
+    src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: "Nirmala UI";
+    src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
+    font-weight: 700;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100%;
+    font-family: "Nirmala UI", sans-serif;
+    font-weight: bold;
+    overflow-x: hidden;
+}
+
+body {
+    background: #0f0638;
+    background-image: url("../images/purple_song_selection_background.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: white;
+}
+
+#topButtonBar {
+    height: 70px;
+    width: 100%;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+}
+
+#webLogo {
+    font-family: "VarelaRound", sans-serif;
+    font-size: 2rem;
+    color: white;
+}
+
+#webLogo span,
+.welcome-card span {
+    color: #ff5252;
+}
+
+#rightButtons {
+    margin-left: auto;
+}
+
+.navButton {
+    background: #17094E;
+    color: white;
+    border: 1px solid #523da2;
+    border-radius: 14px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+.navButton:hover {
+    background: #523da2;
+}
+
+.login-wrapper {
+    min-height: calc(100vh - 70px);
+    padding: 45px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    max-width: none;
+    margin: 0;
+}
+
+.welcome-card,
+.login-card {
+    background: rgba(23, 9, 78, 0.92);
+    border: 2px solid #523da2;
+    border-radius: 28px;
+    padding: 38px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-card {
+    min-height: 430px;
+}
+
+.login-card {
+    min-height: 430px;
+}
+
+.welcome-card h2,
+.login-card h2 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+}
+
+.welcome-card p,
+.small-text {
+    color: #dcd7ff;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.mini-box {
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 25px;
+}
+
+.mini-box h3 {
+    margin-bottom: 14px;
+}
+
+.mini-box p {
+    margin-bottom: 10px;
+    color: white;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    color: white;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    border: 1px solid #523da2;
+    background: #0f0638;
+    color: white;
+    outline: none;
+    font-size: 1rem;
+}
+
+input::placeholder {
+    color: #9f95d8;
+}
+
+input:focus {
+    border-color: white;
+    background: #17094E;
+}
+
+button {
+    margin-top: 8px;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    background: #523da2;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #6f58c9;
+}
+
+#loginMessage {
+    margin-top: 15px;
+    text-align: center;
+    min-height: 20px;
+}
+
+.links {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.links a {
+    color: white;
+    text-decoration: none;
+}
+
+.links a:hover {
+    color: #ff5252;
+}
+
+.links span {
+    margin: 0 8px;
+    color: #bcb5e8;
+}
+
+@media (max-width: 900px) {
+    .login-wrapper {
+        grid-template-columns: 1fr;
+        padding: 25px;
+    }
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /* replaces the input margin */
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 50px;
+    margin-bottom: 0; /* remove input's own margin since wrapper handles it */
+}
+
+.password-wrapper button {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    margin: 0;
+    color: #9f95d8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+
+.password-wrapper button:hover {
+    background: none;
+    color: white;
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KaraBang Profile</title>
+    <link rel="stylesheet" href="CSS/profilepage.css">
+</head>
+<body>
+
+<div id="topButtonBar">
+    <img id="webLogo" src="images/KaraBangLogoRetouched.png" alt="KaraBang">
+    <div id="rightButtons">
+        <button class="navButton" onclick="goToSongs()">Songs</button>
+        <button class="navButton" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<main class="profile-wrapper">
+
+    <!-- TOP SCORES -->
+    <section class="card scoreboard-card">
+        <h2>Top Scores</h2>
+        <div id="topScoresList">
+            <p style="color:#dcd7ff;font-size:0.95rem;">Loading scores...</p>
+        </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="card profile-card">
+
+        <!-- SVG Avatar: rect=background, circle r30=body, circle r10+path=head/shoulders -->
+        <div class="avatar-display">
+            <svg id="profileAvatar" width="150" height="150" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle id="avatarBody"    cx="50" cy="50" r="30"   fill="#787878"/>
+                <circle id="avatarHead"    cx="50" cy="37" r="10"   fill="#9E9E9E"/>
+                <path   id="avatarShoulders"
+                        d="M68 71C68 68.2422 67.5473 65.5115 66.6679 62.9636C65.7884 60.4158 64.4994 58.1008 62.8744 56.1508C61.2493 54.2007 59.3202 52.6539 57.197 51.5985C55.0738 50.5432 52.7981 50 50.5 50C48.2019 50 45.9262 50.5432 43.803 51.5985C41.6798 52.6539 39.7507 54.2007 38.1256 56.1508C36.5006 58.1008 35.2116 60.4158 34.3321 62.9636C33.4527 65.5115 33 68.2422 33 71L50.5 71H68Z"
+                        fill="#9E9E9E"/>
+            </svg>
+        </div>
+        <button id="changeAvatarBtn">Change Avatar</button>
+
+        <h2 id="usernameDisplay">Loading...</h2>
+        <p class="member-text">KaraBang Member</p>
+        <p class="genre-text">Favorite Genre: <span id="genreDisplay">—</span></p>
+
+        <div class="profile-form">
+            <label for="usernameInput">Change Username</label>
+            <input type="text" id="usernameInput" placeholder="Enter new username">
+
+            <label for="genreSelect">Favorite Genre</label>
+            <select id="genreSelect">
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="R&B">R&B</option>
+                <option value="Hip-Hop">Hip-Hop</option>
+                <option value="Country">Country</option>
+            </select>
+
+            <button id="saveProfileBtn">Save Profile</button>
+            <p id="saveStatus" style="color:#a0f0a0;font-size:0.9rem;text-align:center;min-height:20px;"></p>
+        </div>
+    </section>
+
+    <!-- LIKED SONGS -->
+    <section class="card liked-card">
+        <h2>Liked Songs</h2>
+        <div id="likedSongsList">
+            <p style="color:#dcd7ff;font-size:0.95rem;">Loading liked songs...</p>
+        </div>
+    </section>
+
+</main>
+
+<!-- ── Avatar Picker Modal ──────────────────────────────────────────────── -->
+<div id="avatarModal" class="modal-overlay" hidden>
+    <div class="modal-box">
+        <h3 class="modal-title">Choose Your Avatar</h3>
+
+        <!-- Live preview SVG — same structure as the card avatar -->
+        <div class="modal-preview-wrap">
+            <svg id="modalPreviewSvg" width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle id="previewBody"    cx="50" cy="50" r="30"   fill="#787878"/>
+                <circle id="previewHead"    cx="50" cy="37" r="10"   fill="#9E9E9E"/>
+                <path   id="previewShoulders"
+                        d="M68 71C68 68.2422 67.5473 65.5115 66.6679 62.9636C65.7884 60.4158 64.4994 58.1008 62.8744 56.1508C61.2493 54.2007 59.3202 52.6539 57.197 51.5985C55.0738 50.5432 52.7981 50 50.5 50C48.2019 50 45.9262 50.5432 43.803 51.5985C41.6798 52.6539 39.7507 54.2007 38.1256 56.1508C36.5006 58.1008 35.2116 60.4158 34.3321 62.9636C33.4527 65.5115 33 68.2422 33 71L50.5 71H68Z"
+                        fill="#9E9E9E"/>
+            </svg>
+            <span class="modal-preview-label" id="previewComboLabel">Black · Stone · Silver</span>
+        </div>
+
+
+
+        <!-- Body color = the large circle (r30) -->
+        <p class="modal-label" style="margin-top:18px;">Body</p>
+        <div class="color-grid" id="bodyColorGrid"></div>
+
+        <!-- Head color = small circle (r10) + shoulders path -->
+        <p class="modal-label" style="margin-top:18px;">Head &amp; Shoulders</p>
+        <div class="color-grid" id="headColorGrid"></div>
+
+        <div class="modal-actions">
+            <button class="modal-cancel" id="cancelAvatarBtn">Cancel</button>
+            <button class="modal-save"   id="saveAvatarBtn">Save Avatar</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="JS/profilepage.js"></script>
+</body>
+</html>

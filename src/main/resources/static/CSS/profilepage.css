@@ -1,0 +1,293 @@
+@font-face {
+    font-family: "VarelaRound";
+    src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: "Nirmala UI";
+    src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
+    font-weight: 700;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100%;
+    font-family: "Nirmala UI", sans-serif;
+    font-weight: bold;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+body {
+    background: url("../images/purple_song_selection_background.png") no-repeat center fixed;
+    background-size: cover;
+    color: white;
+}
+
+#topButtonBar {
+    height: 70px;
+    width: 100%;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+}
+
+#webLogo { height: 45px; width: auto; }
+#webLogo span { color: #ff5252; }
+
+#rightButtons { margin-left: auto; display: flex; gap: 12px; }
+
+.navButton {
+    background: #17094E;
+    color: white;
+    border: 1px solid #523da2;
+    border-radius: 14px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+.navButton:hover { background: #523da2; }
+
+.profile-wrapper {
+    min-height: calc(100vh - 70px);
+    padding: 35px;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.card {
+    background: rgba(23, 9, 78, 0.92);
+    border: 2px solid #523da2;
+    border-radius: 28px;
+    padding: 30px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+.card:hover {
+    box-shadow: 0 12px 40px rgba(82, 61, 162, 0.55);
+    transform: translateY(-3px);
+    transition: 0.3s ease;
+}
+.card h2 { font-size: 2rem; margin-bottom: 24px; color: #ffffff; }
+
+.scoreboard-card { min-height: 520px; }
+
+/* ── Top Scores ─────────────────────────────────────── */
+.score-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+.score-entry:hover { background: #17094E; border-color: white; }
+.score-entry-rank { font-size: 1rem; color: #ff5252; min-width: 28px; }
+.score-entry-info { flex: 1; }
+.score-entry-info h3 { font-size: 1.05rem; color: white; margin-bottom: 3px; }
+.score-entry-info p  { font-size: 0.85rem; color: #dcd7ff; }
+.score-entry-score   { font-size: 1.2rem; color: #a78bfa; font-weight: bold; }
+
+/* ── SVG Avatar Display ─────────────────────────────── */
+/* The SVG rect has no rx, so the avatar is a square — match that */
+.avatar-display {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+
+#profileAvatar {
+    border-radius: 16px;          /* slight rounding on the square */
+    overflow: hidden;
+    display: block;
+    box-shadow: 0 0 24px rgba(82, 61, 162, 0.55);
+    transition: box-shadow 0.3s, transform 0.2s;
+}
+#profileAvatar:hover {
+    box-shadow: 0 0 32px rgba(127, 119, 221, 0.75);
+    transform: scale(1.04);
+}
+
+#changeAvatarBtn {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 14px;
+    background: #523da2;
+    color: white;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#changeAvatarBtn:hover { background: #6f58c9; }
+
+/* ── Profile Card ───────────────────────────────────── */
+.profile-card { min-height: 620px; text-align: center; }
+#usernameDisplay { font-size: 2.3rem; margin-bottom: 5px; }
+.member-text { color: #dcd7ff; margin-bottom: 8px; }
+.genre-text  { color: #ffffff; margin-bottom: 28px; }
+#genreDisplay { color: #ff5252; }
+
+.profile-form { display: flex; flex-direction: column; text-align: left; gap: 10px; }
+.profile-form label { margin-top: 8px; color: #ffffff; }
+.profile-form input,
+.profile-form select {
+    padding: 13px;
+    border-radius: 14px;
+    border: 1px solid #523da2;
+    background: #0f0638;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+.profile-form input:focus,
+.profile-form select:focus { border-color: white; background: #17094E; }
+
+#saveProfileBtn {
+    margin-top: 18px;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    background: #523da2;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+}
+#saveProfileBtn:hover { background: #6f58c9; }
+
+/* ── Liked Songs ────────────────────────────────────── */
+.liked-card { min-height: 520px; }
+.liked-song-text {
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+.liked-song-text:hover { background: #17094E; border-color: white; }
+.liked-song-text h3 { font-size: 1.2rem; margin-bottom: 5px; }
+.liked-song-text p  { color: #dcd7ff; font-size: 0.95rem; }
+
+/* ── Avatar Picker Modal ────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 2, 25, 0.82);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+.modal-overlay[hidden] { display: none; }
+
+.modal-box {
+    background: rgba(23, 9, 78, 0.97);
+    border: 2px solid #523da2;
+    border-radius: 28px;
+    padding: 34px 30px 28px;
+    width: min(500px, 94vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    animation: modalPop 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.88); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+
+.modal-title {
+    font-size: 1.6rem;
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.modal-preview-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+/* The preview SVG is also a square with the same slight rounding */
+#modalPreviewSvg {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 18px rgba(82, 61, 162, 0.55);
+}
+
+.modal-preview-label {
+    font-size: 0.8rem;
+    color: #a78bfa;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.modal-label {
+    font-size: 0.85rem;
+    color: #dcd7ff;
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Color swatches */
+.color-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
+
+.color-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2.5px solid transparent;
+    cursor: pointer;
+    transition: transform 0.12s, border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+}
+.color-swatch:hover { transform: scale(1.16); }
+.color-swatch.selected {
+    border-color: #ffffff;
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(255,255,255,0.45);
+}
+
+/* Modal buttons */
+.modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+.modal-cancel, .modal-save {
+    flex: 1;
+    padding: 13px;
+    border: none;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.modal-cancel {
+    background: #0f0638;
+    color: #dcd7ff;
+    border: 1px solid #523da2;
+}
+.modal-cancel:hover { background: #17094e; }
+.modal-save { background: #523da2; color: white; }
+.modal-save:hover { background: #6f58c9; }
+
+@media (max-width: 1000px) {
+    .profile-wrapper { grid-template-columns: 1fr; }
+}

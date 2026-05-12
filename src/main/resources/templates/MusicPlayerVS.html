@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<link rel="icon" href="/images/KaraBangLogoIcon.ico">
+<head>
+    <meta charset="UTF-8">
+    <title>KaraBang</title>
+    <link rel="stylesheet" href="/css/MusicPlayer.css">
+    <link rel="stylesheet" href="/css/MusicPlayerVS.css">
+</head>
+
+<body>
+<div id="backgroundPane">
+    <img id="backgroundImage" src="/images/purple_song_selection_background.png">
+    <audio id="audio"></audio>
+    <canvas id="audioVisualizer"></canvas>
+
+    <div id="tierFloatLayer"></div>
+
+    <!-- Center lyric display (main, full-featured) -->
+    <div id="subtitle"></div>
+
+    <!-- Top Bar -->
+    <div id="topBar">
+        <button id="goBack">
+            <img id="goBackImg" src="/images/go_back_icon.svg">
+        </button>
+        <div id="songTitle"></div>
+        <button id="heart">
+            <img id="heartImg" src="/images/heart_gray_icon.svg">
+        </button>
+        <button id="settings">
+            <img src="/images/settings_icon.svg">
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal">
+        <div id="settingsPanel">
+            <div class="settingsHeader">
+                <h2 class="settingsTitle">Settings</h2>
+                <button id="closeSettingsBtn">✕</button>
+            </div>
+            <div class="settingsContent">
+                <div class="settingsSection">
+                    <div class="settingsRow">
+                        <span>Full Song Audio</span>
+                        <input type="checkbox" id="audioVersionToggle">
+                    </div>
+                </div>
+                <div class="settingsSection">
+                    <hr class="divider">
+                    <div class="settingsRow">
+                        <span>Main Lyric Size</span><span id="fontSizeLabel">5</span>
+                    </div>
+                    <input type="range" id="fontSizeSlider" min="1" max="6" step="0.1" value="5">
+                </div>
+                <hr class="divider">
+
+                <!-- Non-English only settings -->
+                <div id="nonEnglishSettings" style="display:none;">
+                    <div class="settingsSection">
+                        <div class="settingsRow">
+                            <span>Romanization Size</span>
+                            <span id="romSizeLabel">2</span>
+                        </div>
+                        <input type="range" id="romSizeSlider" min="0.5" max="4" step="0.1" value="2">
+                        <hr class="divider">
+                        <div class="settingsRow">
+                            <span>Translation Size</span>
+                            <span id="transSizeLabel">3</span>
+                        </div>
+                        <input type="range" id="transSizeSlider" min="0.5" max="5" step="0.1" value="3">
+                        <hr class="divider">
+                        <div id="romSection" class="settingsRow">
+                            <span>Show Romanization</span>
+                            <input type="checkbox" id="romToggle" checked>
+                        </div>
+                        <div id="transSection" class="settingsRow">
+                            <span>Show Translation</span>
+                            <input type="checkbox" id="transToggle" checked>
+                        </div>
+                        <div id="swapSection" class="settingsRow">
+                            <span>Swap Romanization</span>
+                            <input type="checkbox" id="swapToggle">
+                        </div>
+                        <hr class="divider">
+                    </div>
+                </div>
+
+                <div class="settingsSection">
+                    <span>Lyric Color</span>
+                    <span id="colorPickerLabel"></span>
+                    <div id="lyricColorPicker" class="colorGrid"></div>
+                    <hr class="divider">
+                </div>
+
+                <button id="resetPrefsBtn">Reset to defaults</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dropdownMenu" class="dropdown-menu"></div>
+
+    <!-- ── Battle UI ─────────────────────────────────── -->
+
+    <div id="battleUI">
+
+        <!-- P1 — top -->
+        <div class="scoreBarRow" id="p1Panel">
+            <span class="playerLabel" id="p1Label">PLAYER 1</span>
+            <div class="barAndScore">
+                <div class="battleScoreBar" id="p1ScoreBar">
+                    <div class="battleScoreBarFill" id="p1ScoreBarFill"></div>
+                    <div class="battleRankMarker p1marker" style="left:0.5%"><img class="battleRankImg" src="/images/TierF.png"></div>
+                    <div class="battleRankMarker p1marker" style="left:60%"><img class="battleRankImg" src="/images/TierD.png"></div>
+                    <div class="battleRankMarker p1marker" style="left:70%"><img class="battleRankImg" src="/images/TierC.png"></div>
+                    <div class="battleRankMarker p1marker" style="left:80%"><img class="battleRankImg" src="/images/TierB.png"></div>
+                    <div class="battleRankMarker p1marker" style="left:88%"><img class="battleRankImg" src="/images/TierA.png"></div>
+                    <div class="battleRankMarker p1marker rank-ex" style="left:95%"><img class="battleRankImg" src="/images/TierEX.png"></div>
+                </div>
+                <span class="playerScore" id="p1Score">0</span>
+            </div>
+        </div>
+
+
+
+        <!-- P2 — bottom -->
+        <div class="scoreBarRow" id="p2Panel">
+            <span class="playerLabel" id="p2Label">PLAYER 2</span>
+            <div class="barAndScore">
+                <div class="battleScoreBar" id="p2ScoreBar">
+                    <div class="battleScoreBarFill" id="p2ScoreBarFill"></div>
+                    <div class="battleRankMarker p2marker" style="left:0.5%"><img class="battleRankImg" src="/images/TierF.png"></div>
+                    <div class="battleRankMarker p2marker" style="left:60%"><img class="battleRankImg" src="/images/TierD.png"></div>
+                    <div class="battleRankMarker p2marker" style="left:70%"><img class="battleRankImg" src="/images/TierC.png"></div>
+                    <div class="battleRankMarker p2marker" style="left:80%"><img class="battleRankImg" src="/images/TierB.png"></div>
+                    <div class="battleRankMarker p2marker" style="left:88%"><img class="battleRankImg" src="/images/TierA.png"></div>
+                    <div class="battleRankMarker p2marker rank-ex" style="left:95%"><img class="battleRankImg" src="/images/TierEX.png"></div>
+                </div>
+                <span class="playerScore" id="p2Score">0</span>
+            </div>
+        </div>
+
+    </div>
+    <!-- ── End Battle UI ──────────────────────────────── -->
+
+</div><!-- closes backgroundPane -->
+
+<!-- Mic Selector Overlay — display:flex so it shows immediately on load -->
+<div id="micSelectOverlay" style="display:flex;">
+    <div id="micSelectPanel">
+        <h2 id="micPanelTitle">🎤 Select Microphones</h2>
+        <div class="micRow">
+            <label id="p1MicLabel">Player 1 Mic</label>
+            <select id="p1MicSelect"></select>
+        </div>
+        <div class="micRow">
+            <label id="p2MicLabel">Player 2 Mic</label>
+            <select id="p2MicSelect"></select>
+        </div>
+        <button id="confirmMicsBtn">Confirm &amp; Continue</button>
+        <div id="micCountdown" style="display:none; font-family:'LTKaraoke',sans-serif;
+             font-size:5rem; font-weight:bold; color:white; text-align:center;
+             text-shadow: 0 0 20px rgba(75,167,255,0.8);"></div>
+    </div>
+</div>
+
+
+<!-- Winner Overlay — display:none until song ends -->
+<div id="winnerOverlay" style="display:none;">
+    <div id="winnerPanel">
+        <div id="winnerTitle">WINNER</div>
+        <div id="winnerName"></div>
+
+        <div class="winnerScoreRow">
+            <div class="winnerScoreCard" id="p1ScoreCard">
+                <span class="wLabel">PLAYER 1</span>
+                <span class="wScore" id="wP1Score">0</span>
+            </div>
+            <div class="winnerScoreCard" id="p2ScoreCard">
+                <span class="wLabel">PLAYER 2</span>
+                <span class="wScore" id="wP2Score">0</span>
+            </div>
+        </div>
+
+        <div class="winner-rank-bar-wrapper">
+            <div class="winner-rank-labels">
+                <img src="/images/TierF.png"  class="wrbl-img wrbl-f">
+                <img src="/images/TierD.png"  class="wrbl-img wrbl-d" style="left:60%">
+                <img src="/images/TierC.png"  class="wrbl-img" style="left:70%">
+                <img src="/images/TierB.png"  class="wrbl-img" style="left:80%">
+                <img src="/images/TierA.png"  class="wrbl-img" style="left:88%">
+                <img src="/images/TierEX.png" class="wrbl-img wrbl-ex" style="left:95%">
+            </div>
+            <div id="winnerEdgeGlow"></div>
+            <div class="winner-rank-track">
+                <div id="winnerLoserFill" class="winner-loser-fill"></div>
+                <div id="winnerRankFill" class="winner-rank-fill"></div>
+                <div class="wfrb-divider" style="left:1%"></div>
+                <div class="wfrb-divider" style="left:60%"></div>
+                <div class="wfrb-divider" style="left:70%"></div>
+                <div class="wfrb-divider" style="left:80%"></div>
+                <div class="wfrb-divider" style="left:88%"></div>
+                <div class="wfrb-divider" style="left:95%"></div>
+
+                <div id="winnerRankMarker" class="winner-rank-marker"></div>
+            </div>
+        </div>
+        <div id="winnerGradeBadge" class="winner-grade-badge" style="opacity:0;">
+            <img id="winnerGradeImg" class="winner-grade-img">
+        </div>
+
+        <div class="winnerBtns">
+            <button class="winnerBtn primary" id="retryBattleBtn">Play Again</button>
+            <button class="winnerBtn secondary" id="backFromBattleBtn">Back to Songs</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Bar -->
+<div id="bottomBar">
+    <button id="playPause">
+        <img id="playImg" src="/images/play_icon.svg">
+    </button>
+    <button id="restart">
+        <img id="restartImg" src="/images/restart_icon.svg">
+    </button>
+    <div id="progressContainer">
+        <div id="progress"></div>
+    </div>
+    <div id="rightControls">
+        <div class="volume-container">
+            <button id="volumeButton">
+                <img id="volumeIcon" src="/images/volume_high_icon.svg">
+            </button>
+            <input type="range" id="volume" min="0" max="100" value="50">
+        </div>
+    </div>
+</div>
+
+<script type="module" src="/js/KaraokeScorerVS.js"></script>
+<script type="module" src="/js/MusicPlayerVS.js"></script>
+
+</body>
+</html>

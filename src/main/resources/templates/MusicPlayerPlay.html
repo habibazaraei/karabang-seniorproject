@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<link rel="icon" href="/images/KaraBangLogoIcon.ico">
+<head>
+    <meta charset="UTF-8">
+    <title>KaraBang</title>
+    <link rel="stylesheet" href="/css/MusicPlayer.css">
+</head>
+
+<body>
+<div id="backgroundPane">
+    <img id="backgroundImage" src="/images/purple_song_selection_background.png">
+    <audio id="audio"></audio>
+    <canvas id="audioVisualizer"></canvas>
+
+    <div id="tierFloatLayer"></div>
+    <div id="subtitle"></div>
+
+    <!-- Top Bar -->
+    <div id="topBar">
+        <button id="goBack">
+            <img id="goBackImg" src="/images/go_back_icon.svg">
+        </button>
+        <div id="songTitle"></div>
+        <button id="heart">
+            <img id="heartImg" src="/images/heart_gray_icon.svg">
+        </button>
+        <button id="settings">
+            <img src="/images/settings_icon.svg">
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal">
+        <div id="settingsPanel">
+            <div class="settingsHeader">
+                <h2 class="settingsTitle">Settings</h2>
+                <button id="closeSettingsBtn">✕</button>
+            </div>
+
+            <div class="settingsContent">
+                <div class="settingsSection">
+                    <div class="settingsRow">
+                        <span>Full Song Audio</span>
+                        <input type="checkbox" id="audioVersionToggle">
+                    </div>
+                </div>
+                <div class="settingsSection">
+                    <hr class="divider">
+
+                    <div class="settingsRow">
+                        <span>Main Lyric Size</span><span id="fontSizeLabel">5</span>
+                    </div>
+                    <input type="range" id="fontSizeSlider" min="1" max="6" step="0.1" value="5">
+                </div>
+
+                <hr class="divider">
+
+                <!-- Non-English only settings, hidden by default -->
+                <div id="nonEnglishSettings" style="display:none;">
+
+                    <div class="settingsSection">
+
+                        <!-- Romanization -->
+                        <div class="settingsRow">
+                            <span>Romanization Size</span>
+                            <span id="romSizeLabel">1.20</span>
+                        </div>
+                        <input type="range" id="romSizeSlider" min="0.5" max="4" step="0.1" value="2">
+
+                        <hr class="divider">
+
+                        <!-- Translation -->
+                        <div class="settingsRow">
+                            <span>Translation Size</span>
+                            <span id="transSizeLabel">1.70</span>
+                        </div>
+                        <input type="range" id="transSizeSlider" min="0.5" max="5" step="0.1" value="3">
+
+                        <hr class="divider">
+
+                        <!-- Toggles grouped like old UI -->
+                        <div class="settingsRow">
+                            <span>Show Romanization</span>
+                            <input type="checkbox" id="romToggle" checked>
+                        </div>
+
+                        <div class="settingsRow">
+                            <span>Show Translation</span>
+                            <input type="checkbox" id="transToggle" checked>
+                        </div>
+
+                        <div class="settingsRow">
+                            <span>Swap Romanization</span>
+                            <input type="checkbox" id="swapToggle">
+                        </div>
+
+                        <hr class="divider">
+                    </div>
+
+                </div>
+
+                <div class="settingsSection">
+                    <span>Lyric Color</span>
+                    <span id="colorPickerLabel"></span>
+                    <div id="lyricColorPicker" class="colorGrid"></div>
+                    <hr class="divider">
+                </div>
+
+                <button id="resetPrefsBtn">Reset to defaults</button>
+            </div>
+        </div>  <!-- closes settingsPanel -->
+    </div>  <!-- closes settingsModal -->
+
+    <div id="dropdownMenu" class="dropdown-menu">
+        <!-- Empty for now -->
+    </div>
+
+</div>
+
+<div id="bottomBar">
+    <button id="playPause">
+        <img id="playImg" src="/images/play_icon.svg">
+    </button>
+    <button id="restart">
+        <img id="restartImg" src="/images/restart_icon.svg">
+    </button>
+    <div id="progressContainer">
+        <div id="progress"></div>
+    </div>
+    <div id="rightControls">
+        <div class="volume-container">
+            <button id="volumeButton">
+                <img id="volumeIcon" src="/images/volume_high_icon.svg">
+            </button>
+            <input type="range" id="volume" min="0" max="100" value="50">
+        </div>
+    </div>
+</div>
+
+</div>  <!-- closes backgroundPane -->
+
+<script type="module" src="/js/MusicPlayerPlay.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+src/main/resources/Video/Queen[[:space:]]–[[:space:]]Bohemian[[:space:]]Rhapsody[[:space:]](Official[[:space:]]Video[[:space:]]Remastered)_1080p.mp4 filter=lfs diff=lfs merge=lfs -text
+src/main/resources/Video/The[[:space:]]Weeknd[[:space:]]-[[:space:]]Blinding[[:space:]]Lights[[:space:]](Official[[:space:]]Video)_1080p.mp4 filter=lfs diff=lfs merge=lfs -text
+src/main/resources/Video/*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.unity filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text

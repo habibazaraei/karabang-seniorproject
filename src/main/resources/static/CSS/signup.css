@@ -1,0 +1,155 @@
+@font-face {
+    font-family: "VarelaRound";
+    src: url("../fonts/VarelaRound-Regular.ttf") format("truetype");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: "Nirmala UI";
+    src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype");
+    font-weight: 700;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100%;
+    font-family: "Nirmala UI", sans-serif;
+    font-weight: bold;
+    overflow-x: hidden;
+}
+
+body {
+    background: #0f0638;
+    background-image: url("../images/purple_song_selection_background.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: white;
+}
+
+.signup-wrapper {
+    min-height: 100vh;
+    padding: 45px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+    align-items: center;
+    max-width: 1150px;
+    margin: 0 auto;
+}
+
+.left-panel,
+.right-panel {
+    background: rgba(23, 9, 78, 0.92);
+    border: 2px solid #523da2;
+    border-radius: 28px;
+    padding: 40px;
+    min-height: 500px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+
+.brand {
+    font-family: "VarelaRound", sans-serif;
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.brand span {
+    color: #ff5252;
+}
+
+.subtitle {
+    color: #dcd7ff;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+#signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    border: 1px solid #523da2;
+    background: #0f0638;
+    color: white;
+    outline: none;
+    font-size: 1rem;
+}
+
+input::placeholder {
+    color: #9f95d8;
+}
+
+input:focus {
+    border-color: white;
+    background: #17094E;
+}
+
+button {
+    margin-top: 8px;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    background: #523da2;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #6f58c9;
+}
+
+.home-link {
+    margin-top: 22px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+
+.home-link:hover {
+    color: #ff5252;
+}
+
+.album-card h2 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+}
+
+.album-card p {
+    color: #dcd7ff;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+.feature-box {
+    background: #0f0638;
+    border: 1px solid #523da2;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.feature-box:hover {
+    background: #17094E;
+    border-color: white;
+}
+
+@media (max-width: 900px) {
+    .signup-wrapper {
+        grid-template-columns: 1fr;
+        padding: 25px;
+    }
+}
