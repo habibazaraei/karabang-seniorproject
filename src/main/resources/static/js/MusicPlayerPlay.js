@@ -918,7 +918,6 @@ function applyGenreTheme(genre) {
         bottomImg = "../images/bottom_bar_game.svg";
 
 
-
     } else if (g.includes("latin")) {
         topImg = "../images/top_bar_latin.svg";
         bottomImg = "../images/bottom_bar_latin.svg";
