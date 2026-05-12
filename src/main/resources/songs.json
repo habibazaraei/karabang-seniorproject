@@ -601,7 +601,7 @@
     "id": 58,
     "title": "Closer",
     "artist": "The Chainsmokers ft. Halsey",
-    "genre": "Dance",
+    "genre": "Pop",
     "difficulty": "Easy",
     "language": "English",
     "audioPath": "/audio/Closer.mp3",
@@ -611,7 +611,7 @@
     "pitchesPath": ""
   },
   {
-    "id": 59,
+    "id": 60,
     "title": "Snake Eater",
     "artist": "Norihiko Hibino",
     "genre": "Game",
