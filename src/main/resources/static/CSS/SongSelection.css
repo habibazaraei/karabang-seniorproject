@@ -211,7 +211,15 @@ body {
 .songCard.pop-latino:hover {
   transform: none;
   box-shadow: none;
-  border-color: #ebecbf;
+  border-color: #abdaca;
+}
+.songCard.latin {
+  border: 0.2em solid #1B8E66;
+}
+.songCard.latin:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #a1c0b3;
 }
 .songBottom.pop {
   background: url('../images/red_background_2.svg');
@@ -243,6 +251,14 @@ body {
 }
 .songBottom.pop-latino {
   background: url('../images/poplatino_background.svg');
+  background-size: cover;
+}
+.songBottom.latin {
+  background: url('../images/latin_background.svg');
+  background-size: cover;
+}
+.songBottom.hard- {
+  background: url('../images/latin_background.svg');
   background-size: cover;
 }
 /* track selection like cards */

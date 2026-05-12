@@ -884,6 +884,9 @@ function applyGenreTheme(genre) {
     } else if (g.includes("pop")) {
         topImg = "../images/top_bar_pop.svg";
         bottomImg = "../images/bottom_bar_pop.svg";
+    }else if (g.includes("pop")) {
+            topImg = "../images/top_bar_pop.svg";
+            bottomImg = "../images/bottom_bar_pop.svg";
 
     } else if (g.includes("rock")) {
         topImg = "../images/top_bar_rock.svg";
