@@ -73,10 +73,10 @@ let displayedScore = 0;
 let scoreRollInterval = null;
 // ─── UI Elements ──────────────────────────────────────────────────────────────
 
-let scoreDisplay    = null;
-let pitchDisplay    = null;
-let tierDisplay     = null;
-let micToggleBtn    = null;
+let scoreDisplay = null;
+let pitchDisplay = null;
+let tierDisplay = null;
+let micToggleBtn = null;
 
 // ─── Pitch Detection (Autocorrelation) ────────────────────────────────────────
 
@@ -296,11 +296,12 @@ function scoringTick() {
         // AGGRESSIVE COMBO REWARDS
         // Since there is no 'max', these multipliers make the score explode!
         let multiplier = 0;
-            if (currentCombo >= 50) multiplier = 30;
-            else if (currentCombo >= 25) multiplier = 10;
-            else if (currentCombo >= 10) multiplier = 6;
-            else if (currentCombo >= 5) multiplier = 3;
-            else if (currentCombo >= 2) multiplier = 0.75;
+              if (currentCombo >= 50) multiplier =  3.0;
+               else if (currentCombo >= 25) multiplier = 2.75;
+               else if (currentCombo >= 10) multiplier = 2.5;
+               else if (currentCombo >= 5) multiplier = 2.25;
+               else if (currentCombo >= 2) multiplier = 2.0;
+
 
 
         let pointsEarned = tier.points;
