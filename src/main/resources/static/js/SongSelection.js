@@ -942,17 +942,20 @@ document.addEventListener("click", (e) => {
     createClickEffect(e.clientX, e.clientY);
 });
 // hovering scored or play buttons
-document.querySelectorAll("#singButtonPrimary, #singButtonSecondary").forEach(btn => {
-    btn.addEventListener("mouseenter", () => {
-        const now = Date.now();
-        if (now - lastHoverTime < hoverCooldown) return;
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("#singButtonPrimary, #singButtonSecondary, #singButtonVS")
+        .forEach(btn => {
+            btn.addEventListener("mouseenter", () => {
+                const now = Date.now();
+                if (now - lastHoverTime < hoverCooldown) return;
 
-        lastHoverTime = now;
+                lastHoverTime = now;
 
-        hoverSound.currentTime = 0;
-        hoverSound.volume = sfxVolume;
-        hoverSound.play().catch(() => {});
-    });
+                hoverSound.currentTime = 0;
+                hoverSound.volume = sfxVolume;
+                hoverSound.play().catch(() => {});
+            });
+        });
 });
 // ─── SETTINGS MODAL ───────────────────────────────────────────────────────────
 const settingsBtn = document.getElementById('settings');

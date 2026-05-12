@@ -625,7 +625,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   max-width: 600px;
   width: 100%;
   height: auto;
@@ -644,31 +644,19 @@ body {
   #rightPanel { width: 30%; }
 }
 /* song Art cover on the right side of screen */
-#songImageFrame {
+
+
+#songImage {
+  position: relative;
   width: 100%;
   max-width: 600px;
   aspect-ratio: 1 / 1;
-  position: relative;
-  background-image: url("../images/imageBackground.png");
-  background-size: cover;
-  background-position: center;
-
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-#songImage {
-  position: absolute;
-
-  inset: 6px;
-
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
-
   object-fit: cover;
-
   border-radius: clamp(16px, 1vw, 24px);
-  box-shadow: 0 0 20px rgba(37, 37, 36, 0.5);
+
+  box-shadow:
+          0 6px 0 rgba(0, 0, 0, 0.9),
+          0 10px 20px rgba(0, 0, 0, 0.6);
 }
 /* information of the song under image */
 #songInfo {
@@ -684,7 +672,7 @@ body {
   background-image: url("../images/song_info_plate.png");
   background-size: 100% 100%;
   position: relative;
-  box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+
   border-radius: 8px;
   flex-shrink: 1;
   overflow: hidden;
@@ -943,20 +931,28 @@ body::after {
   opacity: 1;
 }
 
-.battleButton {
+.vsButton {
+  appearance: none;
+  -webkit-appearance: none;
 
-  aspect-ratio: 248 / 26;
-  display: block;
+  background: transparent;
+  background-image: url("../images/vsButton.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  aspect-ratio: 248 / 52;
   width: 100%;
-  margin-top: 10px;
-  background-color: #4BA7FF;
-  background-size: 100% 100%;
-  border: none;
-  cursor: pointer;
+  display: block;
 
+  border: none;
+  padding: 0;
+
+
+  cursor: pointer;
 }
 
-.battleButton:hover {
+.vsButton:hover {
   filter: brightness(1.1);
 }
 /*Dropdown Menu*/
