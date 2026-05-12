@@ -264,8 +264,8 @@ async function savePreferences() {
         transSize: transSizeSlider ? Math.round(parseFloat(transSizeSlider.value)) : 3,
         showRomanization: showRomanization,
         showTranslation: showTranslation,
-        swapLyrics: swapLyrics,
-        useFullSong: useFullSong
+        swapLyrics: swapLyrics
+
     }, { merge: true });
 }
 // reset settings
