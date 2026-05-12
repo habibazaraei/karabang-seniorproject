@@ -84,7 +84,7 @@
     "genre": "Game",
     "difficulty": "Medium",
     "language": "English",
-    "audioPath": "/audio/SquareUp.mp3",
+    "audioPath": "/audio/full/SquareUp.mp3",
     "lyricsPath": "/lyrics/SquareUp.lrc",
     "artCoverPath": "/artCover/squareUpCover.jpg",
     "songTeaserPath": "/teaser/squareUpTeaser.mp3",

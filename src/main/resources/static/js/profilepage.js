@@ -110,8 +110,6 @@ async function loadTopScores(user) {
         return song ? song.title : `Song ${entry.songId}`;
     });;
 
-
-
         const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
 
         topScoresList.innerHTML = top5.map((entry, i) => {

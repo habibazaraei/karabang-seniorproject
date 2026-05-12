@@ -22,32 +22,32 @@ import { db, auth, doc, setDoc, getDoc, getDocs, collection, onAuthStateChanged 
 
 // ─── Tier / Rank Constants ─────────────────────────────────────────────────────
 const TIERS = [
-    { label: "PERFECT", maxSemitones: 0.5,      points: 50,  color: "#FFD700" },
-    { label: "GOOD",    maxSemitones: 1.5,       points: 20,  color: "#4BA7FF" },
-    { label: "CLOSE",   maxSemitones: 2.5,       points: 10,  color: "#6bff8e" },
-    { label: "MISS",    maxSemitones: Infinity,  points: 0,   color: "#ff6b6b" },
+    { label: "PERFECT",maxSemitones: 0.75, points: 50,  color: "#FFD700" },
+    { label: "GOOD", maxSemitones: 1.2, points: 20,  color: "#4BA7FF" },
+    { label: "CLOSE", maxSemitones: 1.85, points: 10,  color: "#6bff8e" },
+    { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
 ];
 
 const Ranks = [
     { label: "EX+", min: 95, color: null },
-    { label: "A",   min: 88, color: "#e82020" },
-    { label: "B",   min: 80, color: "#3a24e5" },
-    { label: "C",   min: 70, color: "#4ff4be" },
-    { label: "D",   min: 60, color: "#3fe538" },
-    { label: "F",   min: 0,  color: "#79471B" },
+    { label: "A", min: 88, color: "#e82020" },
+    { label: "B", min: 80, color: "#3a24e5" },
+    { label: "C", min: 70, color: "#4ff4be" },
+    { label: "D", min: 60, color: "#3fe538" },
+    { label: "F", min: 0,  color: "#79471B" },
 ];
 
 const TARGET_SCORE    = 100000;
 const MIN_VOICED_AMP  = 0.005;
 
 // ─── State ─────────────────────────────────────────────────────────────────────
-const params        = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
 const currentSongId = parseInt(params.get("song"));
 
 let songPitchData = null;
-let currentUser   = null;
-let isRestarting  = false;
-let selectedMics  = { p1: null, p2: null };
+let currentUser = null;
+let isRestarting = false;
+let selectedMics = { p1: null, p2: null };
 
 onAuthStateChanged(auth, u => { currentUser = u; });
 
@@ -137,11 +137,12 @@ function scoringTick() {
                 if (p.combo > p.maxCombo) p.maxCombo = p.combo;
             }
 
-            let mult = 1;
-            if      (p.combo >= 50) mult = 10;
-            else if (p.combo >= 25) mult = 5;
-            else if (p.combo >= 10) mult = 3;
-            else if (p.combo >= 2)  mult = 200;
+             let multiplier = 1;
+                 if (currentCombo >= 50) multiplier = 20;     // Huge reward for 50+
+                 else if (currentCombo >= 25) multiplier = 12;
+                 else if (currentCombo >= 10) multiplier = 10;
+                 else if (currentCombo >= 5) multiplier = 7;
+                 else if (currentCombo >= 2) multiplier = 4;
 
             p.score += Math.round(tier.points * mult);
 
