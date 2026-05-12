@@ -181,7 +181,30 @@ body {
   box-shadow: none;
   border-color: #a76cff;
 }
-
+.songCard.rnbsoul {
+  border: 0.2em solid #430BA4;
+}
+.songCard.rnbsoul:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #cab8e3;
+}
+.songCard.alternative {
+  border: 0.2em solid #735EEE;
+}
+.songCard.alternative:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #beb6f1;
+}
+.songCard.hip-hop-rap {
+  border: 0.2em solid #26FEC1;
+}
+.songCard.hip-hop-rap:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #beb6f1;
+}
 .songBottom.pop {
   background: url('../images/red_background_2.svg');
   background-size: cover;
@@ -196,6 +219,18 @@ body {
 }
 .songBottom.rnb {
   background: url('../images/r&b_background.svg');
+  background-size: cover;
+}
+.songBottom.rnbsoul {
+  background: url('../images/soul_background.svg');
+  background-size: cover;
+}
+.songBottom.alternative {
+  background: url('../images/alternative_background.svg');
+  background-size: cover;
+}
+.songBottom.hip-hop-rap {
+  background: url('../images/rap_background.svg');
   background-size: cover;
 }
 /* track selection like cards */
