@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebas
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
 import { getFirestore, doc, setDoc, deleteDoc, getDoc, getDocs, collection, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
 
 // Your Firebase configuration (replace with your actual config)
 const firebaseConfig = {
@@ -23,4 +24,5 @@ const auth = getAuth(app);
 
 
 // Export for use in other JS files
-export { app, analytics, db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut };
+export { app, analytics, db, auth, doc, setDoc, deleteDoc, getDoc, getDocs, collection, onAuthStateChanged, signOut, increment };
+export const storage = getStorage(app);

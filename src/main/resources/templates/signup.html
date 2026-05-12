@@ -3,45 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>KaraBang Signup</title>
-    <link rel="stylesheet" href="CSS/signup.css">
+    <link rel="stylesheet" href="CSS/login.css">
 </head>
-
 <body>
 
-<div class="signup-wrapper">
+<div id="topButtonBar">
+    <img id="webLogo" src="images/KaraBangLogoRetouched.png" alt="KaraBang">
 
-    <div class="left-panel">
-        <h1 class="brand">Kara<span>Bang</span></h1>
-
-        <p class="subtitle">
-            Create your account and start your karaoke journey.
-        </p>
-
-        <form id="signup-form">
-            <input id="username" type="text" placeholder="Username" required>
-            <input id="email" type="email" placeholder="Email" required>
-            <input id="password" type="password" placeholder="Password" required>
-
-            <button id="signupBtn" type="submit">Sign Up</button>
-
-            <a class="home-link" href="/login">Back to Login</a>
-        </form>
+    <div id="rightButtons">
     </div>
-
-    <div class="right-panel">
-        <div class="album-card">
-            <h2>Join KaraBang</h2>
-            <p>Save your favorite songs, track your scores, and build your karaoke profile.</p>
-
-            <div class="feature-box">Create your profile</div>
-            <div class="feature-box">Save liked songs</div>
-            <div class="feature-box">Track your best scores</div>
-        </div>
-    </div>
-
 </div>
 
-<script type="module" src="JS/signup.js"></script>
+<main class="login-wrapper">
 
+    <section class="login-card">
+        <h2>Create Account</h2>
+        <p class="small-text">Create your account and start your karaoke journey.</p>
+
+        <form id="signup-form">
+            <label for="username">Username</label>
+            <input id="username" type="text" placeholder="Enter username" required>
+
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="Enter email" required>
+
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+                <input id="password" type="password" placeholder="Enter password" required>
+                <button type="button" id="togglePassword">👁</button>
+            </div>
+
+            <button id="signupBtn" type="submit">Sign Up</button>
+        </form>
+
+        <p id="signupMessage"></p>
+
+        <div class="links">
+            <a href="/login">Back to Login</a>
+            <span>|</span>
+            <a href="/forgot">Forgot password?</a>
+        </div>
+    </section>
+
+</main>
+
+<script type="module" src="JS/signup.js"></script>
 </body>
 </html>

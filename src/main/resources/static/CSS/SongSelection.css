@@ -144,6 +144,7 @@ body {
   border-color: transparent;
   transition-duration: 0.4s;
 }
+
 .songCard.pop {
   border: 0.2em solid #FF5252;
 }
@@ -152,13 +153,97 @@ body {
   box-shadow: none;
   border-color: #fcdbdb;
 }
+
 .songCard.rock {
   border: 0.2em solid #920A65;
 }
+
 .songCard.rock:hover {
   transform: none;
   box-shadow: none;
   border-color: #ffbae7;
+}
+
+.songCard.game {
+  border: 0.2em solid #00BD29;
+}
+.songCard.game:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #8bf6a2;
+}
+
+.songCard.rnb {
+  border: 0.2em solid #6B16FE;
+}
+.songCard.rnb:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #a76cff;
+}
+.songCard.rnbsoul {
+  border: 0.2em solid #430BA4;
+}
+.songCard.rnbsoul:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #cab8e3;
+}
+.songCard.alternative {
+  border: 0.2em solid #735EEE;
+}
+.songCard.alternative:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #beb6f1;
+}
+.songCard.hip-hop-rap {
+  border: 0.2em solid #01B481;
+}
+.songCard.hip-hop-rap:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #c8e1d9;;
+}
+.songCard.pop-latino {
+  border: 0.2em solid #A1A437;
+}
+.songCard.pop-latino:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #ebecbf;
+}
+.songBottom.pop {
+  background: url('../images/red_background_2.svg');
+  background-size: cover;
+}
+.songBottom.rock {
+  background: url('../images/purple_background.svg');
+  background-size: cover;
+}
+.songBottom.game {
+  background: url('../images/game_background.svg');
+  background-size: cover;
+}
+.songBottom.rnb {
+  background: url('../images/r&b_background.svg');
+  background-size: cover;
+}
+.songBottom.rnbsoul {
+  background: url('../images/soul_background.svg');
+  background-size: cover;
+}
+.songBottom.alternative {
+  background: url('../images/alternative_background.svg');
+  background-size: cover;
+}
+.songBottom.hip-hop-rap {
+  background: url('../images/rap_background.svg');
+  background-size: cover;
+}
+.songBottom.pop-latino {
+  background: url('../images/poplatino_background.svg');
+  background-size: cover;
 }
 /* track selection like cards */
 
@@ -322,15 +407,7 @@ body {
   min-width: 20px;
   vertical-align: middle;
 }
-.songBottom.pop {
-  background: url('../images/red_background_2.svg');
-  background-size: cover;
 
-}
-.songBottom.rock {
-  background: url('../images/purple_background.svg');
-  background-size: cover;
-}
 /* invisible hover zones for scrolling */
 .scrollZone {
   position: absolute;
@@ -625,7 +702,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   max-width: 600px;
   width: 100%;
   height: auto;
@@ -644,32 +721,56 @@ body {
   #rightPanel { width: 30%; }
 }
 /* song Art cover on the right side of screen */
-#songImageFrame {
+
+#songImageWrapper {
+  position: relative;
   width: 100%;
   max-width: 600px;
-  aspect-ratio: 1 / 1;
-  position: relative;
-  background-image: url("../images/imageBackground.png");
-  background-size: cover;
-  background-position: center;
-
-  border-radius: 12px;
-  overflow: hidden;
+  display: block;
 }
 
 #songImage {
-  position: absolute;
-
-  inset: 6px;
-
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
-
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-
   border-radius: clamp(16px, 1vw, 24px);
-  box-shadow: 0 0 20px rgba(37, 37, 36, 0.5);
+  box-shadow:
+          0 6px 0 rgba(0, 0, 0, 0.9),
+          0 10px 20px rgba(0, 0, 0, 0.6);
 }
+
+#songRankBadge {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  width: clamp(44px, 12%, 128px);
+  height: auto;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+  z-index: 10;
+  pointer-events: none;
+  animation: rankBadgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes rankBadgePop {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+#songRankBadge.ex-badge {
+  right: 0px;
+  width: clamp(100px, 22%, 240px);
+  filter: drop-shadow(0 0 10px gold);
+  animation: rankBadgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+  exPulse 1.2s ease-in-out 0.35s infinite;
+}
+
+@keyframes exPulse {
+  0%, 100% { filter: drop-shadow(0 0 10px gold); }
+  50%       { filter: drop-shadow(0 0 22px gold) brightness(1.25); }
+}
+
+
 /* information of the song under image */
 #songInfo {
   width: 100%;
@@ -684,7 +785,7 @@ body {
   background-image: url("../images/song_info_plate.png");
   background-size: 100% 100%;
   position: relative;
-  box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+
   border-radius: 8px;
   flex-shrink: 1;
   overflow: hidden;
@@ -943,20 +1044,28 @@ body::after {
   opacity: 1;
 }
 
-.battleButton {
+.vsButton {
+  appearance: none;
+  -webkit-appearance: none;
 
-  aspect-ratio: 248 / 26;
-  display: block;
+  background: transparent;
+  background-image: url("../images/vsButton.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  aspect-ratio: 248 / 52;
   width: 100%;
-  margin-top: 10px;
-  background-color: #4BA7FF;
-  background-size: 100% 100%;
-  border: none;
-  cursor: pointer;
+  display: block;
 
+  border: none;
+  padding: 0;
+
+
+  cursor: pointer;
 }
 
-.battleButton:hover {
+.vsButton:hover {
   filter: brightness(1.1);
 }
 /*Dropdown Menu*/

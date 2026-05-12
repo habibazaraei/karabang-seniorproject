@@ -20,21 +20,21 @@ window.stopMic = () => {
 // ─── Tier Constants ───────────────────────────────────────────────────────────
 
 const TIERS = [
-    { label: "PERFECT", maxSemitones: 0.5, points: 30, color: "#FFD700" },
-    { label: "GOOD", maxSemitones: 1.5, points: 20, color: "#4BA7FF" },
-    { label: "CLOSE",maxSemitones: 2.5, points: 10, color: "#6bff8e" },
+    { label: "PERFECT",maxSemitones: 10.0, points: 50,  color: "#FFD700" },
+    { label: "GOOD", maxSemitones: 15.0, points: 20,  color: "#4BA7FF" },
+    { label: "CLOSE", maxSemitones: 20.0, points: 10,  color: "#6bff8e" },
     { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
 ];
 
-const MIN_VOICED_AMP = 0.005; // RMS threshold — below this we treat user as silent
+const MIN_VOICED_AMP = 0.002; // RMS threshold — below this we treat user as silent
 // ─── Ranks Constants ───────────────────────────────────────────────────────────
 const Ranks = [
     { label: "EX+", min: 95, color: null },      // Handled by rainbow logic
-    { label: "A",   min: 88, color: "#e82020" }, // Red
-    { label: "B",   min: 80, color: "#3a24e5" }, // Blue
-    { label: "C",   min: 70, color: "#4ff4be" }, // Cyan
-    { label: "D",   min: 60, color: "#3fe538" }, // Green
-    { label: "F",   min: 0,  color: "#79471B" }, // Brown
+    { label: "A", min: 88, color: "#e82020" }, // Red
+    { label: "B", min: 80, color: "#3a24e5" }, // Blue
+    { label: "C", min: 70, color: "#4ff4be" }, // Cyan
+    { label: "D", min: 60, color: "#3fe538" }, // Green
+    { label: "F", min: 0,  color: "#79471B" }, // Brown
 ];
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -73,10 +73,10 @@ let displayedScore = 0;
 let scoreRollInterval = null;
 // ─── UI Elements ──────────────────────────────────────────────────────────────
 
-let scoreDisplay    = null;
-let pitchDisplay    = null;
-let tierDisplay     = null;
-let micToggleBtn    = null;
+let scoreDisplay = null;
+let pitchDisplay = null;
+let tierDisplay = null;
+let micToggleBtn = null;
 
 // ─── Pitch Detection (Autocorrelation) ────────────────────────────────────────
 
@@ -284,7 +284,7 @@ function scoringTick() {
 
         if (tier.label === "MISS") {
             consecutiveMisses++;
-            if (consecutiveMisses >= 12) {
+            if (consecutiveMisses >= 15) {
                 currentCombo = 0;
             }
         } else {
@@ -295,13 +295,14 @@ function scoringTick() {
 
         // AGGRESSIVE COMBO REWARDS
         // Since there is no 'max', these multipliers make the score explode!
-        let multiplier = 1;
-        if (currentCombo >= 50) multiplier = 20;     // Huge reward for 50+
-        else if (currentCombo >= 25) multiplier = 10;
-        else if (currentCombo >= 10) multiplier = 7;
-        else if (currentCombo >= 5) multiplier = 4;
-        else if (currentCombo >= 2) multiplier = 2;
-        //else if (currentCombo >= 2)  multiplier = 500; //COMBO FOR TESTING
+        let multiplier = 0;
+              if (currentCombo >= 50) multiplier =  3.0;
+               else if (currentCombo >= 25) multiplier = 2.75;
+               else if (currentCombo >= 10) multiplier = 2.5;
+               else if (currentCombo >= 5) multiplier = 2.25;
+               else if (currentCombo >= 2) multiplier = 2.0;
+
+
 
         let pointsEarned = tier.points;
         // Make 'PERFECT' significantly better than others to reward accuracy
