@@ -886,7 +886,10 @@ function applyGenreTheme(genre) {
     let topImg = "../images/top_bar_background.svg";
     let bottomImg = "../images/bottom_bar_background.svg";
 
-    if (g.includes("pop")) {
+    if (g.includes("pop latino")) {
+        topImg = "../images/top_bar_pop_latino.svg";
+        bottomImg = "../images/bottom_bar_pop_latino.svg";
+    } else if (g.includes("pop")) {
         topImg = "../images/top_bar_pop.svg";
         bottomImg = "../images/bottom_bar_pop.svg";
 
@@ -914,9 +917,7 @@ function applyGenreTheme(genre) {
         topImg = "../images/top_bar_game.svg";
         bottomImg = "../images/bottom_bar_game.svg";
 
-    } else if (g.includes("pop latino")) {
-        topImg = "../images/top_bar_poplatino.svg";
-        bottomImg = "../images/bottom_bar_poplatino.svg";
+
 
     } else if (g.includes("latin")) {
         topImg = "../images/top_bar_latin.svg";

@@ -198,12 +198,20 @@ body {
   border-color: #beb6f1;
 }
 .songCard.hip-hop-rap {
-  border: 0.2em solid #26FEC1;
+  border: 0.2em solid #01B481;
 }
 .songCard.hip-hop-rap:hover {
   transform: none;
   box-shadow: none;
-  border-color: #beb6f1;
+  border-color: #c8e1d9;;
+}
+.songCard.pop-latino {
+  border: 0.2em solid #A1A437;
+}
+.songCard.pop-latino:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #ebecbf;
 }
 .songBottom.pop {
   background: url('../images/red_background_2.svg');
@@ -231,6 +239,10 @@ body {
 }
 .songBottom.hip-hop-rap {
   background: url('../images/rap_background.svg');
+  background-size: cover;
+}
+.songBottom.pop-latino {
+  background: url('../images/poplatino_background.svg');
   background-size: cover;
 }
 /* track selection like cards */
