@@ -22,10 +22,10 @@ import { db, auth, doc, setDoc, getDoc, getDocs, collection, onAuthStateChanged 
 
 // ─── Tier / Rank Constants ─────────────────────────────────────────────────────
 const TIERS = [
-      { label: "PERFECT",maxSemitones: 10.0, points: 50,  color: "#FFD700" },
-     { label: "GOOD", maxSemitones: 15.0, points: 20,  color: "#4BA7FF" },
-     { label: "CLOSE", maxSemitones: 20.0, points: 10,  color: "#6bff8e" },
-     { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
+    { label: "PERFECT",maxSemitones: 10.0, points: 30,  color: "#FFD700" },
+    { label: "GOOD", maxSemitones: 15.0, points: 15,  color: "#4BA7FF" },
+    { label: "CLOSE", maxSemitones: 20.0, points: 5,  color: "#6bff8e" },
+    { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
 ];
 
 const Ranks = [
@@ -137,12 +137,12 @@ function scoringTick() {
                 if (p.combo > p.maxCombo) p.maxCombo = p.combo;
             }
 
-                  let multiplier = 0;
-                         if (currentCombo >= 50) multiplier =  3.0;
-                          else if (currentCombo >= 25) multiplier = 2.75;
-                          else if (currentCombo >= 10) multiplier = 2.5;
-                          else if (currentCombo >= 5) multiplier = 2.25;
-                          else if (currentCombo >= 2) multiplier = 2.0
+                 let multiplier = 0;
+                               if (currentCombo >= 50) multiplier =  2.50;
+                                else if (currentCombo >= 25) multiplier = 2.25;
+                                else if (currentCombo >= 10) multiplier = 2.00;
+                                else if (currentCombo >= 5) multiplier = 1.25;
+                                else if (currentCombo >= 2) multiplier = 0.75;
 
 
             p.score += Math.round(tier.points * mult);

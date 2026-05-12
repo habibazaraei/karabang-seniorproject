@@ -20,9 +20,9 @@ window.stopMic = () => {
 // ─── Tier Constants ───────────────────────────────────────────────────────────
 
 const TIERS = [
-    { label: "PERFECT",maxSemitones: 10.0, points: 50,  color: "#FFD700" },
-    { label: "GOOD", maxSemitones: 15.0, points: 20,  color: "#4BA7FF" },
-    { label: "CLOSE", maxSemitones: 20.0, points: 10,  color: "#6bff8e" },
+    { label: "PERFECT",maxSemitones: 10.0, points: 30,  color: "#FFD700" },
+    { label: "GOOD", maxSemitones: 15.0, points: 15,  color: "#4BA7FF" },
+    { label: "CLOSE", maxSemitones: 20.0, points: 5,  color: "#6bff8e" },
     { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
 ];
 
@@ -91,8 +91,8 @@ function detectPitch(analyser) {
     if (rms < MIN_VOICED_AMP) return 0;
 
     const sampleRate = audioCtx.sampleRate;
-    const minPeriod  = Math.floor(sampleRate / 1200);
-    const maxPeriod  = Math.floor(sampleRate / 60);
+    const minPeriod = Math.floor(sampleRate / 1200);
+    const maxPeriod = Math.floor(sampleRate / 60);
 
     let bestCorr   = -1;
     let bestPeriod = -1;
@@ -197,7 +197,7 @@ async function showMicSelectOverlay() {
     const micOverlay = document.getElementById("micSelectOverlay");
     const bottomBar  = document.getElementById("bottomBar");
 
-    if (bottomBar)  bottomBar.style.pointerEvents = "none";
+    if (bottomBar) bottomBar.style.pointerEvents = "none";
     if (micOverlay) micOverlay.style.display      = "flex";
 
     await populateMicSelects();
@@ -236,9 +236,9 @@ function getExpectedPitch(currentTimeSec) {
 }
 
 async function startCountdownAndPlay(deviceId = null) {
-    const overlay   = document.getElementById("karaokeStartOverlay");
+    const overlay = document.getElementById("karaokeStartOverlay");
     const startText = document.getElementById("startText");
-    const audio     = document.getElementById("audio");
+    const audio = document.getElementById("audio");
     const bottomBar = document.getElementById("bottomBar");
 
     overlay.style.display = "flex";
@@ -284,7 +284,7 @@ function scoringTick() {
 
         if (tier.label === "MISS") {
             consecutiveMisses++;
-            if (consecutiveMisses >= 15) {
+            if (consecutiveMisses >= 12) {
                 currentCombo = 0;
             }
         } else {
@@ -296,11 +296,11 @@ function scoringTick() {
         // AGGRESSIVE COMBO REWARDS
         // Since there is no 'max', these multipliers make the score explode!
         let multiplier = 0;
-              if (currentCombo >= 50) multiplier =  3.0;
-               else if (currentCombo >= 25) multiplier = 2.75;
-               else if (currentCombo >= 10) multiplier = 2.5;
-               else if (currentCombo >= 5) multiplier = 2.25;
-               else if (currentCombo >= 2) multiplier = 2.0;
+              if (currentCombo >= 50) multiplier =  2.50;
+               else if (currentCombo >= 25) multiplier = 2.25;
+               else if (currentCombo >= 10) multiplier = 2.00;
+               else if (currentCombo >= 5) multiplier = 1.25;
+               else if (currentCombo >= 2) multiplier = 0.75;
 
 
 
@@ -328,13 +328,13 @@ function scoringTick() {
     updateScorerUI(userHz, expectedHz);
 }
 function resetScore() {
-    totalScore     = 0;
+    totalScore = 0;
     displayedScore = 0;
-    maxPossible    = 0;
-    scoredFrames   = 0;
-    lastTierLabel  = "";
-    currentCombo   = 0;
-    maxCombo       = 0;
+    maxPossible = 0;
+    scoredFrames = 0;
+    lastTierLabel = "";
+    currentCombo = 0;
+    maxCombo = 0;
     consecutiveMisses = 0;
     if (scoreRollInterval) { clearInterval(scoreRollInterval); scoreRollInterval = null; }
     const scoreTextEl = document.getElementById("scoreText");
@@ -380,23 +380,23 @@ export async function restartSong() {
     restoreGameUI();
 
     // Reset the mic overlay UI back to its original state
-    const micTitle    = document.getElementById("micPanelTitle");
-    const micRow      = document.querySelector("#micSelectPanel .micRow");
-    const confirmBtn  = document.getElementById("confirmMicsBtn");
+    const micTitle = document.getElementById("micPanelTitle");
+    const micRow = document.querySelector("#micSelectPanel .micRow");
+    const confirmBtn = document.getElementById("confirmMicsBtn");
     const countdownEl = document.getElementById("micCountdown");
 
-    if (micTitle)    micTitle.style.display    = "block";
-    if (micRow)      micRow.style.display      = "flex";
+    if (micTitle) micTitle.style.display    = "block";
+    if (micRow) micRow.style.display      = "flex";
     if (confirmBtn) {
-        confirmBtn.style.display  = "block";
-        confirmBtn.disabled       = false;
-        confirmBtn.style.opacity  = "1";
+        confirmBtn.style.display = "block";
+        confirmBtn.disabled = false;
+        confirmBtn.style.opacity = "1";
     }
     if (countdownEl) countdownEl.style.display = "none";
 
     // Lock bottom bar and show the mic overlay again
-    if (bottomBar)   bottomBar.style.pointerEvents = "none";
-    if (micOverlay)  micOverlay.style.display      = "flex";
+    if (bottomBar) bottomBar.style.pointerEvents = "none";
+    if (micOverlay)  micOverlay.style.display = "flex";
 
     // Pre-select the previously chosen mic so it's not a blank choice
     const sel = document.getElementById("micSelectSingle");
@@ -601,7 +601,7 @@ async function openScoreboard() {
 
     // Set song title
     try {
-        const res  = await fetch("/api/songs");
+        const res = await fetch("/api/songs");
         const data = await res.json();
         const song = data.find(s => s.id === currentSongId);
         document.getElementById("scoreboardSongTitle").textContent = song ? `${song.title} — ${song.artist}` : "";
@@ -1024,12 +1024,12 @@ function showFinalScore() {
     else grade = "F";
 
     // Hide game UI
-    const topBar    = document.querySelector(".top-bar") || document.getElementById("topBar");
+    const topBar = document.querySelector(".top-bar") || document.getElementById("topBar");
     const bottomBar = document.getElementById("bottomBar");
-    const scorer    = document.getElementById("scorerPanel");
-    if (topBar)    topBar.style.display    = "none";
+    const scorer = document.getElementById("scorerPanel");
+    if (topBar) topBar.style.display    = "none";
     if (bottomBar) bottomBar.style.display = "none";
-    if (scorer)    scorer.style.display    = "none";
+    if (scorer)  scorer.style.display    = "none";
 
     const gradeImgMap = {
         "EX+": "/images/TierEX.png",
@@ -1125,7 +1125,7 @@ function animateFinalScore(target, onDone) {
 
     function update(now) {
         const progress = Math.min((now - startTime) / duration, 1);
-        const eased    = 1 - Math.pow(1 - progress, 3);
+        const eased = 1 - Math.pow(1 - progress, 3);
         el.textContent = Math.floor(target * eased).toLocaleString();
 
         if (progress < 1) {
@@ -1140,13 +1140,13 @@ function animateFinalScore(target, onDone) {
 }
 
 function animateFinalRankBar(pct, grade, gradeImgMap) {
-    const fill   = document.getElementById("finalRankFill");
+    const fill = document.getElementById("finalRankFill");
     const marker = document.getElementById("finalRankMarker");
-    const badge  = document.getElementById("finalGradeBadge");
+    const badge = document.getElementById("finalGradeBadge");
     if (!fill || !marker || !badge) return;
 
-    const safePct   = Math.min(pct, 100);
-    const duration  = 1400;
+    const safePct = Math.min(pct, 100);
+    const duration = 1400;
     const startTime = performance.now();
 
     const glassShine = `linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%)`;
@@ -1168,7 +1168,7 @@ function animateFinalRankBar(pct, grade, gradeImgMap) {
             const sortedRanks = [...Ranks].filter(r => r.min < 95).sort((a, b) => a.min - b.min);
             const gradientParts = [];
             for (let i = 0; i < sortedRanks.length; i++) {
-                const r    = sortedRanks[i];
+                const r = sortedRanks[i];
                 const next = sortedRanks[i + 1];
                 gradientParts.push(`${r.color} ${r.min}%`);
                 gradientParts.push(`${r.color} ${next ? next.min : 100}%`);
@@ -1183,21 +1183,21 @@ function animateFinalRankBar(pct, grade, gradeImgMap) {
     applyBackground(trackWidth);
 
     // Start state
-    fill.style.width      = "0%";
-    marker.style.left     = "0%";
-    marker.style.opacity  = "0";
+    fill.style.width = "0%";
+    marker.style.left = "0%";
+    marker.style.opacity = "0";
     badge.style.transform = "scale(0.5)";
 
     // fill animation
     function step(now) {
         const elapsed  = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const eased    = 1 - Math.pow(1 - progress, 2.5);
-        const current  = eased * safePct;
+        const eased = 1 - Math.pow(1 - progress, 2.5);
+        const current = eased * safePct;
 
-        fill.style.width         = current + "%";
-        marker.style.left        = current + "%";
-        marker.style.opacity     = "1";
+        fill.style.width = current + "%";
+        marker.style.left = current + "%";
+        marker.style.opacity = "1";
 
         // Scroll stripes during fill
         if (isEX) {
@@ -1211,7 +1211,7 @@ function animateFinalRankBar(pct, grade, gradeImgMap) {
             requestAnimationFrame(step);
         } else {
             // Lock fill at final width
-            fill.style.width  = safePct + "%";
+            fill.style.width = safePct + "%";
             marker.style.left = safePct + "%";
             marker.classList.add("marker-bounce");
 
@@ -1240,8 +1240,8 @@ function animateFinalRankBar(pct, grade, gradeImgMap) {
             // Pop badge after marker bounce
             setTimeout(() => {
                 badge.style.transition = "opacity 0.3s ease, transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)";
-                badge.style.opacity    = "1";
-                badge.style.transform  = "scale(1)";
+                badge.style.opacity = "1";
+                badge.style.transform = "scale(1)";
             }, 400);
         }
     }
@@ -1339,9 +1339,9 @@ function injectFinalScoreStyles() {
         }
 
         @keyframes markerBounce {
-            0%   { transform: translate(-50%, -50%) scaleY(1); }
-            30%  { transform: translate(-50%, -50%) scaleY(1.6); }
-            65%  { transform: translate(-50%, -50%) scaleY(0.8); }
+            0% { transform: translate(-50%, -50%) scaleY(1); }
+            30% { transform: translate(-50%, -50%) scaleY(1.6); }
+            65% { transform: translate(-50%, -50%) scaleY(0.8); }
             100% { transform: translate(-50%, -50%) scaleY(1); }
         }
 
@@ -1676,7 +1676,7 @@ function updateScoreBar(pct) {
         const next = sortedRanks[i + 1];
         gradientParts.push(`${current.color} ${current.min}%`);
         if (next) gradientParts.push(`${current.color} ${next.min}%`);
-        else       gradientParts.push(`${current.color} 100%`);
+        else gradientParts.push(`${current.color} 100%`);
     }
 
     const totalWidth = bar.offsetWidth;
@@ -1716,16 +1716,16 @@ window.addEventListener("DOMContentLoaded", () => {
             if (song) loadSongPitches(song.pitchesPath);
         });
 
-    const audioEl   = document.getElementById("audio");
+    const audioEl = document.getElementById("audio");
     const bottomBar = document.getElementById("bottomBar");
     const startBtn  = document.getElementById("startKaraokeBtn");
     const startOverlay = document.getElementById("karaokeStartOverlay");
-    const micOverlay   = document.getElementById("micSelectOverlay");
+    const micOverlay = document.getElementById("micSelectOverlay");
 
     // Lock bottom bar and hide start overlay completely until mic is confirmed
-    if (bottomBar)    bottomBar.style.pointerEvents = "none";
-    if (startOverlay) startOverlay.style.display    = "none";
-    if (startBtn)     startBtn.disabled             = true;
+    if (bottomBar)  bottomBar.style.pointerEvents = "none";
+    if (startOverlay) startOverlay.style.display = "none";
+    if (startBtn) startBtn.disabled = true;
 
     // Show mic select overlay on load, request permission
     showMicSelectOverlay();
@@ -1743,15 +1743,15 @@ window.addEventListener("DOMContentLoaded", () => {
             confirmBtn.style.opacity = "0.5";
 
             // Countdown inside the mic overlay panel
-            const micTitle    = document.getElementById("micPanelTitle");
-            const micRow      = document.querySelector("#micSelectPanel .micRow");
-            const micLabel    = document.getElementById("micSelectSingleLabel");
-            const micSelect   = document.getElementById("micSelectSingle");
+            const micTitle = document.getElementById("micPanelTitle");
+            const micRow = document.querySelector("#micSelectPanel .micRow");
+            const micLabel = document.getElementById("micSelectSingleLabel");
+            const micSelect = document.getElementById("micSelectSingle");
             const countdownEl = document.getElementById("micCountdown");
 
             // Hide the selection UI, show the countdown
-            if (micRow)    micRow.style.display    = "none";
-            if (micTitle)  micTitle.style.display  = "none";
+            if (micRow) micRow.style.display = "none";
+            if (micTitle)  micTitle.style.display = "none";
             if (confirmBtn) confirmBtn.style.display = "none";
             if (countdownEl) countdownEl.style.display = "block";
 
@@ -1780,9 +1780,9 @@ window.addEventListener("DOMContentLoaded", () => {
     // ── Step 3: Start button → countdown → play ──────────────────────
     if (startBtn) {
         startBtn.onclick = async () => {
-            startBtn.disabled      = true;
+            startBtn.disabled = true;
             startBtn.style.opacity = "0.5";
-            startBtn.style.cursor  = "not-allowed";
+            startBtn.style.cursor = "not-allowed";
 
             resetScore();
             await startCountdownAndPlay(selectedMicId);
