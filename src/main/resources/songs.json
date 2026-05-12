@@ -478,7 +478,7 @@
     "lyricsPath": "/lyrics/FlyMeToTheMoon.lrc",
     "artCoverPath": "/artCover/flyMeToTheMoonArtCover.jpg",
     "songTeaserPath": "/teaser/flyMeToTheMoonTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/FlyMeToTheMoon_pitches.json"
   },
   {
     "id": 49,
@@ -491,7 +491,7 @@
     "lyricsPath": "/lyrics/CantHelpFallingInLove.lrc",
     "artCoverPath": "/artCover/cantHelpFallingInLoveArtCover.jpg",
     "songTeaserPath": "/teaser/cantHelpFallingInLoveTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/CantHelpFallingInLove_pitches.json"
   },
   {
     "id": 50,
@@ -504,7 +504,7 @@
     "lyricsPath": "/lyrics/SuspiciousMinds.lrc",
     "artCoverPath": "/artCover/suspiciousMindsArtCover.jpg",
     "songTeaserPath": "/teaser/suspiciousMindsTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/SuspiciousMinds_pitches.json"
   },
   {
     "id": 51,
@@ -517,7 +517,7 @@
     "lyricsPath": "/lyrics/SoSick.lrc",
     "artCoverPath": "/artCover/soSickArtCover.jpg",
     "songTeaserPath": "/teaser/soSickTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/SoSick_pitches.json"
   },
   {
     "id": 52,
@@ -530,7 +530,7 @@
     "lyricsPath": "/lyrics/24kMagic.lrc",
     "artCoverPath": "/artCover/24kMagicArtCover.jpg",
     "songTeaserPath": "/teaser/24kMagicTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/24kMagic_pitches.json"
   },
   {
     "id": 53,
@@ -543,7 +543,7 @@
     "lyricsPath": "/lyrics/RapGod.lrc",
     "artCoverPath": "/artCover/rapGodArtCover.jpg",
     "songTeaserPath": "/teaser/rapGodTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/RapGod_pitches.json"
   },
   {
     "id": 54,
@@ -556,7 +556,7 @@
     "lyricsPath": "/lyrics/LoseYourself.lrc",
     "artCoverPath": "/artCover/loseYourselfArtCover.jpg",
     "songTeaserPath": "/teaser/loseYourselfTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/LoseYourself_pitches.json"
   },
   {
     "id": 55,
@@ -569,7 +569,7 @@
     "lyricsPath": "/lyrics/Billionaire.lrc",
     "artCoverPath": "/artCover/billionaireArtCover.jpg",
     "songTeaserPath": "/teaser/billionaireTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/Billionare_pitches.json"
   },
   {
     "id": 56,
@@ -582,7 +582,7 @@
     "lyricsPath": "/lyrics/WhenIWasYourMan.lrc",
     "artCoverPath": "/artCover/whenIWasYourManArtCover.jpg",
     "songTeaserPath": "/teaser/whenIWasYourManTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/WhenIWasYourMan_pitches.json"
   },
   {
     "id": 57,
@@ -595,7 +595,7 @@
     "lyricsPath": "/lyrics/TalkingToTheMoon.lrc",
     "artCoverPath": "/artCover/talkingToTheMoonArtCover.jpg",
     "songTeaserPath": "/teaser/talkingToTheMoonTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/TalkingToTheMoon_pitches.json"
   },
   {
     "id": 58,
@@ -608,7 +608,7 @@
     "lyricsPath": "/lyrics/Closer.lrc",
     "artCoverPath": "/artCover/closerArtCover.jpg",
     "songTeaserPath": "/teaser/closerTeaser.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/Closer_pitches.json"
   },
   {
     "id": 60,
@@ -621,6 +621,6 @@
     "lyricsPath": "/lyrics/SnakeEater.lrc",
     "artCoverPath": "/artCover/SnakeEaterCover.jpg",
     "songTeaserPath": "/teaser/SnakeEater.mp3",
-    "pitchesPath": ""
+    "pitchesPath": "/audio/SnakeEater_pitches.json"
   }
 ]
