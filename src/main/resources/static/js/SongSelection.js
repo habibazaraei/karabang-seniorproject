@@ -825,7 +825,7 @@ function refreshSongList() {
             card.style.transition = "";
         });
     });
-    loadFavoriteStates(); //Loads favorites on icon (Shows red heart)
+    loadFavoriteStates();
 }
 function addSongCard(listToRender){
 
@@ -843,7 +843,30 @@ function addSongCard(listToRender){
         }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("rock")) {
             songBottomClass += " rock";
             songCardClass += " rock";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("r&b/soul")) {
+            songBottomClass += " r&b/soul";
+            songCardClass += " r&b/soul";
+        } else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("r&b")) {
+            songBottomClass += " rnb";
+            songCardClass += " rnb";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("alternative")) {
+            songBottomClass += " alternative";
+            songCardClass += " alternative";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("hip-hop/rap")) {
+            songBottomClass += " hip-hop/rap";
+            songCardClass += " hip-hop/rap";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("game")) {
+            songBottomClass += " game";
+            songCardClass += " game";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop latino")) {
+            songBottomClass += " pop latino";
+            songCardClass += " pop latino";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("latin")) {
+            songBottomClass += " latin";
+            songCardClass += " latin";
         }
+
+
         card.className = songCardClass + (song.isPlaceholder ? " placeholder" : "");
         card.innerHTML = `
             <div class="songTop">
@@ -1224,6 +1247,7 @@ function updateTrackSelect() {
         singButtonPrimary.disabled = false;
         favoriteButtonRight.dataset.id = String(centerSong.id);
         loadFavoriteStates();
+        updateSongRankBadge(centerSong);
 
         // --- Teaser logic ---
         if (currentTeaserId !== centerSong.id) {
@@ -1256,7 +1280,9 @@ function updateTrackSelect() {
        clearInterval(teaserFadeInterval);
        clearTimeout(teaserReplayTimeout);
        currentTeaserId = null;
-   }
+        const badge = document.getElementById("songRankBadge");
+        if (badge) badge.style.display = "none";
+    }
 }
 
 async function syncHeartState(song) {
@@ -1276,7 +1302,58 @@ async function syncHeartState(song) {
         img.src = "/images/heart_gray_icon.svg";
     }
 }
+const gradeImgMap = {
+    "EX+": "/images/TierEX.png",
+    "A":   "/images/TierA.png",
+    "B":   "/images/TierB.png",
+    "C":   "/images/TierC.png",
+    "D":   "/images/TierD.png",
+    "F":   "/images/TierF.png",
+};
 
+async function updateSongRankBadge(song) {
+    const badge = document.getElementById("songRankBadge");
+    if (!badge) return;
+
+    // Hide badge immediately while loading
+    badge.style.display = "none";
+    badge.className = "";
+
+    const user = auth.currentUser;
+    if (!user || !song || song.isPlaceholder) return;
+
+    try {
+        const scoreRef = doc(db, "scores", String(song.id), "entries", user.uid);
+        const snap = await getDoc(scoreRef);
+        if (!snap.exists()) return;
+
+        const score = snap.data().score;
+        const targetScore = 100000;
+        const pct = (score / targetScore) * 100;
+
+        let grade;
+        if (pct >= 95) grade = "EX+";
+        else if (pct >= 88) grade = "A";
+        else if (pct >= 80) grade = "B";
+        else if (pct >= 70) grade = "C";
+        else if (pct >= 60) grade = "D";
+        else grade = "F";
+
+        // Reset animation by replacing the element's animation
+        badge.style.animation = "none";
+        void badge.offsetWidth; // force reflow
+
+        badge.src = gradeImgMap[grade];
+        badge.alt = grade;
+        badge.style.display = "block";
+
+        if (grade === "EX+") {
+            badge.classList.add("ex-badge");
+        }
+    } catch (err) {
+        console.error("Failed to load rank badge:", err);
+    }
+}
 function moveDown(){
     currentIndex++
     if(currentIndex >= currentList.length) currentIndex = 0
@@ -1318,6 +1395,7 @@ async function loadSongsFromAPI() {
                     songName.innerText = centerSong.title;
                     artistName.innerText = centerSong.artist;
                     syncHeartState(centerSong);
+                    updateSongRankBadge(centerSong);
                 }
             }
         }
@@ -1462,6 +1540,8 @@ onAuthStateChanged(auth, user => {
         loadFavoriteStates();
         loadUserPreferences(user);
         loadNavAvatar(user);
+
+        if (selectedSong) updateSongRankBadge(selectedSong);
     } else {
         document.getElementById("loggedIn").style.display = "none";
         document.getElementById("loggedOut").style.display = "block";
