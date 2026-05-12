@@ -22,10 +22,10 @@ import { db, auth, doc, setDoc, getDoc, getDocs, collection, onAuthStateChanged 
 
 // ─── Tier / Rank Constants ─────────────────────────────────────────────────────
 const TIERS = [
-    { label: "PERFECT",maxSemitones: 0.75, points: 50,  color: "#FFD700" },
-    { label: "GOOD", maxSemitones: 1.2, points: 20,  color: "#4BA7FF" },
-    { label: "CLOSE", maxSemitones: 1.85, points: 10,  color: "#6bff8e" },
-    { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
+      { label: "PERFECT",maxSemitones: 10.0, points: 50,  color: "#FFD700" },
+     { label: "GOOD", maxSemitones: 15.0, points: 20,  color: "#4BA7FF" },
+     { label: "CLOSE", maxSemitones: 20.0, points: 10,  color: "#6bff8e" },
+     { label: "MISS", maxSemitones: Infinity, points: 0, color: "#ff6b6b" },
 ];
 
 const Ranks = [
@@ -38,7 +38,7 @@ const Ranks = [
 ];
 
 const TARGET_SCORE    = 100000;
-const MIN_VOICED_AMP  = 0.005;
+const MIN_VOICED_AMP  = 0.002;
 
 // ─── State ─────────────────────────────────────────────────────────────────────
 const params = new URLSearchParams(window.location.search);
@@ -137,12 +137,13 @@ function scoringTick() {
                 if (p.combo > p.maxCombo) p.maxCombo = p.combo;
             }
 
-             let multiplier = 1;
-                 if (currentCombo >= 50) multiplier = 20;     // Huge reward for 50+
-                 else if (currentCombo >= 25) multiplier = 12;
-                 else if (currentCombo >= 10) multiplier = 10;
-                 else if (currentCombo >= 5) multiplier = 7;
-                 else if (currentCombo >= 2) multiplier = 4;
+              let multiplier = 0;
+                    if (currentCombo >= 50) multiplier = 10;
+                    else if (currentCombo >= 25) multiplier = 4;
+                    else if (currentCombo >= 10) multiplier = 2;
+                    else if (currentCombo >= 5) multiplier = 1.5;
+                    else if (currentCombo >= 2) multiplier = 0.75;
+
 
             p.score += Math.round(tier.points * mult);
 
