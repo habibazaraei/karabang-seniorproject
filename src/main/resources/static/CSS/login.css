@@ -25,25 +25,25 @@ html, body {
 
 body {
     background: #0f0638;
-    background-image: url("../images/purple_song_selection_background.svg");
+    background-image: url("../images/purple_song_selection_background.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
     color: white;
+    padding-top: env(safe-area-inset-top);
 }
 
 #topButtonBar {
-    height: 70px;
-    width: 100%;
-    padding: 15px 30px;
-    display: flex;
-    align-items: center;
+     position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
 }
 
 #webLogo {
-    font-family: "VarelaRound", sans-serif;
-    font-size: 2rem;
-    color: white;
+    width: 250px;
+    height: auto;
 }
 
 #webLogo span,
@@ -242,4 +242,8 @@ button:hover {
 .password-wrapper button:hover {
     background: none;
     color: white;
+}
+
+main {
+    padding-top: 80px;
 }
