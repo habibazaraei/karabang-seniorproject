@@ -609,5 +609,18 @@
     "artCoverPath": "/artCover/closerArtCover.jpg",
     "songTeaserPath": "/teaser/closerTeaser.mp3",
     "pitchesPath": ""
+  },
+  {
+    "id": 58,
+    "title": "Snake Eater",
+    "artist": "Norihiko Hibino",
+    "genre": "Game",
+    "difficulty": "Easy",
+    "language": "English",
+    "audioPath": "/audio/SnakeEater.mp3",
+    "lyricsPath": "/lyrics/SnakeEater.lrc",
+    "artCoverPath": "/artCover/SnakeEaterCover.jpg",
+    "songTeaserPath": "/teaser/SnakeEater.mp3",
+    "pitchesPath": ""
   }
 ]
