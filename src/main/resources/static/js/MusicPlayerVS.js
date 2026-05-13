@@ -891,6 +891,9 @@ function applyGenreTheme(genre) {
     } else if (g.includes("pop")) {
         topImg = "../images/top_bar_pop.svg";
         bottomImg = "../images/bottom_bar_pop.svg";
+    }else if (g.includes("pop")) {
+        topImg = "../images/top_bar_pop.svg";
+        bottomImg = "../images/bottom_bar_pop.svg";
 
     } else if (g.includes("rock")) {
         topImg = "../images/top_bar_rock.svg";
@@ -909,13 +912,12 @@ function applyGenreTheme(genre) {
         bottomImg = "../images/bottom_bar_alternative.svg";
 
     } else if (g.includes("hip-hop/rap")) {
-        topImg = "../images/top_bar_hiphop.svg";
-        bottomImg = "../images/bottom_bar_hiphop.svg";
+        topImg = "../images/top_bar_rap.svg";
+        bottomImg = "../images/bottom_bar_rap.svg";
 
     } else if (g.includes("game")) {
         topImg = "../images/top_bar_game.svg";
         bottomImg = "../images/bottom_bar_game.svg";
-
 
     } else if (g.includes("latin")) {
         topImg = "../images/top_bar_latin.svg";

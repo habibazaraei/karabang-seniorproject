@@ -905,8 +905,8 @@ function applyGenreTheme(genre) {
         bottomImg = "../images/bottom_bar_alternative.svg";
 
     } else if (g.includes("hip-hop/rap")) {
-        topImg = "../images/top_bar_hiphop.svg";
-        bottomImg = "../images/bottom_bar_hiphop.svg";
+        topImg = "../images/top_bar_rap.svg";
+        bottomImg = "../images/bottom_bar_rap.svg";
 
     } else if (g.includes("game")) {
         topImg = "../images/top_bar_game.svg";

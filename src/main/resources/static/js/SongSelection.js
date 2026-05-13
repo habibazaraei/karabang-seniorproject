@@ -837,7 +837,10 @@ function addSongCard(listToRender){
         // Build songBottom HTML
         let songBottomClass = "songBottom";
         let songCardClass = "songCard";
-        if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop latino")) {
+        if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("hip-hop/rap")) {
+            songBottomClass += " hip-hop-rap";
+            songCardClass += " hip-hop-rap";
+        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("pop latino")) {
             songBottomClass += " pop-latino";
             songCardClass += " pop-latino";
         }
@@ -856,9 +859,7 @@ function addSongCard(listToRender){
         }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("alternative")) {
             songBottomClass += " alternative";
             songCardClass += " alternative";
-        }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("hip-hop/rap")) {
-            songBottomClass += " hip-hop-rap";
-            songCardClass += " hip-hop-rap";
+
         }else if (!song.isPlaceholder && song.genre?.trim().toLowerCase().includes("game")) {
             songBottomClass += " game";
             songCardClass += " game";

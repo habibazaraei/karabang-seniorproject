@@ -137,15 +137,17 @@ function scoringTick() {
                 if (p.combo > p.maxCombo) p.maxCombo = p.combo;
             }
 
-                 let multiplier = 0;
-                               if (currentCombo >= 50) multiplier =  2.50;
-                                else if (currentCombo >= 25) multiplier = 2.25;
-                                else if (currentCombo >= 10) multiplier = 2.00;
-                                else if (currentCombo >= 5) multiplier = 1.25;
-                                else if (currentCombo >= 2) multiplier = 0.75;
+            let multiplier = 1;
+            if      (p.combo >= 50) multiplier = 2.50;
+            else if (p.combo >= 25) multiplier = 2.25;
+            else if (p.combo >= 10) multiplier = 2.00;
+            else if (p.combo >= 5)  multiplier = 1.25;
+            else if (p.combo >= 2)  multiplier = 0.75;
 
+            let pointsEarned = tier.points;
+            if (tier.label === "PERFECT") pointsEarned = 50;
 
-            p.score += Math.round(tier.points * mult);
+            p.score += Math.round(pointsEarned * multiplier);
 
             // Combo milestone popups
             if ([2, 5, 10, 25, 50, 100, 200].includes(p.combo)) {
