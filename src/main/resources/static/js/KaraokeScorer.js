@@ -275,7 +275,7 @@ function scoringTick() {
     // If the song doesn't expect a note, just exit.
     if (expectedHz <= 0) return;
 
-    // --- REMOVED MAXPOSSIBLE ---
+
     // We no longer track a denominator. The score is now absolute.
     scoredFrames++;
 
