@@ -622,5 +622,84 @@
     "artCoverPath": "/artCover/SnakeEaterCover.jpg",
     "songTeaserPath": "/teaser/SnakeEater.mp3",
     "pitchesPath": "/audio/SnakeEater_pitches.json"
+  },
+  {
+    "id": 61,
+    "title": "Takedown",
+    "artist": "Huntr/x",
+    "genre": "KPop",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/Takedown.mp3",
+    "lyricsPath": "/lyrics/Takedown.lrc",
+    "artCoverPath": "/artCover/HuntrxArtCover.jpg",
+    "songTeaserPath": "/teaser/TakedownTeaser.mp3",
+    "pitchesPath": ""
+  },
+  {
+    "id": 62,
+    "title": "What It Sounds Like",
+    "artist": "Huntr/x",
+    "genre": "KPop",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/WhatItSoundsLike.mp3",
+    "lyricsPath": "/lyrics/WhatItSoundsLike.lrc",
+    "artCoverPath": "/artCover/HuntrxArtCover.jpg",
+    "songTeaserPath": "/teaser/WhatItSoundsLikeTeaser.mp3",
+    "pitchesPath": ""
+  },
+  {
+    "id": 63,
+    "title": "How It's Done",
+    "artist": "Huntr/x",
+    "genre": "KPop",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/HowItsDone.mp3",
+    "lyricsPath": "/lyrics/HowItsDone.lrc",
+    "artCoverPath": "/artCover/HuntrxArtCover.jpg",
+    "songTeaserPath": "/teaser/HowItsDoneTeaser.mp3",
+    "pitchesPath": ""
+  },
+  {
+    "id": 64,
+    "title": "Golden",
+    "artist": "Huntr/x",
+    "genre": "KPop",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/Golden.mp3",
+    "lyricsPath": "/lyrics/Golden.lrc",
+    "artCoverPath": "/artCover/HuntrxArtCover.jpg",
+    "songTeaserPath": "/teaser/GoldenTeaser.mp3",
+    "pitchesPath": ""
+  },
+  {
+    "id": 65,
+    "title": "Soda Pop",
+    "artist": "Saja Boys",
+    "genre": "KPop",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/SodaPop.mp3",
+    "lyricsPath": "/lyrics/SodaPop.lrc",
+    "artCoverPath": "/artCover/SodaPopArtCover.jpg",
+    "songTeaserPath": "/teaser/SodaPopTeaser.mp3",
+    "pitchesPath": ""
+  },
+  {
+    "id": 66,
+    "title": "Your Idol",
+    "artist": "Saja Boys",
+    "genre": "KPop",
+    "difficulty": "Medium",
+    "language": "English",
+    "audioPath": "/audio/YourIdol.mp3",
+    "lyricsPath": "/lyrics/YourIdol.lrc",
+    "artCoverPath": "/artCover/YourIdolArtCover.jpg",
+    "songTeaserPath": "/teaser/YourIdolTeaser.mp3",
+    "pitchesPath": ""
   }
+
 ]
