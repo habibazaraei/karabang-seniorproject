@@ -1,9 +1,7 @@
 # karabang-seniorproject
 
-
-    Karabang is a web appilcation that 
-
 Karabang is a web-based karaoke application designed to provide an interactive singing experience. Users can create accounts, browse and select songs, sing along with synchronized lyrics, and receive real time scoring feedback based on microphone input and pitch detection. The system also includes personalization features such as settings, favorites, and profile management. The application focuses on usability, real time feedback, and scalability, allowing for future enhancements such as scoreboards, duet features, and expanded song libraries.
+
 ## 🌟 Highlights
 
 I think a "Highlights" section is one of the most important to include at the top of a good README. Create a simple, bulleted list of the main selling points of your software.
