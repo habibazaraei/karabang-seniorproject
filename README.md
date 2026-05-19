@@ -20,7 +20,7 @@ Jason Yi (Irronye)
 - linkedin: https://www.linkedin.com/in/jason-yi-340521278/
 
 Tyler Radisch (Tylerdr16)
-- linkedin: https://www.linkedin.com/in/jason-yi-340521278/](https://www.linkedin.com/in/tyler-radisch-70b688227/
+- linkedin: https://www.linkedin.com/in/tyler-radisch-70b688227/
 
 ## 🚀 Usage instructions
 
