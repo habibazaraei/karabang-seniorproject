@@ -23,7 +23,14 @@ Tyler Radisch (Tylerdr16)
 - linkedin: https://www.linkedin.com/in/tyler-radisch-70b688227/
 
 ## 🚀 Usage instructions
-
+    Pitch Extractor:
+        -Download extract_pitchesv2.py
+        -Place file in folder
+        -Download a song and extract the vocal track using a separate software
+        -Open up a terminal
+        -Type in py extract_pitches_v2.py --audio SONGNAME.mp3 --out SONGNAME_pitches.json
+        -Change the SONGNAME to the name of the file with the vocal track.
+        -Press enter and wait for completion.
 
 ## ⬇️ Installation instructions
 
