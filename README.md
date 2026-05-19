@@ -19,6 +19,9 @@ Karabang is a web-based karaoke application designed to provide an interactive s
 Jason Yi (Irronye)
 - linkedin: https://www.linkedin.com/in/jason-yi-340521278/
 
+Tyler Radisch (Tylerdr16)
+- linkedin: https://www.linkedin.com/in/jason-yi-340521278/](https://www.linkedin.com/in/tyler-radisch-70b688227/
+
 ## 🚀 Usage instructions
 
     Show off what your software looks like in action! Try to limit it to one-liners if possible and don't delve into API specifics.
@@ -51,8 +54,8 @@ Additionally, you want to be sure to specify any minimum requirements to run the
 
 ## 🖊️ Q&A
 
-> **Q:** Why songs in song selection are all blank (???)?
-> **A:** After grading our project, we will create a copy of the directory, and remove the current song list for copyright reasons. Youj can add your songs to your own code
+> **Q: Why songs in song selection are all blank (???)? **
+> **A: After grading our project, we will create a copy of the directory, and remove the current song list for copyright reasons. You can add your songs to your own code. **
 ## 🏆 Examples that inspire me
 
 These are a few projects that I think have very effective READMEs. You look at the README and you can quickly gain what you need to answer the few questions I posed earlier.
