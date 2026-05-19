@@ -12,41 +12,13 @@
 ## ℹ️ Overview
 
 Karabang is a web-based karaoke application designed to provide an interactive singing experience. Users can create accounts, browse and select songs, sing along with synchronized lyrics, and receive real time scoring feedback based on microphone input and pitch detection. The system also includes personalization features such as settings, favorites, and profile management. The application focuses on usability, real time feedback, and scalability, allowing for future enhancements such as scoreboards, duet features, and expanded song libraries.
-## 😊 Leave a good impression
 
-Consider the following:
 
-    Your README is often the first and only thing anyone will see about your software.
-    People judge your software by your README.
-    Your README is shipped alongside your code within package managers.
-
-In many people's minds, a poorly written README translates to poorly written software. Your README should convey the quality of your work, your expertise on the matter and get users excited by what you have done.
-
-    At the end of the day, your README is often the best marketing material you have.
-
-Additionally, try to gear your README towards the average user. Assume some first-year Computer Science student is looking at your documentation wondering if coding is for them. Show them and the world what can be done with quality software and make them feel like your software is approachable.
-## ⌛ Be considerate of people's time
-
-When someone looks over your README, they should be able to find the answers to these questions quickly:
-
-    Does this solve my problem?
-    Can I use this code?
-    Who made this?
-    How can I learn more?
-
-Try to streamline your README so that anyone glancing at it can answer those questions. This requires a bit of foresight into the typical kinds of problems people will come to your software for -- figure out those common problems and demonstrate a solution (even if that problem isn't the central aspect of your software).
-
-On my point about emoji usage in the Highlights: besides being friendly and quirky, you can use emojis to break up otherwise plain text. In most of my READMEs, I like to use emojis in the section headers. This makes it much easier for me, and hopefully, others, to navigate the document.
-
-To help people answer the question of "who made this?", include a subsection in your Overview to explain who created the software.
 ## ✍️ Author
 
-I'm Bane Sullivan and I created this guide hoping to refine my ability to create inspiring READMEs and help my colleagues better communicate what we are creating. This guide is my opinionated take on "how to write a good README?"
+Jason Yi (Irronye)
+- linkedin: https://www.linkedin.com/in/jason-yi-340521278/
 
-After all, we're in the business of Open Source Software for a reason: to share our work and make an impact. Having a well-written overview of our work is crucial in pursuing that goal.
-## 🎁 Template
-
-Are you sold yet? Check out the included template to get started for your project!
 ## 🚀 Usage instructions
 
     Show off what your software looks like in action! Try to limit it to one-liners if possible and don't delve into API specifics.
@@ -76,6 +48,11 @@ pip install pyvista
 I'm assuming that you are shipping your software off to some package manager; if so, you've made it clear that you intend to reach a wide range of users who likely aren't interested in contributing back to your software. With that in mind, save your development instructions (e.g., git clone ...; cmake ..) for the bottom of your README or another document altogether. The people looking for that know how to find it, whereas your average user will be scared off by complicated build instructions.
 
 Additionally, you want to be sure to specify any minimum requirements to run the software here. If it is multiplatform, great, let people know that! If not, specify what platforms this runs on or which versions of Python, etc., are supported.
+
+## 🖊️ Q&A
+
+> **Q:** Why songs in song selection are all blank (???)
+> **A:**
 ## 🏆 Examples that inspire me
 
 These are a few projects that I think have very effective READMEs. You look at the README and you can quickly gain what you need to answer the few questions I posed earlier.
