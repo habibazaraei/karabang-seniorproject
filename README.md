@@ -4,16 +4,12 @@ Karabang is a web-based karaoke application designed to provide an interactive s
 
 ## 🌟 Highlights
 
-I think a "Highlights" section is one of the most important to include at the top of a good README. Create a simple, bulleted list of the main selling points of your software.
+- User Authentication (Sign-UP, Login, Forgot Password)
+- Song Selection and Playback
+- Lyrics Display (line-by-line and word-by-word)
+- Score System (real time detection)
+- UI Navigation and Responsiveness
 
-Here are the main takeaways of this guide:
-
-    Make it inviting, friendly, and approachable
-    Find the most appealing part of your software and sell it!
-    Keep it concise; ain't nobody got time for your manifesto
-    Have links to everything relevant (documentation, CI status, deployments, etc.)
-    Emoji usage is encouraged (I'm only half kidding)
-    A template for you to use!
 
 ## ℹ️ Overview
 
