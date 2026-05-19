@@ -51,8 +51,8 @@ Additionally, you want to be sure to specify any minimum requirements to run the
 
 ## 🖊️ Q&A
 
-> **Q:** Why songs in song selection are all blank (???)
-> **A:**
+> **Q:** Why songs in song selection are all blank (???)?
+> **A:** After grading our project, we will create a copy of the directory, and remove the current song list for copyright reasons. Youj can add your songs to your own code
 ## 🏆 Examples that inspire me
 
 These are a few projects that I think have very effective READMEs. You look at the README and you can quickly gain what you need to answer the few questions I posed earlier.
