@@ -47,8 +47,3 @@ Tyler Radisch (Tylerdr16)
 >
 > **A:** There is a link to the code used for the pitch charts below.
 
-
-## 📖 Links
-
-    https://github.com/hackergrrl/art-of-readme
-
