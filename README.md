@@ -29,7 +29,7 @@ Tyler Radisch (Tylerdr16)
 
 - Download the main branch and run it
 - In a search browser type in: http://localhost:8080/songselection
-- 
+
 ## 🖊️ Q&A
 
 > **Q: Why songs in song selection are all blank ?**
