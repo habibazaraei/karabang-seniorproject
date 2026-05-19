@@ -19,14 +19,14 @@ Here are the main takeaways of this guide:
     Emoji usage is encouraged (I'm only half kidding)
     A template for you to use!
 
-ℹ️ Overview
+## ℹ️ Overview
 
     If nothing else, try writing better READMEs because it will make you look more professional and legitimate.
 
 A good README should include a brief overview section with a paragraph or two explaining what the software does, how it works, and who made it.
 
 Feel free to include 2-3 subsections here with relevant information in regards to who you are and how the software is relevant in a broader ecosystem of software (perhaps respectfully compare your software to other solutions out there).
-😊 Leave a good impression
+## 😊 Leave a good impression
 
 Consider the following:
 
@@ -39,7 +39,7 @@ In many people's minds, a poorly written README translates to poorly written sof
     At the end of the day, your README is often the best marketing material you have.
 
 Additionally, try to gear your README towards the average user. Assume some first-year Computer Science student is looking at your documentation wondering if coding is for them. Show them and the world what can be done with quality software and make them feel like your software is approachable.
-⌛ Be considerate of people's time
+## ⌛ Be considerate of people's time
 
 When someone looks over your README, they should be able to find the answers to these questions quickly:
 
@@ -53,15 +53,15 @@ Try to streamline your README so that anyone glancing at it can answer those que
 On my point about emoji usage in the Highlights: besides being friendly and quirky, you can use emojis to break up otherwise plain text. In most of my READMEs, I like to use emojis in the section headers. This makes it much easier for me, and hopefully, others, to navigate the document.
 
 To help people answer the question of "who made this?", include a subsection in your Overview to explain who created the software.
-✍️ Author
+## ✍️ Author
 
 I'm Bane Sullivan and I created this guide hoping to refine my ability to create inspiring READMEs and help my colleagues better communicate what we are creating. This guide is my opinionated take on "how to write a good README?"
 
 After all, we're in the business of Open Source Software for a reason: to share our work and make an impact. Having a well-written overview of our work is crucial in pursuing that goal.
-🎁 Template
+## 🎁 Template
 
 Are you sold yet? Check out the included template to get started for your project!
-🚀 Usage instructions
+## 🚀 Usage instructions
 
     Show off what your software looks like in action! Try to limit it to one-liners if possible and don't delve into API specifics.
 
@@ -77,7 +77,7 @@ text.plot(cpos='xy')
 example
 
 It can be tempting to document your entire API in the README, and many projects have done a fantastic job of this like tqdm, but I'd like to mostly discourage this and gear you towards writing actual documentation and leaving the README as an elevator pitch.
-⬇️ Installation instructions
+## ⬇️ Installation instructions
 
     You may be inclined to add development instructions here, but don't.
 
@@ -90,7 +90,7 @@ pip install pyvista
 I'm assuming that you are shipping your software off to some package manager; if so, you've made it clear that you intend to reach a wide range of users who likely aren't interested in contributing back to your software. With that in mind, save your development instructions (e.g., git clone ...; cmake ..) for the bottom of your README or another document altogether. The people looking for that know how to find it, whereas your average user will be scared off by complicated build instructions.
 
 Additionally, you want to be sure to specify any minimum requirements to run the software here. If it is multiplatform, great, let people know that! If not, specify what platforms this runs on or which versions of Python, etc., are supported.
-🏆 Examples that inspire me
+## 🏆 Examples that inspire me
 
 These are a few projects that I think have very effective READMEs. You look at the README and you can quickly gain what you need to answer the few questions I posed earlier.
 
@@ -108,14 +108,14 @@ There are countless others like these out there, but here are a few I strive to 
     MonitorControl/MonitorControl
 
 I know you're all looking for an example of a bad README now, so check out py-filelock which only has a link to API docs -- no overview or anything 🤦‍♂️. I feel a little bad calling out a specific project, but you know what, I'm trying to make a point.
-💭 Invite users to give feedback and contribute
+## 💭 Invite users to give feedback and contribute
 
     If you found this guide insightful or if you have suggestions, please start a Discussion!
 
 When making open source software, you share your work with the world. Whether that is in the hope of contributions back, humbly if just one other person out there finds it useful, or building a community, I think it is important to solicit engagement. To do this, I like to point people over to the Discussions tab or invite them to request new features by opening an issue.
 
 If you want to encourage others to contribute back to your project, this is the place to do it. Point people to your DEVELOPMENT and/or CONTRIBUTING guides if you have them. Further, you can outline any other ways to contribute such as translating the README or documentation.
-📖 Further reading
+## 📖 Further reading
 
     https://github.com/hackergrrl/art-of-readme
     https://www.giacomodebidda.com/articles/how-to-write-a-killer-readme/
