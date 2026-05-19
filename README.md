@@ -1,11 +1,9 @@
 # karabang-seniorproject
 
 
-    Your documentation is a direct reflection of your software, so hold it to the same standards.
+    Karabang is a web appilcation that 
 
-After much practice, I have a recipe of sorts for writing READMEs that I follow anytime I make a new project. I wanted to share my process here, gather feedback, and see if I can lower the barrier to writing a good README.
-
-This guide is geared towards projects that do not yet, or never will, have flushed out documentation. Once a project has a dedicated website, the README should turn into a minimal elevator pitch and "link fest" to relevant materials.
+Karabang is a web-based karaoke application designed to provide an interactive singing experience. Users can create accounts, browse and select songs, sing along with synchronized lyrics, and receive real time scoring feedback based on microphone input and pitch detection. The system also includes personalization features such as settings, favorites, and profile management. The application focuses on usability, real time feedback, and scalability, allowing for future enhancements such as scoreboards, duet features, and expanded song libraries.
 ## 🌟 Highlights
 
 I think a "Highlights" section is one of the most important to include at the top of a good README. Create a simple, bulleted list of the main selling points of your software.
